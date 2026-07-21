@@ -6,6 +6,7 @@ import { AlertTriangle, Bug, Loader2, RotateCcw, ShieldAlert, VideoOff } from "l
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { loadPersistedCameraPermission, updateCameraPermission } from "@/lib/camera-permission-service"
 
 type CameraStatus = "loading" | "streaming" | "denied" | "unsupported" | "error" | "no-devices" | "simulation"
 
@@ -22,6 +23,10 @@ export function CameraView() {
   const streamRef = useRef<MediaStream | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const settledRef = useRef(false)
+  // Backend sync: resolved once (demo userId, since there's no auth yet) and
+  // reused across retries; the initial-GET short-circuit below only runs once.
+  const userIdRef = useRef<number | null>(null)
+  const initialSyncRef = useRef(false)
 
   const [status, setStatus] = useState<CameraStatus>("loading")
   const [retryToken, setRetryToken] = useState(0)
@@ -34,6 +39,19 @@ export function CameraView() {
     settledRef.current = false
     setErrorInfo(null)
     setResolution(null)
+
+    // Persists a granted/denied transition to the backend. Fire-and-forget:
+    // network/backend failures must never block or crash the local stream.
+    async function persistStatus(next: "granted" | "denied") {
+      try {
+        const userId = userIdRef.current ?? (await loadPersistedCameraPermission()).userId
+        userIdRef.current = userId
+        await updateCameraPermission(userId, next)
+        console.log(`${LOG_PREFIX} Persisted camera permission status "${next}" for user ${userId}.`)
+      } catch (err) {
+        console.warn(`${LOG_PREFIX} Failed to persist camera permission status "${next}" to the backend.`, err)
+      }
+    }
 
     async function attach() {
       // Arm the stuck-request watchdog for the whole lifecycle up front,
@@ -122,6 +140,7 @@ export function CameraView() {
           console.error(`${LOG_PREFIX} Phase 4 FAILED: <video> ref is not mounted, cannot attach stream.`)
         }
         setStatus("streaming")
+        void persistStatus("granted")
       } catch (err: unknown) {
         settledRef.current = true
         if (timeoutRef.current) clearTimeout(timeoutRef.current)
@@ -131,11 +150,37 @@ export function CameraView() {
         const message = err instanceof DOMException ? err.message : String(err)
         console.error(`${LOG_PREFIX} Phase 2 FAILED: getUserMedia() rejected — ${name}: ${message}`, err)
         setErrorInfo({ name, message })
-        setStatus(name === "NotAllowedError" || name === "PermissionDeniedError" ? "denied" : "error")
+        const isDenied = name === "NotAllowedError" || name === "PermissionDeniedError"
+        setStatus(isDenied ? "denied" : "error")
+        if (isDenied) void persistStatus("denied")
       }
     }
 
-    attach()
+    async function run() {
+      // Only on the very first mount (not on user-triggered retries): check
+      // the backend for a previously persisted decision before touching
+      // getUserMedia, so a hard refresh reflects "denied" immediately
+      // instead of flashing "Requesting camera access…" first.
+      if (!initialSyncRef.current) {
+        initialSyncRef.current = true
+        try {
+          const { userId, permission } = await loadPersistedCameraPermission()
+          userIdRef.current = userId
+          console.log(`${LOG_PREFIX} Restored persisted camera permission from backend:`, permission)
+          if (!cancelled && permission?.status === "denied") {
+            settledRef.current = true
+            setStatus("denied")
+            return
+          }
+        } catch (err) {
+          console.warn(`${LOG_PREFIX} Failed to load persisted camera permission; continuing with live check.`, err)
+        }
+      }
+      if (cancelled) return
+      await attach()
+    }
+
+    run()
 
     return () => {
       cancelled = true
