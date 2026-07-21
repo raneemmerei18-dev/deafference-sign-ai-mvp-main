@@ -6,6 +6,8 @@
 // duplicated rather than imported since the Express server and the Next.js
 // app are separate build targets.
 
+import { getOrCreateUserId } from "@/lib/identity"
+
 export type CameraPermissionStatus = "granted" | "denied" | "prompted"
 
 export interface CameraPermissionRecord {
@@ -47,6 +49,13 @@ function generateAnonId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
 }
 
+// BE-7: every outgoing request identifies the calling device via this
+// header, alongside the numeric demo userId already carried in the
+// path/body below. See lib/identity.ts and docs/IDENTITY.md.
+function withIdentityHeaders(headers: Record<string, string> = {}): Record<string, string> {
+  return { ...headers, "X-User-Id": getOrCreateUserId() }
+}
+
 async function parseApiResponse<T>(res: Response): Promise<ApiResponse<T>> {
   const body = (await res.json().catch(() => null)) as ApiResponse<T> | null
   if (!body) {
@@ -80,7 +89,7 @@ async function getOrCreateDemoUserId(): Promise<number> {
   const email = `anon-${generateAnonId()}@deafference.local`
   const res = await fetch(`${API_BASE_URL}/api/users`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: withIdentityHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({ email }),
   })
   const body = await parseApiResponse<UserRecord>(res)
@@ -99,7 +108,7 @@ async function getOrCreateDemoUserId(): Promise<number> {
 export async function fetchCameraPermission(userId: number): Promise<CameraPermissionRecord | null> {
   const res = await fetch(`${API_BASE_URL}/api/users/camera-permission/${userId}`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: withIdentityHeaders({ "Content-Type": "application/json" }),
   })
 
   if (res.status === 404) {
@@ -123,7 +132,7 @@ export async function updateCameraPermission(
 ): Promise<CameraPermissionRecord> {
   const res = await fetch(`${API_BASE_URL}/api/users/camera-permission`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: withIdentityHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({ userId, status }),
   })
 
