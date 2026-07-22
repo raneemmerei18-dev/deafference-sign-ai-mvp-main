@@ -72,6 +72,20 @@ app.use((req: Request, res: Response) => {
 
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  // express.json() throws a SyntaxError (with a `body` property) when the
+  // request body isn't valid JSON — without this branch it fell through to
+  // the generic 500 below, misreporting a client input error as a server one.
+  if (err instanceof SyntaxError && 'body' in err) {
+    res.status(400).json({
+      success: false,
+      error: {
+        code: 'INVALID_JSON',
+        message: 'Request body contains malformed JSON.',
+      },
+    });
+    return;
+  }
+
   if (err.message?.startsWith('CORS:')) {
     res.status(403).json({
       success: false,

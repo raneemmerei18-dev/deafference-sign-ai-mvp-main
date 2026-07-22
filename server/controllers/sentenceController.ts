@@ -11,12 +11,12 @@ export const createSentence = async (
   const glosses = req.validatedGlosses ?? [];
 
   try {
-    const { sentence, source } = await translateGlossesToSentence(glosses);
+    const result = await translateGlossesToSentence(glosses);
 
     res.status(200).json({
-      sentence,
-      glosses,
-      source,
+      sentence: result.sentence,
+      glosses: result.glosses,
+      source: result.source,
     });
   } catch (error) {
     console.error('Sentence translation error:', error);

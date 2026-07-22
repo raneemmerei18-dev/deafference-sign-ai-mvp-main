@@ -29,6 +29,7 @@ Return ONLY the translated sentence text.`;
 interface TranslationResult {
   sentence: string;
   source: SentenceSource;
+  glosses: string[];
 }
 
 type Provider = 'openai' | 'anthropic' | 'gemini';
@@ -215,11 +216,16 @@ const PROVIDER_CALLERS: Record<Provider, (glosses: string[], signal: AbortSignal
  * AI provider first (bounded by AI_TIMEOUT_MS); any missing config,
  * non-2xx response, timeout, or empty completion falls back to the
  * deterministic rule-based translator, which never throws.
+ *
+ * The returned `glosses` is the cleaned (trimmed, blank-filtered) array
+ * actually used for translation — callers should echo this back rather
+ * than the raw input, so the response never claims to have translated a
+ * blank/whitespace-only entry it silently dropped.
  */
 export async function translateGlossesToSentence(glosses: string[]): Promise<TranslationResult> {
   const cleaned = glosses.map((g) => (typeof g === 'string' ? g.trim() : '')).filter(Boolean);
   if (cleaned.length === 0) {
-    return { sentence: '', source: 'rules' };
+    return { sentence: '', source: 'rules', glosses: cleaned };
   }
 
   const provider = getConfiguredProvider();
@@ -229,7 +235,7 @@ export async function translateGlossesToSentence(glosses: string[]): Promise<Tra
     try {
       const sentence = await PROVIDER_CALLERS[provider](cleaned, controller.signal);
       if (sentence) {
-        return { sentence, source: 'ai' };
+        return { sentence, source: 'ai', glosses: cleaned };
       }
     } catch (err) {
       console.warn(`[sentence] AI provider "${provider}" failed, falling back to rules.`, err);
@@ -238,5 +244,5 @@ export async function translateGlossesToSentence(glosses: string[]): Promise<Tra
     }
   }
 
-  return { sentence: translateGlossesWithRules(cleaned), source: 'rules' };
+  return { sentence: translateGlossesWithRules(cleaned), source: 'rules', glosses: cleaned };
 }
