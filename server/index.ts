@@ -4,6 +4,7 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors, { CorsOptions } from 'cors';
 import cameraPermissionRoutes from './routes/cameraPermissionRoutes';
 import userRoutes from './routes/userRoutes';
+import sentenceRoutes from './routes/sentenceRoutes';
 
 const app: Express = express();
 // Default to 4000 so the API does not collide with the Next.js dev server (3000).
@@ -51,6 +52,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/users', cameraPermissionRoutes);
+app.use('/api/sentence', sentenceRoutes);
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {

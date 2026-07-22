@@ -11,6 +11,10 @@ export interface ValidatedUserRequest extends Request {
   validatedBody?: CreateUserRequest;
 }
 
+export interface ValidatedSentenceRequest extends Request {
+  validatedGlosses?: string[];
+}
+
 const VALID_STATUSES: CameraPermissionStatus[] = ['granted', 'denied', 'prompted'];
 
 // Basic RFC-5322-ish email shape check (kept intentionally simple, mirroring
@@ -138,6 +142,61 @@ export const validateCreateUserPayload = (
       validated.name = name;
     }
     req.validatedBody = validated;
+
+    next();
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Invalid request payload',
+      },
+    });
+  }
+};
+
+export const validateSentencePayload = (
+  req: ValidatedSentenceRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  try {
+    const { glosses } = req.body;
+
+    if (glosses === undefined || glosses === null) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'glosses is required',
+        },
+      });
+      return;
+    }
+
+    if (!Array.isArray(glosses)) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'glosses must be an array of strings',
+        },
+      });
+      return;
+    }
+
+    if (!glosses.every((g) => typeof g === 'string')) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'every item in glosses must be a string',
+        },
+      });
+      return;
+    }
+
+    req.validatedGlosses = glosses;
 
     next();
   } catch (error) {
