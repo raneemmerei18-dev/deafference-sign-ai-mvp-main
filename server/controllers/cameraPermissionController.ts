@@ -1,6 +1,6 @@
 // controllers/cameraPermissionController.ts
 import { Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { ValidatedRequest } from '../middleware/validators';
 import { CameraPermissionResponse, ApiResponse } from '../types/camera-permission';
 
@@ -49,6 +49,20 @@ export const updateCameraPermission = async (
     });
   } catch (error) {
     console.error('Camera permission update error:', error);
+
+    // userId passed validation (positive integer) but no User row with that
+    // id exists, so the upsert's FK constraint fails. This is a client
+    // input error, not a database failure — surface it as 404, not 500.
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
+      res.status(404).json({
+        success: false,
+        error: {
+          code: 'USER_NOT_FOUND',
+          message: `No user exists with id ${req.validatedBody?.userId}.`,
+        },
+      });
+      return;
+    }
 
     // Handle Prisma validation errors
     if (error instanceof Error) {
