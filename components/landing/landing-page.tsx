@@ -2,15 +2,17 @@
 
 import { Navbar } from "./navbar"
 import { Hero } from "./hero"
+import { AboutUs } from "./about-us"
 import { WhyChooseUs } from "./why-choose-us"
-import { HowItWorks } from "./how-it-works"
+import { HowItWorksVisual } from "./how-it-works-visual"
+import { DemoCenter } from "./demo-center"
 import { Features } from "./features"
 import { Performance } from "./performance"
-import { UseCases } from "./use-cases"
-import { BestConditions } from "./best-conditions"
-import { SupportedLanguages } from "./supported-languages"
-import { Mission } from "./mission"
+import { Pricing } from "./pricing"
+import { ScenarioGrid } from "./scenario-grid"
+import { PrivacyPolicy } from "./privacy-policy"
 import { FAQ } from "./faq"
+import { Contact } from "./contact"
 import { CTA } from "./cta"
 import { Footer } from "./footer"
 
@@ -20,15 +22,17 @@ export function LandingPage() {
       <Navbar />
       <main>
         <Hero />
+        <AboutUs />
         <WhyChooseUs />
-        <HowItWorks />
+        <HowItWorksVisual />
+        <DemoCenter />
         <Features />
         <Performance />
-        <UseCases />
-        <BestConditions />
-        <SupportedLanguages />
-        <Mission />
+        <Pricing />
+        <ScenarioGrid />
+        <PrivacyPolicy />
         <FAQ />
+        <Contact />
         <CTA />
       </main>
       <Footer />

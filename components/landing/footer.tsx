@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { Globe2, Mail, MessageSquare } from "lucide-react"
 import { Container } from "@/components/shared/container"
-import { LANDING_NAV } from "@/lib/constants"
+import { FOOTER_EXPLORE_NAV, FOOTER_COMPANY_NAV } from "@/lib/constants"
 import { Logo } from "@/components/deafference/logo"
 
 const socialLinks = [
@@ -21,7 +21,7 @@ export function Footer() {
       transition={{ duration: 0.45, ease: "easeOut" }}
       className="border-t border-border/60 py-10"
     >
-      <Container className="grid gap-8 lg:grid-cols-[1fr_auto_auto] lg:items-start">
+      <Container className="grid gap-8 lg:grid-cols-[1fr_auto_auto_auto] lg:items-start">
         <div className="max-w-sm">
           <Logo />
           <p className="mt-4 text-sm leading-7 text-muted-foreground">
@@ -33,7 +33,18 @@ export function Footer() {
         <div>
           <p className="text-sm font-semibold text-foreground">Explore</p>
           <nav className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground">
-            {LANDING_NAV.map((item) => (
+            {FOOTER_EXPLORE_NAV.map((item) => (
+              <a key={item.href} href={item.href} className="transition-colors hover:text-foreground">
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+
+        <div>
+          <p className="text-sm font-semibold text-foreground">Company</p>
+          <nav className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground">
+            {FOOTER_COMPANY_NAV.map((item) => (
               <a key={item.href} href={item.href} className="transition-colors hover:text-foreground">
                 {item.label}
               </a>
