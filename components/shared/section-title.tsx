@@ -9,6 +9,8 @@ type SectionTitleProps = {
   description?: string
   align?: "left" | "center"
   className?: string
+  /** Applied to the underlying <h2>, e.g. so a parent <section> can use aria-labelledby. */
+  headingId?: string
 }
 
 export function SectionTitle({
@@ -17,6 +19,7 @@ export function SectionTitle({
   description,
   align = "left",
   className,
+  headingId,
 }: SectionTitleProps) {
   return (
     <motion.div
@@ -31,7 +34,7 @@ export function SectionTitle({
           {eyebrow}
         </p>
       ) : null}
-      <h2 className="mt-3 text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl">
+      <h2 id={headingId} className="mt-3 text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl">
         {title}
       </h2>
       {description ? (
