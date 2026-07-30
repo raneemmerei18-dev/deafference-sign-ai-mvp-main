@@ -265,7 +265,14 @@ function ScenarioTabs() {
 
 export function ScenarioGrid() {
   return (
-    <section id="use-cases" aria-labelledby="scenarios-heading" className="border-y border-white/5 bg-[#0B0F19] py-24 sm:py-28">
+    <section
+      id="use-cases"
+      aria-labelledby="scenarios-heading"
+      className="border-y border-white/5 bg-[#0B0F19] py-24 sm:py-28"
+      data-mira-zone="0.85"
+      data-mira-mood="listen"
+      data-mira-line="Anywhere a conversation gets stuck."
+    >
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 18 }}

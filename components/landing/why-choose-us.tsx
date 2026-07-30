@@ -32,7 +32,13 @@ const reasons = [
 
 export function WhyChooseUs() {
   return (
-    <section id="why-choose-us" className="py-24 sm:py-28">
+    <section
+      id="why-choose-us"
+      className="py-24 sm:py-28"
+      data-mira-zone="0.85"
+      data-mira-mood="think"
+      data-mira-line="Here's why it's different."
+    >
       <Container>
         <SectionTitle
           eyebrow="Why choose us"

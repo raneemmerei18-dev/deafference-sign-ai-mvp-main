@@ -15,10 +15,12 @@ import { FAQ } from "./faq"
 import { Contact } from "./contact"
 import { CTA } from "./cta"
 import { Footer } from "./footer"
+import { MiraCompanion } from "./mira-companion"
 
 export function LandingPage() {
   return (
     <div className="min-h-dvh bg-background text-foreground">
+      <MiraCompanion />
       <Navbar />
       <main>
         <Hero />

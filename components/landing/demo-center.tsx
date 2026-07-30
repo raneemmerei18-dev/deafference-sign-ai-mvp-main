@@ -407,7 +407,13 @@ function DemoCenterTabs() {
 
 export function DemoCenter() {
   return (
-    <section id="demo" className="relative overflow-hidden bg-slate-950 py-24 sm:py-28">
+    <section
+      id="demo"
+      className="relative overflow-hidden bg-slate-950 py-24 sm:py-28"
+      data-mira-zone="0.78"
+      data-mira-mood="listen"
+      data-mira-line="Watch it translate live."
+    >
       <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_50%_100%,_rgba(240,165,28,0.16),_transparent_50%)]" />
 
       <Container>

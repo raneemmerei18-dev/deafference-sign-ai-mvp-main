@@ -32,7 +32,13 @@ const principles = [
 
 export function PrivacyPolicy() {
   return (
-    <section id="privacy" className="py-24 sm:py-28">
+    <section
+      id="privacy"
+      className="py-24 sm:py-28"
+      data-mira-zone="0.2"
+      data-mira-mood="neutral"
+      data-mira-line="Nothing leaves your device."
+    >
       <Container>
         <SectionTitle
           eyebrow="Privacy policy"

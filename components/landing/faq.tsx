@@ -30,7 +30,13 @@ const faqs = [
 
 export function FAQ() {
   return (
-    <section id="faq" className="py-24 sm:py-28">
+    <section
+      id="faq"
+      className="py-24 sm:py-28"
+      data-mira-zone="0.6"
+      data-mira-mood="think"
+      data-mira-line="Got questions? I've got answers."
+    >
       <Container>
         <SectionTitle
           eyebrow="FAQ"

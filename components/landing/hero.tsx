@@ -53,7 +53,13 @@ function SignAvatar() {
 
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden bg-slate-950 pt-16 sm:pt-24">
+    <section
+      id="top"
+      className="relative overflow-hidden bg-slate-950 pt-16 sm:pt-24"
+      data-mira-zone="0.62"
+      data-mira-mood="happy"
+      data-mira-line="Hi — I'm Mira. I'll walk you through it."
+    >
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[36rem] bg-[radial-gradient(circle_at_top,_rgba(240,165,28,0.22),_transparent_45%)]" />
 
       <Container className="pb-20 sm:pb-28">
@@ -79,6 +85,8 @@ export function Hero() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href={APP_ROUTES.translate}
+                data-mira-say="This is the one."
+                data-mira-cheer=""
                 className={`brand-gradient inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-base font-bold text-white transition-all hover:scale-[1.02] ${FOCUS_RING}`}
               >
                 <ArrowRight className="size-4" />
@@ -86,6 +94,7 @@ export function Hero() {
               </Link>
               <a
                 href="#use-cases"
+                data-mira-say="Good idea — let's look."
                 className={`inline-flex h-12 items-center justify-center rounded-xl border border-slate-700 px-6 text-base font-medium text-slate-300 transition-colors hover:border-slate-500 hover:text-white ${FOCUS_RING}`}
               >
                 Explore Scenarios

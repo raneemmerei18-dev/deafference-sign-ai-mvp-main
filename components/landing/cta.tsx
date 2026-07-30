@@ -7,7 +7,13 @@ import { Container } from "@/components/shared/container"
 
 export function CTA() {
   return (
-    <section id="cta" className="py-24 sm:py-28">
+    <section
+      id="cta"
+      className="py-24 sm:py-28"
+      data-mira-zone="0.5"
+      data-mira-mood="talk"
+      data-mira-line="Ready when you are."
+    >
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -34,6 +40,8 @@ export function CTA() {
               <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
                 <a
                   href="mailto:hello@deafference.ai"
+                  data-mira-say="Yes! Let's go."
+                  data-mira-cheer=""
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-background px-6 text-base font-semibold text-foreground transition-colors hover:bg-background/90"
                 >
                   <Mail className="size-4" />
@@ -41,6 +49,7 @@ export function CTA() {
                 </a>
                 <a
                   href="#top"
+                  data-mira-say="See you at the top."
                   className="inline-flex h-12 items-center justify-center rounded-full border border-background/20 px-6 text-base font-semibold text-background transition-colors hover:bg-background/10"
                 >
                   Back to top

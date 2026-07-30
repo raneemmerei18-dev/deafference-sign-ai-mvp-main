@@ -132,7 +132,14 @@ export function Pricing() {
   const [billing, setBilling] = useState<Billing>("monthly")
 
   return (
-    <section id="pricing" aria-labelledby="pricing-heading" className="border-y border-border/60 bg-muted/20 py-24 sm:py-28">
+    <section
+      id="pricing"
+      aria-labelledby="pricing-heading"
+      className="border-y border-border/60 bg-muted/20 py-24 sm:py-28"
+      data-mira-zone="0.15"
+      data-mira-mood="neutral"
+      data-mira-line="Free to start, simple to scale."
+    >
       <Container>
         <SectionTitle
           headingId="pricing-heading"

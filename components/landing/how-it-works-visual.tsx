@@ -139,7 +139,13 @@ export function HowItWorksVisual() {
   }, [locked])
 
   return (
-    <section id="how-it-works" className="relative overflow-hidden bg-[#090D16] py-24 sm:py-28">
+    <section
+      id="how-it-works"
+      className="relative overflow-hidden bg-[#090D16] py-24 sm:py-28"
+      data-mira-zone="0.2"
+      data-mira-mood="think"
+      data-mira-line="Three steps, both directions."
+    >
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[30rem] bg-[radial-gradient(circle_at_50%_0%,_rgba(240,165,28,0.16),_transparent_50%)]" />
 
       <Container>
