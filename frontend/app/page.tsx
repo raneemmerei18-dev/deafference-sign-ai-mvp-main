@@ -1,4 +1,4 @@
-import { SiteNav } from '@/components/sections/site-nav'
+import { Navbar } from '@/components/sections/navbar'
 import { Act1Hero } from '@/components/sections/act1-hero'
 import { Act2Missed } from '@/components/sections/act2-missed'
 import { Act3Resolved } from '@/components/sections/act3-resolved'
@@ -15,7 +15,7 @@ export default function HomePage() {
       >
         Skip to content
       </a>
-      <SiteNav />
+      <Navbar />
       <main id="main">
         <Act1Hero />
         <Act2Missed />

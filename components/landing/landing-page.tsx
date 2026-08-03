@@ -18,7 +18,8 @@ import { Footer } from "./footer"
 
 export function LandingPage() {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
+    <div className="landing-bright relative min-h-dvh bg-background text-foreground">
+      <div aria-hidden="true" className="starfield pointer-events-none fixed inset-0 z-30" />
       <Navbar />
       <main>
         <Hero />

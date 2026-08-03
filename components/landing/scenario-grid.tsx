@@ -21,7 +21,7 @@ import { Container } from "@/components/shared/container"
 import { cn } from "@/lib/utils"
 
 const FOCUS_RING =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
 type Scenario = {
   icon: LucideIcon
@@ -149,22 +149,22 @@ function ScenarioCard({ scenario, index }: { scenario: Scenario; index: number }
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.4, delay: Math.min(index, 7) * 0.04, ease: "easeOut" }}
-      className="flex h-full flex-col rounded-2xl border border-slate-700/70 bg-slate-800/40 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-brand-orange/50 hover:shadow-xl hover:shadow-brand-orange/10"
+      className="flex h-full flex-col rounded-2xl border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#FF8F00]/50 hover:shadow-xl hover:shadow-[#FF8F00]/10"
     >
-      <div className="flex size-11 items-center justify-center rounded-xl bg-brand-orange/15 text-brand-orange" aria-hidden="true">
+      <div className="flex size-11 items-center justify-center rounded-xl bg-[#FFC107]/20 text-[#0F172A]" aria-hidden="true">
         <Icon className="size-5" />
       </div>
 
-      <h3 className="mt-4 text-base font-bold text-white">{scenario.title}</h3>
+      <h3 className="mt-4 text-base font-bold text-[#0F172A]">{scenario.title}</h3>
 
       <div className="mt-4 space-y-3 text-sm leading-6">
         <div>
-          <p className="text-[11px] font-semibold tracking-[0.14em] text-slate-400 uppercase">Pain point</p>
-          <p className="mt-1 text-slate-300">{scenario.context}</p>
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">Pain point</p>
+          <p className="mt-1 text-foreground/70">{scenario.context}</p>
         </div>
         <div>
-          <p className="text-[11px] font-semibold tracking-[0.14em] text-brand-orange uppercase">Deafference solution</p>
-          <p className="mt-1 text-slate-300">{scenario.solution}</p>
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-[#B45309] uppercase">Deafference solution</p>
+          <p className="mt-1 text-foreground/70">{scenario.solution}</p>
         </div>
       </div>
     </motion.article>
@@ -229,8 +229,8 @@ function ScenarioTabs() {
               className={cn(
                 "rounded-full border px-4 py-2 text-sm font-semibold whitespace-nowrap transition-colors",
                 selected
-                  ? "border-brand-orange/50 bg-brand-orange/15 text-brand-orange"
-                  : "border-slate-700 text-slate-300 hover:border-slate-600 hover:text-white",
+                  ? "border-[#FF8F00]/50 bg-[#FF8F00]/15 text-[#B45309]"
+                  : "border-border text-foreground/70 hover:border-foreground/30 hover:text-foreground",
                 FOCUS_RING,
               )}
             >
@@ -265,7 +265,7 @@ function ScenarioTabs() {
 
 export function ScenarioGrid() {
   return (
-    <section id="use-cases" aria-labelledby="scenarios-heading" className="border-y border-white/5 bg-[#0B0F19] py-24 sm:py-28">
+    <section id="use-cases" aria-labelledby="scenarios-heading" className="border-y border-border bg-background py-24 sm:py-28">
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 18 }}
@@ -274,13 +274,13 @@ export function ScenarioGrid() {
           transition={{ duration: 0.55, ease: "easeOut" }}
           className="max-w-2xl"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-brand-orange/30 bg-brand-red/10 px-3 py-1.5 text-xs font-semibold tracking-[0.2em] text-brand-orange uppercase">
-            🌍 Real-world impact
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/40 bg-[#FFC107]/15 px-3 py-1.5 text-xs font-semibold tracking-[0.2em] text-[#0F172A] uppercase">
+            Real-world impact
           </span>
-          <h2 id="scenarios-heading" className="mt-5 text-3xl font-bold tracking-tight text-balance text-white sm:text-4xl">
+          <h2 id="scenarios-heading" className="mt-5 text-3xl font-bold tracking-tight text-balance text-[#0F172A] sm:text-4xl">
             Designed for where communication matters most.
           </h2>
-          <p className="mt-4 text-base leading-7 text-slate-300">
+          <p className="mt-4 text-base leading-7 text-foreground/70">
             Twelve everyday environments where a missing interpreter shouldn&apos;t mean a missed
             conversation. Filter by category or browse all of them at once.
           </p>

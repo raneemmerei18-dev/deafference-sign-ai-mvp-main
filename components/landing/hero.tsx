@@ -1,77 +1,96 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
+import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { APP_ROUTES } from "@/lib/constants"
 
 const FOCUS_RING =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
-const PIPELINE_STEPS = ["Detect", "Match", "Sign"] as const
+const WAVE_BARS = [6, 12, 8, 14, 9] as const
 
-const WAVE_BARS = [10, 22, 14, 28, 18, 24, 12, 20, 16, 26, 11, 19] as const
-
-function Waveform() {
+function LiveWaveform() {
   return (
-    <div className="flex h-8 items-end gap-1" aria-hidden="true">
+    <div className="flex h-4 items-end gap-0.5" aria-hidden="true">
       {WAVE_BARS.map((h, i) => (
         <motion.span
           key={i}
-          className="w-1 rounded-full bg-brand-orange"
+          className="w-[3px] rounded-full bg-white"
           style={{ height: h }}
           animate={{ scaleY: [1, 1.6, 0.7, 1] }}
-          transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.06, ease: "easeInOut" }}
+          transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.08, ease: "easeInOut" }}
         />
       ))}
     </div>
   )
 }
 
-// Placeholder sign-output figure: an abstract silhouette + hand cue, not a
-// photoreal avatar, kept consistent with the rest of the mockup's iconography.
-function SignAvatar() {
+// Shown only if /hero-avatar.png hasn't been added yet (or fails to load) —
+// tuned for visibility against the light warm background so a missing asset
+// never reads as a blank box.
+function SignAvatarFallback() {
   return (
-    <svg width="72" height="88" viewBox="0 0 72 88" fill="none" aria-hidden="true">
-      <circle cx="36" cy="20" r="16" fill="white" fillOpacity="0.14" />
+    <svg viewBox="0 0 200 240" className="h-full w-full max-w-xs" aria-hidden="true">
       <path
-        d="M8 84c0-24 8-38 28-38s28 14 28 38"
-        stroke="white"
-        strokeOpacity="0.14"
-        strokeWidth="14"
-        strokeLinecap="round"
+        d="M20 236c0-70 24-110 80-110s80 40 80 110"
+        fill="var(--brand-yellow)"
       />
-      <g stroke="var(--brand-orange)" strokeWidth="3.5" strokeLinecap="round" fill="none">
-        <path d="M40 48c8-6 16-6 20-14" />
-        <path d="M38 58c10-4 20-4 26-12" opacity="0.55" />
+      <circle cx="100" cy="60" r="52" fill="var(--brand-yellow)" />
+      <g stroke="#0F172A" strokeWidth="8" strokeLinecap="round" fill="none">
+        <path d="M112 138c24-17 47-17 59-40" />
+        <path d="M104 168c30-12 58-12 75-35" opacity="0.6" />
       </g>
-      <circle cx="60" cy="34" r="4" fill="var(--brand-orange)" />
+      <circle cx="176" cy="98" r="12" fill="#0F172A" />
     </svg>
+  )
+}
+
+/** Hero character art. Points at /hero-avatar.png — falls back to an abstract
+ *  mark if that file is missing or fails to load, so the layout never shows
+ *  a blank box while the real asset is pending. */
+function HeroAvatar() {
+  const [failed, setFailed] = useState(false)
+
+  if (failed) {
+    return (
+      <div className="absolute inset-0 flex items-end justify-center pb-4">
+        <SignAvatarFallback />
+      </div>
+    )
+  }
+
+  return (
+    <Image
+      src="/hero-avatar.png"
+      alt="Friendly animated avatar demonstrating fluid sign language hand gestures"
+      fill
+      priority
+      onError={() => setFailed(true)}
+      className="object-contain object-bottom drop-shadow-[0_30px_40px_rgba(255,143,0,0.25)]"
+    />
   )
 }
 
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden bg-slate-950 pt-16 sm:pt-24">
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[36rem] bg-[radial-gradient(circle_at_top,_rgba(240,165,28,0.22),_transparent_45%)]" />
-
-      <Container className="pb-20 sm:pb-28">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+    <section id="top" className="warm-glow relative overflow-hidden pt-16 sm:pt-24">
+      <Container className="pb-0 sm:pb-0">
+        <div className="grid items-end gap-8 lg:grid-cols-2 lg:gap-12">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
+            className="pb-12 lg:self-center lg:pb-20"
           >
-            <span className="inline-flex items-center gap-2 rounded-full border border-brand-orange/30 bg-brand-red/10 px-3 py-1.5 text-xs font-medium text-brand-orange">
-              🤟 Real-Time Speech-to-Sign Bridge
-            </span>
-
-            <h1 className="mt-6 max-w-xl text-4xl font-extrabold tracking-tight text-balance text-white md:text-6xl">
-              Say it. See it signed instantly.
+            <h1 className="max-w-xl text-4xl font-extrabold tracking-tight text-balance text-[#0F172A] uppercase md:text-6xl">
+              Say it. See it signed. Instantly.
             </h1>
 
-            <p className="mt-6 max-w-lg text-lg leading-8 text-pretty text-slate-300">
+            <p className="mt-6 max-w-lg text-lg leading-8 text-pretty text-foreground/70">
               Deafference converts spoken words into fluid visual sign language in real time —
               eliminating communication barriers everywhere.
             </p>
@@ -79,17 +98,27 @@ export function Hero() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href={APP_ROUTES.translate}
-                className={`brand-gradient inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-base font-bold text-white transition-all hover:scale-[1.02] ${FOCUS_RING}`}
+                className={`inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#FFC107] to-[#FF8F00] px-6 text-base font-bold text-[#0F172A] shadow-[0_12px_32px_-12px_rgba(255,143,0,0.55)] transition-all hover:scale-[1.03] hover:shadow-[0_16px_40px_-12px_rgba(255,143,0,0.7)] ${FOCUS_RING}`}
               >
                 <ArrowRight className="size-4" />
                 Launch Translator
               </Link>
               <a
                 href="#use-cases"
-                className={`inline-flex h-12 items-center justify-center rounded-xl border border-slate-700 px-6 text-base font-medium text-slate-300 transition-colors hover:border-slate-500 hover:text-white ${FOCUS_RING}`}
+                className={`inline-flex h-12 items-center justify-center rounded-full border border-[#14B8A6]/50 bg-background px-6 text-base font-medium text-[#0F766E] transition-colors hover:border-[#14B8A6] hover:bg-[#14B8A6]/10 ${FOCUS_RING}`}
               >
                 Explore Scenarios
               </a>
+            </div>
+
+            <div className="mt-8 flex items-center gap-3">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#14B8A6] to-[#22C55E]">
+                <LiveWaveform />
+              </span>
+              <div>
+                <p className="text-xs font-medium text-muted-foreground">Real-Time</p>
+                <p className="text-sm font-bold text-[#0F172A]">Speech-to-Sign Bridge</p>
+              </div>
             </div>
           </motion.div>
 
@@ -97,60 +126,17 @@ export function Hero() {
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, ease: "easeOut", delay: 0.08 }}
+            className="relative mx-auto w-full max-w-lg lg:mx-0 lg:max-w-none"
           >
-            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_-28px_rgba(0,0,0,0.5)] sm:p-8">
-              {/* Header bar */}
-              <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
-                  <span className="relative flex size-2">
-                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
-                  </span>
-                  Live input
-                </span>
-                <span className="text-xs font-medium text-slate-400">Output mode: Sign animations</span>
-              </div>
-
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                {/* Audio input box */}
-                <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                  <p className="text-[11px] font-medium tracking-[0.2em] text-slate-400 uppercase">
-                    Audio input
-                  </p>
-                  <div className="mt-3">
-                    <Waveform />
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-white">
-                    &ldquo;Can you direct me to the reception area?&rdquo;
-                  </p>
-                </div>
-
-                {/* Sign output box */}
-                <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                  <p className="text-[11px] font-medium tracking-[0.2em] text-slate-400 uppercase">
-                    Sign output
-                  </p>
-                  <div className="mt-2 flex items-center justify-center">
-                    <SignAvatar />
-                  </div>
-                  <div className="mt-3 flex items-center justify-center gap-2">
-                    {PIPELINE_STEPS.map((step, i) => (
-                      <span
-                        key={step}
-                        className="rounded-full bg-brand-orange/15 px-2 py-1 text-[10px] font-semibold text-brand-orange"
-                      >
-                        {i + 1}. {step}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-5 flex justify-center">
-                <span className="brand-gradient inline-flex items-center rounded-full px-4 py-1.5 text-xs font-bold text-white">
-                  &lt; 300ms real-time translation
-                </span>
-              </div>
+            <div
+              aria-hidden="true"
+              className="warm-glow absolute -inset-10 -z-10 rounded-[3rem] opacity-90 blur-2xl"
+            />
+            <div
+              className="relative h-[440px] w-full sm:h-[560px] lg:h-[86vh] lg:max-h-[900px]"
+              style={{ animation: "avatar-float 5s ease-in-out infinite" }}
+            >
+              <HeroAvatar />
             </div>
           </motion.div>
         </div>

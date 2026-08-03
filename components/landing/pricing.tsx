@@ -199,7 +199,7 @@ export function Pricing() {
                   className={cn(
                     "mt-8 inline-flex h-11 items-center justify-center rounded-xl px-5 text-sm font-semibold transition-all",
                     plan.highlighted
-                      ? "brand-gradient text-white hover:brightness-110"
+                      ? "brand-gradient text-[#0F172A] hover:brightness-105"
                       : "border border-border text-foreground hover:bg-muted",
                     FOCUS_RING,
                   )}

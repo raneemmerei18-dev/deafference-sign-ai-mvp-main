@@ -21,7 +21,7 @@ import { APP_ROUTES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
 const FOCUS_RING =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
 const DEMO_STEPS = [
   { label: "Speech detected", caption: "“Where is the nearest exit?”" },
@@ -104,12 +104,12 @@ function FlagshipDemo() {
   }
 
   return (
-    <article aria-labelledby="flagship-demo-heading" className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_-28px_rgba(0,0,0,0.5)] sm:p-8">
+    <article aria-labelledby="flagship-demo-heading" className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 id="flagship-demo-heading" className="text-lg font-bold text-white sm:text-xl">
+        <h3 id="flagship-demo-heading" className="text-lg font-bold text-[#0F172A] sm:text-xl">
           Real-Time Sign Translation
         </h3>
-        <span className="inline-flex items-center rounded-full bg-brand-orange/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-orange">
+        <span className="inline-flex items-center rounded-full bg-[#FFC107]/20 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0F172A]">
           Interactive
         </span>
       </div>
@@ -120,7 +120,7 @@ function FlagshipDemo() {
             {WAVE_BARS.map((h, i) => (
               <motion.span
                 key={i}
-                className="w-1.5 rounded-full bg-brand-orange"
+                className="w-1.5 rounded-full bg-[#FF8F00]"
                 style={{ height: h }}
                 animate={playing ? { scaleY: [1, 1.6, 0.7, 1] } : { scaleY: 0.5 }}
                 transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.06, ease: "easeInOut" }}
@@ -134,20 +134,20 @@ function FlagshipDemo() {
                 key={s.label}
                 className={cn(
                   "flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors duration-300",
-                  i === step ? "border-brand-orange/50 bg-brand-orange/10" : "border-white/5 bg-black/20 opacity-50",
+                  i === step ? "border-[#FF8F00]/50 bg-[#FF8F00]/10" : "border-border bg-muted/40 opacity-60",
                 )}
               >
                 <span
                   className={cn(
                     "flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
-                    i === step ? "bg-brand-orange text-white" : "bg-white/10 text-slate-400",
+                    i === step ? "bg-[#FF8F00] text-white" : "bg-muted text-muted-foreground",
                   )}
                 >
                   {i + 1}
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-white">{s.label}</p>
-                  {captionsOn ? <p className="text-xs text-slate-400">{s.caption}</p> : null}
+                  <p className="text-sm font-semibold text-[#0F172A]">{s.label}</p>
+                  {captionsOn ? <p className="text-xs text-muted-foreground">{s.caption}</p> : null}
                 </div>
               </div>
             ))}
@@ -158,7 +158,7 @@ function FlagshipDemo() {
               type="button"
               onClick={handlePlay}
               className={cn(
-                "brand-gradient inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-bold text-white transition-all hover:brightness-110",
+                "brand-gradient inline-flex h-11 items-center justify-center gap-2 rounded-full px-5 text-sm font-bold text-[#0F172A] transition-all hover:scale-[1.02]",
                 FOCUS_RING,
               )}
             >
@@ -169,7 +169,7 @@ function FlagshipDemo() {
               type="button"
               onClick={handleReplay}
               className={cn(
-                "inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 px-4 text-sm font-medium text-slate-300 transition-colors hover:border-slate-500 hover:text-white",
+                "inline-flex h-11 items-center justify-center gap-2 rounded-full border border-border px-4 text-sm font-medium text-foreground/70 transition-colors hover:border-foreground/30 hover:text-foreground",
                 FOCUS_RING,
               )}
             >
@@ -181,8 +181,10 @@ function FlagshipDemo() {
               onClick={() => setCaptionsOn((c) => !c)}
               aria-pressed={captionsOn}
               className={cn(
-                "inline-flex h-11 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-medium transition-colors",
-                captionsOn ? "border-brand-orange/40 bg-brand-orange/10 text-brand-orange" : "border-slate-700 text-slate-400 hover:text-white",
+                "inline-flex h-11 items-center justify-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors",
+                captionsOn
+                  ? "border-[#FF8F00]/40 bg-[#FF8F00]/10 text-[#B45309]"
+                  : "border-border text-muted-foreground hover:text-foreground",
                 FOCUS_RING,
               )}
             >
@@ -192,33 +194,33 @@ function FlagshipDemo() {
           </div>
         </div>
 
-        <figure className="rounded-2xl border border-white/10 bg-black/30 p-6">
-          <figcaption className="text-[11px] font-medium tracking-[0.2em] text-slate-400 uppercase">
+        <figure className="rounded-2xl border border-border bg-accent p-6">
+          <figcaption className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase">
             Sign output preview
           </figcaption>
           <div className="mt-6 flex items-center justify-center">
             <svg width="88" height="108" viewBox="0 0 72 88" fill="none" aria-hidden="true">
-              <circle cx="36" cy="20" r="16" fill="white" fillOpacity="0.14" />
+              <circle cx="36" cy="20" r="16" fill="#0F172A" fillOpacity="0.08" />
               <path
                 d="M8 84c0-24 8-38 28-38s28 14 28 38"
-                stroke="white"
-                strokeOpacity="0.14"
+                stroke="#0F172A"
+                strokeOpacity="0.08"
                 strokeWidth="14"
                 strokeLinecap="round"
               />
               <motion.path
                 d="M40 48c8-6 16-6 20-14"
-                stroke="var(--brand-orange)"
+                stroke="#FF8F00"
                 strokeWidth="3.5"
                 strokeLinecap="round"
                 fill="none"
                 animate={step === 2 && playing ? { pathLength: [0, 1, 1, 0] } : { pathLength: 0.6 }}
                 transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
               />
-              <circle cx="60" cy="34" r="4" fill="var(--brand-orange)" />
+              <circle cx="60" cy="34" r="4" fill="#FF8F00" />
             </svg>
           </div>
-          <p className="mt-6 text-center text-sm leading-6 text-slate-300">
+          <p className="mt-6 text-center text-sm leading-6 text-foreground/70">
             {captionsOn ? DEMO_STEPS[step].caption : "Captions hidden"}
           </p>
         </figure>
@@ -237,17 +239,17 @@ function MediaCard({ item }: { item: MediaItem }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
+      className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card"
     >
-      <figure className="relative m-0 aspect-video overflow-hidden bg-slate-900">
+      <figure className="relative m-0 aspect-video overflow-hidden bg-[#0F172A]">
         <div
           aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_50%_40%,_rgba(240,165,28,0.18),_transparent_60%)]"
+          className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_50%_40%,_rgba(255,193,7,0.22),_transparent_60%)]"
         >
           <Icon
             className={cn(
-              "size-10 text-brand-orange/40 transition-transform duration-500",
-              isPlaying && "scale-110 text-brand-orange/70",
+              "size-10 text-[#FFC107]/50 transition-transform duration-500",
+              isPlaying && "scale-110 text-[#FFC107]/80",
             )}
           />
         </div>
@@ -257,9 +259,9 @@ function MediaCard({ item }: { item: MediaItem }) {
           onClick={() => setIsPlaying((p) => !p)}
           aria-pressed={isPlaying}
           aria-label={`${isPlaying ? "Pause" : "Play"} preview: ${item.title}`}
-          className={cn("absolute inset-0 flex items-center justify-center bg-black/20 transition-colors hover:bg-black/10", FOCUS_RING)}
+          className={cn("absolute inset-0 flex items-center justify-center bg-black/10 transition-colors hover:bg-black/20", FOCUS_RING)}
         >
-          <span className="flex size-14 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-lg transition-transform hover:scale-105">
+          <span className="flex size-14 items-center justify-center rounded-full bg-white/95 text-[#0F172A] shadow-lg transition-transform hover:scale-105">
             {isPlaying ? (
               <Pause className="size-6" fill="currentColor" />
             ) : (
@@ -268,12 +270,12 @@ function MediaCard({ item }: { item: MediaItem }) {
           </span>
         </button>
 
-        <span className="absolute right-2 bottom-2 rounded-md bg-black/70 px-1.5 py-0.5 text-[11px] font-medium text-white">
+        <span className="absolute right-2 bottom-2 rounded-md bg-black/60 px-1.5 py-0.5 text-[11px] font-medium text-white">
           {isPlaying ? "Playing…" : item.duration}
         </span>
 
         {item.audience ? (
-          <span className="absolute top-2 left-2 rounded-full bg-black/70 px-2 py-1 text-[10px] font-semibold tracking-[0.12em] text-brand-orange uppercase">
+          <span className="absolute top-2 left-2 rounded-full bg-black/60 px-2 py-1 text-[10px] font-semibold tracking-[0.12em] text-[#FFC107] uppercase">
             {item.audience}
           </span>
         ) : null}
@@ -282,8 +284,8 @@ function MediaCard({ item }: { item: MediaItem }) {
       </figure>
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-base font-bold text-white">{item.title}</h3>
-        <p className="mt-2 text-sm leading-6 text-slate-300">{item.description}</p>
+        <h3 className="text-base font-bold text-[#0F172A]">{item.title}</h3>
+        <p className="mt-2 text-sm leading-6 text-foreground/70">{item.description}</p>
       </div>
     </motion.article>
   )
@@ -353,8 +355,8 @@ function DemoCenterTabs() {
                 className={cn(
                   "rounded-full border px-4 py-2 text-sm font-semibold whitespace-nowrap transition-colors",
                   selected
-                    ? "border-brand-orange/50 bg-brand-orange/15 text-brand-orange"
-                    : "border-slate-700 text-slate-300 hover:border-slate-600 hover:text-white",
+                    ? "border-[#FF8F00]/50 bg-[#FF8F00]/15 text-[#B45309]"
+                    : "border-border text-foreground/70 hover:border-foreground/30 hover:text-foreground",
                   FOCUS_RING,
                 )}
               >
@@ -407,8 +409,8 @@ function DemoCenterTabs() {
 
 export function DemoCenter() {
   return (
-    <section id="demo" className="relative overflow-hidden bg-slate-950 py-24 sm:py-28">
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_50%_100%,_rgba(240,165,28,0.16),_transparent_50%)]" />
+    <section id="demo" className="relative overflow-hidden bg-background py-24 sm:py-28">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_50%_100%,_rgba(255,193,7,0.14),_transparent_50%)]" />
 
       <Container>
         <motion.div
@@ -418,13 +420,13 @@ export function DemoCenter() {
           transition={{ duration: 0.55, ease: "easeOut" }}
           className="max-w-2xl"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-brand-orange/30 bg-brand-red/10 px-3 py-1.5 text-xs font-semibold tracking-[0.2em] text-brand-orange uppercase">
-            ▶ Demo center
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#FFC107]/40 bg-[#FFC107]/15 px-3 py-1.5 text-xs font-semibold tracking-[0.2em] text-[#0F172A] uppercase">
+            Demo center
           </span>
-          <h2 className="mt-5 text-3xl font-bold tracking-tight text-balance text-white sm:text-4xl">
+          <h2 className="mt-5 text-3xl font-bold tracking-tight text-balance text-[#0F172A] sm:text-4xl">
             See it in action, then explore how to set it up.
           </h2>
-          <p className="mt-4 text-base leading-7 text-slate-300">
+          <p className="mt-4 text-base leading-7 text-foreground/70">
             Interactive product walkthroughs and step-by-step setup tutorials — no microphone or
             account required to preview.
           </p>
@@ -445,19 +447,19 @@ export function DemoCenter() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-          className="mt-10 flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-center sm:p-8"
+          className="mt-10 flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-6 text-center sm:p-8"
         >
-          <p className="text-base font-semibold text-white sm:text-lg">
+          <p className="text-base font-semibold text-[#0F172A] sm:text-lg">
             Ready to go beyond the preview?
           </p>
-          <p className="max-w-md text-sm leading-6 text-slate-300">
+          <p className="max-w-md text-sm leading-6 text-foreground/70">
             Launch the full live demo sandbox and try real-time translation with your own voice or
             camera.
           </p>
           <Link
             href={APP_ROUTES.translate}
             className={cn(
-              "brand-gradient mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-base font-bold text-white transition-all hover:brightness-110",
+              "brand-gradient mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-full px-6 text-base font-bold text-[#0F172A] transition-all hover:scale-[1.02]",
               FOCUS_RING,
             )}
           >

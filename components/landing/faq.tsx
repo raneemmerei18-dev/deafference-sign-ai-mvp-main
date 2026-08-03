@@ -4,29 +4,7 @@ import { motion } from "framer-motion"
 import { Accordion } from "@/components/ui/accordion"
 import { Container } from "@/components/shared/container"
 import { SectionTitle } from "@/components/shared/section-title"
-
-const faqs = [
-  {
-    title: "What does Deafference include today?",
-    content:
-      "A polished landing page structure and an independent translation app architecture, ready for future product expansion.",
-  },
-  {
-    title: "Does the landing page depend on the translation workflow?",
-    content:
-      "No. The marketing site and the AI translation app are intentionally separated so they can evolve on different timelines.",
-  },
-  {
-    title: "Can dashboard, pricing, and docs be added later?",
-    content:
-      "Yes. The folder structure and shared primitives are designed to make additional pages straightforward to add.",
-  },
-  {
-    title: "Is backend logic implemented yet?",
-    content:
-      "No. This build intentionally stops at architecture, reusable components, and placeholder content.",
-  },
-]
+import { FAQ_ITEMS } from "@/lib/constants"
 
 export function FAQ() {
   return (
@@ -45,7 +23,7 @@ export function FAQ() {
           transition={{ duration: 0.55, ease: "easeOut" }}
           className="mt-12"
         >
-          <Accordion items={faqs} />
+          <Accordion items={[...FAQ_ITEMS]} />
         </motion.div>
       </Container>
     </section>

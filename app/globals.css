@@ -107,6 +107,108 @@
   --sidebar-ring: oklch(0.63 0.2 33);
 }
 
+/* Landing page bright theme — the marketing site's own accent system.
+   Scoped to a class (applied on the landing page's root wrapper) rather than
+   :root, so it doesn't reskin the authenticated app (profile/settings/admin
+   share the same semantic tokens by design and keep their existing palette). */
+.landing-bright {
+  color-scheme: light;
+  --background: #fafcff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #ffc107;
+  --primary-foreground: #0f172a;
+  --secondary: oklch(0.97 0.02 85);
+  --secondary-foreground: #0f172a;
+  --muted: oklch(0.97 0.015 80);
+  --muted-foreground: oklch(0.45 0.02 260);
+  --accent: oklch(0.95 0.05 85);
+  --accent-foreground: #0f172a;
+  --border: oklch(0.9 0.02 80);
+  --input: oklch(0.9 0.02 80);
+  --ring: #f59e0b;
+  --brand-yellow: #ffc107;
+  --brand-orange: #ff8f00;
+}
+
+/* Soft ambient wash behind the hero: a bright #FAFCFF field with warm-cream
+   (#FFF9E6) blooms plus a hint of cool blue/pink around the character art,
+   so the section reads bright and lightly colorful instead of stark white. */
+.landing-bright .warm-glow {
+  background-color: #fafcff;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 18% 0%, #fff9e6 0%, transparent 60%),
+    radial-gradient(ellipse 60% 55% at 88% 8%, #fff9e6 0%, transparent 55%),
+    radial-gradient(ellipse 50% 45% at 78% 55%, rgba(219, 234, 254, 0.7) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 40% at 55% 75%, rgba(252, 231, 243, 0.55) 0%, transparent 60%);
+}
+
+/* Twinkling star-field that sits above the whole landing page (fixed, so it
+   shines behind the navbar/cards and follows scroll), echoing the same
+   shimmer that used to live only behind the hero avatar. Two tiled dot
+   layers animate opacity out of phase so it reads as a gentle twinkle
+   rather than a uniform blink. */
+.landing-bright .starfield {
+  background-image:
+    radial-gradient(1.6px 1.6px at 10% 20%, rgba(255, 193, 7, 0.85), transparent 100%),
+    radial-gradient(1.2px 1.2px at 30% 70%, rgba(255, 255, 255, 0.9), transparent 100%),
+    radial-gradient(1.6px 1.6px at 55% 15%, rgba(255, 143, 0, 0.7), transparent 100%),
+    radial-gradient(1.2px 1.2px at 75% 55%, rgba(255, 255, 255, 0.85), transparent 100%),
+    radial-gradient(1.6px 1.6px at 90% 85%, rgba(255, 193, 7, 0.75), transparent 100%),
+    radial-gradient(1.2px 1.2px at 15% 90%, rgba(255, 143, 0, 0.6), transparent 100%),
+    radial-gradient(1.6px 1.6px at 45% 40%, rgba(255, 255, 255, 0.8), transparent 100%),
+    radial-gradient(1.2px 1.2px at 65% 95%, rgba(255, 193, 7, 0.7), transparent 100%);
+  background-repeat: repeat;
+  background-size: 340px 340px;
+  animation: star-twinkle 4.5s ease-in-out infinite;
+}
+
+.landing-bright .starfield::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.2px 1.2px at 22% 45%, rgba(255, 255, 255, 0.8), transparent 100%),
+    radial-gradient(1.6px 1.6px at 40% 85%, rgba(255, 143, 0, 0.65), transparent 100%),
+    radial-gradient(1.2px 1.2px at 60% 25%, rgba(255, 193, 7, 0.8), transparent 100%),
+    radial-gradient(1.6px 1.6px at 85% 65%, rgba(255, 255, 255, 0.75), transparent 100%),
+    radial-gradient(1.2px 1.2px at 95% 15%, rgba(255, 143, 0, 0.6), transparent 100%);
+  background-repeat: repeat;
+  background-size: 280px 280px;
+  animation: star-twinkle 6s ease-in-out infinite reverse;
+  animation-delay: 1.4s;
+}
+
+@keyframes star-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes avatar-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-10px) rotate(0.6deg) scale(1.008);
+  }
+  50% {
+    transform: translateY(-16px) rotate(0deg) scale(1.015);
+  }
+  75% {
+    transform: translateY(-10px) rotate(-0.6deg) scale(1.008);
+  }
+}
+
+
 .dark {
   color-scheme: dark;
   /* Deep premium backdrop (explicit hex, not oklch, to hit the exact requested tone) */

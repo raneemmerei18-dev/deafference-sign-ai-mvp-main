@@ -30,7 +30,7 @@ export function Act4Pipeline() {
   })
 
   return (
-    <section ref={ref} aria-label="How it moves" className="relative h-[360vh] bg-paper">
+    <section id="how-it-works" ref={ref} aria-label="How it moves" className="relative h-[360vh] bg-paper">
       <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden">
         {/* Stage rail */}
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 pt-24 md:px-8">

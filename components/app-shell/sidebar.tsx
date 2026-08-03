@@ -11,8 +11,11 @@ import {
   LayoutGrid,
   Mic,
   Settings2,
+  ShieldCheck,
+  UserCircle2,
   type LucideIcon,
 } from "lucide-react"
+import { useAuth } from "@/components/auth/auth-provider"
 import { APP_ROUTES, SIDEBAR_NAV } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 
@@ -24,6 +27,7 @@ const ICONS: Record<string, LucideIcon> = {
   GitBranch,
   FlaskConical,
   Layers,
+  UserCircle2,
 }
 
 const FOCUS_RING =
@@ -31,6 +35,7 @@ const FOCUS_RING =
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
+  const { role } = useAuth()
 
   return (
     <nav aria-label="Application sections" className="flex h-full flex-col px-4 py-6">
@@ -68,6 +73,33 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             </ul>
           </div>
         ))}
+
+        {role === "admin" ? (
+          <div>
+            <p className="px-3 text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+              Administration
+            </p>
+            <ul className="mt-2 space-y-1">
+              <li>
+                <Link
+                  href={APP_ROUTES.admin}
+                  onClick={onNavigate}
+                  aria-current={pathname === APP_ROUTES.admin ? "page" : undefined}
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-sm font-medium transition-colors",
+                    pathname === APP_ROUTES.admin
+                      ? "border-brand-red/30 bg-brand-orange/10 text-brand-red"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    FOCUS_RING,
+                  )}
+                >
+                  <ShieldCheck className="size-4 shrink-0" aria-hidden="true" />
+                  Admin Panel
+                </Link>
+              </li>
+            </ul>
+          </div>
+        ) : null}
       </div>
 
       <div className="border-t border-border pt-4">
