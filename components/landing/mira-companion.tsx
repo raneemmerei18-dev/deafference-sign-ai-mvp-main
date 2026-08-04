@@ -6,24 +6,31 @@ import "./mira-companion.css"
 const MOODS = ["neutral", "happy", "sad", "think", "listen", "talk", "cheer"] as const
 const ACTS = ["a-wave", "a-point", "a-cheer"] as const
 
-// Mira, the landing page's walking companion. She tracks whichever
-// [data-mira-zone] section is centered in view and reacts when the visitor
-// hovers or clicks a [data-mira-say] element. Ported 1:1 from the standalone
-// mockup (deafference-landing-live character.html) into a client component.
+// Mira, the landing page's walking companion. Unlike a fixed HUD mascot, she
+// is positioned in real document coordinates (position: absolute, anchored to
+// the page — not the viewport), so scrolling from one section to the next
+// physically carries her down the page, and crossing into a new
+// [data-mira-zone] section makes her actually walk (diagonally, if needed) to
+// a spot inside it. She also reacts when the visitor hovers or clicks a
+// [data-mira-say] element. Ported from the standalone mockup
+// (deafference-landing-live character.html) into a client component.
 export function MiraCompanion() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const figureRef = useRef<HTMLDivElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)
   const bubbleRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const dockEl = containerRef.current
+    const figure = figureRef.current
     const mira = svgRef.current
     const bubble = bubbleRef.current
-    if (!dockEl || !mira || !bubble) return
+    if (!dockEl || !figure || !mira || !bubble) return
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
     let posX = 0
+    let posY = 0
     let facing = 1
     let busy = false
     let current: Element | null = null
@@ -32,9 +39,29 @@ export function MiraCompanion() {
     let sayTimer: ReturnType<typeof setTimeout> | undefined
     let hoverTimer: ReturnType<typeof setTimeout> | undefined
 
-    function limit(x: number) {
+    function limitX(x: number) {
       const w = dockEl!.offsetWidth || 130
       return Math.max(8, Math.min(window.innerWidth - w - 8, x))
+    }
+    function limitY(y: number) {
+      return Math.max(40, y)
+    }
+    // Where she should stand for a given [data-mira-zone] section: a
+    // horizontal fraction of the viewport width (same as before), and a real
+    // document-space vertical spot near the bottom of whatever part of that
+    // section is *currently on screen* — not the bottom of the whole
+    // section, which for a tall section can be thousands of pixels below the
+    // moment the visitor actually scrolls into it. Clamped to the section's
+    // own bounds so she never lands outside it.
+    function zoneAnchor(el: HTMLElement) {
+      const rect = el.getBoundingClientRect()
+      const frac = parseFloat(el.getAttribute("data-mira-zone") || "0.5")
+      const x = window.innerWidth * frac - 66
+      const sectionTop = rect.top
+      const sectionBottom = rect.top + rect.height
+      const preferred = Math.min(window.innerHeight - 250, sectionBottom - 232)
+      const viewportY = Math.max(sectionTop + 20, Math.min(preferred, sectionBottom - 40))
+      return { x, y: viewportY + window.scrollY }
     }
     function mood(name: string) {
       MOODS.forEach((m) => mira!.classList.remove(`mira-e-${m}`))
@@ -56,30 +83,37 @@ export function MiraCompanion() {
       clearTimeout(sayTimer)
       sayTimer = setTimeout(() => bubble!.classList.remove("on"), ms || 2800)
     }
-    function place(x: number) {
-      posX = limit(x)
-      dockEl!.style.transform = `translateX(${posX}px)`
+    function place(x: number, y: number) {
+      posX = limitX(x)
+      posY = limitY(y)
+      dockEl!.style.left = `${posX}px`
+      dockEl!.style.top = `${posY}px`
     }
-    function walkTo(x: number, done?: () => void) {
-      x = limit(x)
+    function walkTo(x: number, y: number, done?: () => void) {
+      x = limitX(x)
+      y = limitY(y)
       const dx = x - posX
-      if (reduced || Math.abs(dx) < 14) {
-        place(x)
+      const dy = y - posY
+      const dist = Math.hypot(dx, dy)
+      if (reduced || dist < 14) {
+        place(x, y)
         done?.()
         return
       }
-      facing = dx > 0 ? 1 : -1
-      const dur = Math.min(2400, Math.max(520, Math.abs(dx) * 3))
+      if (Math.abs(dx) > 10) facing = dx > 0 ? 1 : -1
+      const dur = Math.min(2600, Math.max(520, dist * 2.2))
       act(null)
       mira!.classList.add("walking")
+      figure!.style.transform = `scaleX(${facing})`
       dockEl!.style.transitionDuration = `${dur}ms`
-      dockEl!.style.transform = `translateX(${x}px) scaleX(${facing})`
+      dockEl!.style.left = `${x}px`
+      dockEl!.style.top = `${y}px`
       posX = x
+      posY = y
       clearTimeout(walkTimer)
       walkTimer = setTimeout(() => {
         mira!.classList.remove("walking")
         dockEl!.style.transitionDuration = "260ms"
-        dockEl!.style.transform = `translateX(${posX}px) scaleX(1)`
         done?.()
       }, dur)
     }
@@ -91,11 +125,11 @@ export function MiraCompanion() {
         (entries) => {
           entries.forEach((en) => {
             if (!en.isIntersecting || en.intersectionRatio < 0.45) return
-            const el = en.target
+            const el = en.target as HTMLElement
             if (el === current || busy) return
             current = el
-            const frac = parseFloat(el.getAttribute("data-mira-zone") || "0.5")
-            walkTo(window.innerWidth * frac - 66, () => {
+            const { x, y } = zoneAnchor(el)
+            walkTo(x, y, () => {
               mood(el.getAttribute("data-mira-mood") || "neutral")
               say(el.getAttribute("data-mira-line"), 3200)
             })
@@ -114,7 +148,7 @@ export function MiraCompanion() {
         hoverTimer = setTimeout(() => {
           if (busy) return
           const r = b.getBoundingClientRect()
-          walkTo(r.left + r.width / 2 - 66, () => {
+          walkTo(r.left + window.scrollX + r.width / 2 - 66, r.top + window.scrollY + r.height + 14, () => {
             mood("talk")
             act("point")
             say(b.getAttribute("data-mira-say") || "This one.", 2400)
@@ -171,18 +205,23 @@ export function MiraCompanion() {
         mood("think")
         setTimeout(() => mood("neutral"), 2200)
       } else if (r < 0.62) {
-        walkTo(posX + (Math.random() > 0.5 ? 70 : -70))
+        walkTo(posX + (Math.random() > 0.5 ? 70 : -70), posY)
       }
     }, 9000)
 
     function handleResize() {
-      place(posX)
+      place(posX, posY)
     }
     window.addEventListener("resize", handleResize)
 
-    place(-140)
+    // Entrance: spawn above and to the side of the hero section, then walk
+    // her down into it — she arrives the same way she'll travel between
+    // every later section.
+    const heroZone = zones[0]
+    const heroAnchor = heroZone ? zoneAnchor(heroZone) : { x: window.innerWidth * 0.62 - 66, y: 400 }
+    place(-140, heroAnchor.y - 260)
     const enterTimer = setTimeout(() => {
-      walkTo(window.innerWidth * 0.62 - 66, () => {
+      walkTo(heroAnchor.x, heroAnchor.y, () => {
         mood("happy")
         act("wave", 2400)
         say("Hi — I'm Mira. Scroll, I'll follow.", 3600)
@@ -205,6 +244,7 @@ export function MiraCompanion() {
   return (
     <div id="mira-companion" ref={containerRef}>
       <div id="mira-bubble" ref={bubbleRef} aria-live="polite" />
+      <div id="mira-figure" ref={figureRef}>
       <svg
         id="mira-mascot"
         ref={svgRef}
@@ -406,6 +446,7 @@ export function MiraCompanion() {
           </g>
         </g>
       </svg>
+      </div>
     </div>
   )
 }
