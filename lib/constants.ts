@@ -12,6 +12,7 @@ export const APP_ROUTES = {
   contact: "/contact",
   login: "/login",
   signup: "/signup",
+  scenarios: "/scenarios",
 } as const
 
 // Exact link set + order required for the primary navbar.
@@ -27,7 +28,7 @@ export const LANDING_NAV = [
 export const FOOTER_EXPLORE_NAV = [
   ...LANDING_NAV,
   { label: "Why Us", href: "#why-choose-us" },
-  { label: "Scenarios", href: "#use-cases" },
+  { label: "Scenarios", href: APP_ROUTES.scenarios },
   { label: "Pricing", href: "#pricing" },
   { label: "Translate", href: APP_ROUTES.translate },
 ] as const

@@ -57,17 +57,11 @@ export const featureCardsData: FeatureCardData[] = [
   },
 ]
 
-export function FeatureCardGrid({
-  reducedMotion = false,
-  onSelectCard,
-}: {
-  reducedMotion?: boolean
-  onSelectCard: (card: FeatureCardData) => void
-}) {
+export function FeatureCardGrid() {
   return (
     <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-6">
       {featureCardsData.map((card) => (
-        <FeatureCard key={card.id} card={card} reducedMotion={reducedMotion} onSelectCard={onSelectCard} />
+        <FeatureCard key={card.id} card={card} />
       ))}
     </div>
   )

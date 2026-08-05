@@ -1,15 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import { motion, useReducedMotion } from "framer-motion"
+import { motion } from "framer-motion"
 import { BrainCircuit, Radio, ShieldCheck, type LucideIcon } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Container } from "@/components/shared/container"
 import { SectionTitle } from "@/components/shared/section-title"
 import { IconBadge } from "@/components/shared/icon-badge"
 import { cn } from "@/lib/utils"
-import { FeatureCardGrid, type FeatureCardData } from "@/components/landing/features/feature-card-grid"
-import { DemoModal } from "@/components/landing/features/demo-modal"
+import { FeatureCardGrid } from "@/components/landing/features/feature-card-grid"
 
 const TRUST_CAPABILITIES = [
   {
@@ -47,9 +45,6 @@ function FeatureCard({
 }
 
 export function Features() {
-  const prefersReducedMotion = useReducedMotion()
-  const [selectedCard, setSelectedCard] = useState<FeatureCardData | null>(null)
-
   return (
     <section id="features" className="py-24 sm:py-28">
       <Container>
@@ -68,13 +63,9 @@ export function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.55, ease: "easeOut" }}
-            className="relative mt-5 overflow-hidden rounded-3xl bg-slate-950 p-6 sm:p-10"
+            className="mt-5"
           >
-            <div className="pointer-events-none absolute top-0 left-1/2 h-[300px] w-[600px] -translate-x-1/2 rounded-full bg-orange-500/10 blur-[120px]" />
-            <div className="pointer-events-none absolute right-0 bottom-0 h-[350px] w-[350px] rounded-full bg-amber-500/5 blur-[140px]" />
-            <div className="relative">
-              <FeatureCardGrid reducedMotion={Boolean(prefersReducedMotion)} onSelectCard={setSelectedCard} />
-            </div>
+            <FeatureCardGrid />
           </motion.div>
         </div>
 
@@ -121,8 +112,6 @@ export function Features() {
           </motion.div>
         </div>
       </Container>
-
-      <DemoModal card={selectedCard} onClose={() => setSelectedCard(null)} />
     </section>
   )
 }

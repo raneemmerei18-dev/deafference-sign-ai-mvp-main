@@ -103,12 +103,12 @@ export function Hero() {
                 <ArrowRight className="size-4" />
                 Launch Translator
               </Link>
-              <a
-                href="#use-cases"
+              <Link
+                href={APP_ROUTES.scenarios}
                 className={`inline-flex h-12 items-center justify-center rounded-full border border-[#14B8A6]/50 bg-background px-6 text-base font-medium text-[#0F766E] transition-colors hover:border-[#14B8A6] hover:bg-[#14B8A6]/10 ${FOCUS_RING}`}
               >
                 Explore Scenarios
-              </a>
+              </Link>
             </div>
 
             <div className="mt-8 flex items-center gap-3">
