@@ -12,6 +12,7 @@ export const APP_ROUTES = {
   contact: "/contact",
   login: "/login",
   signup: "/signup",
+  scenarios: "/scenarios",
 } as const
 
 // Exact link set + order required for the primary navbar. "For you" and "For
@@ -19,7 +20,7 @@ export const APP_ROUTES = {
 // value-proposition section) rather than net-new pages.
 export const LANDING_NAV = [
   { label: "How it works", href: "#how-it-works" },
-  { label: "For you", href: "#use-cases" },
+  { label: "For you", href: APP_ROUTES.scenarios },
   { label: "For organisations", href: "#why-choose-us" },
   { label: "Resources", href: "#faq" },
   { label: "Pricing", href: "#pricing" },

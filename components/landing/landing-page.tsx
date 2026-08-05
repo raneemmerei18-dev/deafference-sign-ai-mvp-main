@@ -9,7 +9,6 @@ import { DemoCenter } from "./demo-center"
 import { Features } from "./features"
 import { Performance } from "./performance"
 import { Pricing } from "./pricing"
-import { ScenarioGrid } from "./scenario-grid"
 import { PrivacyPolicy } from "./privacy-policy"
 import { FAQ } from "./faq"
 import { Contact } from "./contact"
@@ -31,7 +30,6 @@ export function LandingPage() {
         <Features />
         <Performance />
         <Pricing />
-        <ScenarioGrid />
         <PrivacyPolicy />
         <FAQ />
         <Contact />
