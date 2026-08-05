@@ -15,7 +15,13 @@ const metrics = [
 
 export function Performance() {
   return (
-    <section id="performance" className="py-24 sm:py-28">
+    <section
+      id="performance"
+      className="py-24 sm:py-28"
+      data-mira-zone="0.7"
+      data-mira-mood="talk"
+      data-mira-line="Speed you can actually feel."
+    >
       <Container>
         <SectionTitle
           eyebrow="Performance"

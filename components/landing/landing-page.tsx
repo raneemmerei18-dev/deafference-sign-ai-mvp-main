@@ -15,11 +15,12 @@ import { FAQ } from "./faq"
 import { Contact } from "./contact"
 import { CTA } from "./cta"
 import { Footer } from "./footer"
+import { MiraCompanion } from "./mira-companion"
 
 export function LandingPage() {
   return (
-    <div className="landing-bright relative min-h-dvh bg-background text-foreground">
-      <div aria-hidden="true" className="starfield pointer-events-none fixed inset-0 z-30" />
+    <div className="min-h-dvh bg-background text-foreground">
+      <MiraCompanion />
       <Navbar />
       <main>
         <Hero />

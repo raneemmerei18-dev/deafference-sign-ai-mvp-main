@@ -48,7 +48,13 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="border-y border-border/60 bg-muted/20 py-24 sm:py-28">
+    <section
+      id="contact"
+      className="border-y border-border/60 bg-muted/20 py-24 sm:py-28"
+      data-mira-zone="0.3"
+      data-mira-mood="listen"
+      data-mira-line="Say hello — we're listening."
+    >
       <Container>
         <SectionTitle
           eyebrow="Contact"

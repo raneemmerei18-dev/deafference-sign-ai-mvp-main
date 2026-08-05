@@ -20,6 +20,9 @@ export function Footer() {
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
       className="border-t border-border/60 py-10"
+      data-mira-zone="0.12"
+      data-mira-mood="neutral"
+      data-mira-line="See you soon."
     >
       <Container className="grid gap-8 lg:grid-cols-[1fr_auto_auto_auto] lg:items-start">
         <div className="max-w-sm">

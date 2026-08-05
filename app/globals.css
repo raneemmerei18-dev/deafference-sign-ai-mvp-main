@@ -12,6 +12,9 @@
   --color-brand-orange: var(--brand-orange);
   --color-brand-red: var(--brand-red);
   --color-brand-magenta: var(--brand-magenta);
+  --color-brand-navy: var(--brand-navy);
+  --color-soft-orange-glow: var(--soft-orange-glow);
+  --color-blue-accent: var(--blue-accent);
   --color-indicator-indigo: var(--indicator-indigo);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -68,29 +71,35 @@
 
 :root {
   color-scheme: light;
-  --background: oklch(0.985 0.006 75);
-  --foreground: oklch(0.26 0.028 268);
+  --background: #faf8f4;
+  --foreground: #172133;
   --card: oklch(1 0.003 90);
-  --card-foreground: oklch(0.26 0.028 268);
+  --card-foreground: #172133;
   --popover: oklch(1 0.003 90);
-  --popover-foreground: oklch(0.26 0.028 268);
+  --popover-foreground: #172133;
   --primary: oklch(0.63 0.2 33);
   --primary-foreground: oklch(0.99 0.01 80);
   --secondary: oklch(0.955 0.014 70);
-  --secondary-foreground: oklch(0.32 0.03 265);
+  --secondary-foreground: #172133;
   --muted: oklch(0.96 0.01 75);
-  --muted-foreground: oklch(0.5 0.03 60);
+  --muted-foreground: #667085;
   --accent: oklch(0.955 0.03 65);
-  --accent-foreground: oklch(0.35 0.08 45);
+  --accent-foreground: #172133;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.014 70);
+  --border: rgba(0, 0, 0, 0.08);
   --input: oklch(0.9 0.014 70);
   --ring: oklch(0.63 0.2 33);
-  --brand-yellow: oklch(0.83 0.17 78);
-  --brand-orange: oklch(0.72 0.19 48);
-  --brand-red: oklch(0.62 0.22 30);
-  --brand-magenta: oklch(0.52 0.2 12);
-  --indicator-indigo: oklch(0.56 0.19 275);
+  /* Warm accent family -- once the multi-color yellow/red/magenta gradient,
+     now collapsed to a single orange hue at different depths so .brand-gradient
+     and every consumer of these tokens reads as one cohesive brand color. */
+  --brand-yellow: #ffd2a6;
+  --brand-orange: #ff7a1a;
+  --brand-red: #e8590c;
+  --brand-magenta: #0e2344;
+  --brand-navy: #0e2344;
+  --soft-orange-glow: #ffd2a6;
+  --blue-accent: #5da8ff;
+  --indicator-indigo: #5da8ff;
   --chart-1: oklch(0.83 0.17 78);
   --chart-2: oklch(0.72 0.19 48);
   --chart-3: oklch(0.62 0.22 30);
@@ -230,11 +239,14 @@
   --border: oklch(1 0 0 / 14%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.7 0.19 42);
-  --brand-yellow: oklch(0.83 0.17 78);
-  --brand-orange: oklch(0.72 0.19 48);
-  --brand-red: oklch(0.64 0.22 30);
-  --brand-magenta: oklch(0.56 0.2 12);
-  --indicator-indigo: oklch(0.66 0.19 275);
+  --brand-yellow: #ffd2a6;
+  --brand-orange: #ff7a1a;
+  --brand-red: #e8590c;
+  --brand-magenta: #16305c;
+  --brand-navy: #16305c;
+  --soft-orange-glow: #ffd2a6;
+  --blue-accent: #6cb4ff;
+  --indicator-indigo: #6cb4ff;
   --chart-1: oklch(0.83 0.17 78);
   --chart-2: oklch(0.72 0.19 48);
   --chart-3: oklch(0.64 0.22 30);
@@ -262,31 +274,18 @@
   }
 }
 
-/* Brand gradient inspired by the Deafference logo (yellow -> orange -> red -> magenta) */
+/* Primary brand surface: solid navy, per the handcrafted/no-neon-gradient
+   direction -- replaces the old yellow/orange/red/magenta rainbow. */
 .brand-gradient {
-  background-image: linear-gradient(
-    120deg,
-    var(--brand-yellow) 0%,
-    var(--brand-orange) 38%,
-    var(--brand-red) 72%,
-    var(--brand-magenta) 100%
-  );
+  background-color: var(--brand-navy);
 }
 
 .brand-gradient-text {
-  background-image: linear-gradient(
-    120deg,
-    var(--brand-orange) 0%,
-    var(--brand-red) 55%,
-    var(--brand-magenta) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--brand-orange);
 }
 
 .brand-glow {
-  box-shadow: 0 18px 50px -18px color-mix(in oklch, var(--brand-red) 60%, transparent);
+  box-shadow: 0 18px 50px -18px color-mix(in oklch, var(--brand-orange) 55%, transparent);
 }
 
 /* Glassmorphic surface for elevated panels (nav, modals, floating overlays) */

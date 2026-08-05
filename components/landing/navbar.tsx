@@ -3,30 +3,20 @@
 import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
+import { ArrowRight, Menu, X } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { LANDING_NAV, APP_ROUTES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import { CalmModeToggle } from "./calm-mode-toggle"
 
 const FOCUS_RING =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
-const navLinkClassName = cn(
-  "rounded-md px-3 py-2 text-sm font-medium text-foreground/70 transition-colors hover:text-foreground",
-  FOCUS_RING,
-)
-
-const loginLinkClassName = cn(
-  "hidden items-center rounded-lg border border-transparent px-3.5 py-2 text-sm font-medium text-foreground/80 transition-colors hover:border-border hover:bg-muted hover:text-foreground md:inline-flex",
-  FOCUS_RING,
-)
-
-const signUpLinkClassName = cn(
-  "hidden items-center rounded-full bg-gradient-to-r from-[#14B8A6] to-[#FBBF24] px-4 py-2 text-sm font-semibold text-[#0F172A] shadow-sm transition-all hover:scale-[1.03] hover:shadow-md md:inline-flex",
-  FOCUS_RING,
-)
-
-function NavLink({ href, label, className, onClick }: { href: string; label: string; className: string; onClick?: () => void }) {
+function NavLink({ href, label, onClick }: { href: string; label: string; onClick?: () => void }) {
+  const className = cn(
+    "rounded-md px-3 py-2 text-sm font-medium text-foreground/70 transition-colors hover:text-foreground",
+    FOCUS_RING,
+  )
   return href.startsWith("#") ? (
     <a href={href} className={className} onClick={onClick}>
       {label}
@@ -38,15 +28,15 @@ function NavLink({ href, label, className, onClick }: { href: string; label: str
   )
 }
 
-// Yellow rounded-square badge + white wave/hand symbol — the two ideas the
-// product is built on (spoken input, signed output) collapsed into one mark.
+// Waveform + open-hand fusion mark, now a single solid-orange symbol rather
+// than the old multi-color gradient chip.
 function BrandMark() {
   return (
     <svg width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true">
-      <rect width="34" height="34" rx="9" fill="var(--brand-yellow)" />
-      <rect x="7" y="16" width="2.2" height="7" rx="1.1" fill="white" fillOpacity="0.65" />
-      <rect x="10.5" y="12" width="2.2" height="14" rx="1.1" fill="white" fillOpacity="0.8" />
-      <rect x="14" y="9" width="2.2" height="20" rx="1.1" fill="white" fillOpacity="0.95" />
+      <rect width="34" height="34" rx="9" fill="var(--brand-orange)" />
+      <rect x="7" y="16" width="2.2" height="7" rx="1.1" fill="white" fillOpacity="0.55" />
+      <rect x="10.5" y="12" width="2.2" height="14" rx="1.1" fill="white" fillOpacity="0.7" />
+      <rect x="14" y="9" width="2.2" height="20" rx="1.1" fill="white" fillOpacity="0.85" />
       <path
         d="M18.5 21.5c0-4.6.9-8.3 1.9-8.3.9 0 1.5 2.6 1.5 5.5 0-3.7 1.3-6.8 2.3-6.6.9.2 1.1 3 1 5.9.9-2.7 2-4.5 2.8-4.1.8.4.3 3.6-.6 5.8-.9 2.3-2.6 4.3-5 4.3-2.7 0-3.9-1.3-3.9-2.5Z"
         fill="white"
@@ -92,36 +82,45 @@ export function Navbar() {
   }, [isMenuOpen])
 
   return (
-    <header
+    <motion.header
+      initial={{ opacity: 0, y: -16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       className={cn(
         "sticky top-0 z-50 border-b transition-all duration-300",
-        isScrolled
-          ? "border-border bg-background/90 shadow-sm backdrop-blur-md"
-          : "border-transparent bg-transparent",
+        isScrolled ? "border-black/[0.06] bg-[#FAF8F4]/85 shadow-[0_8px_30px_-20px_rgba(14,35,68,0.25)] backdrop-blur-md" : "border-transparent bg-transparent",
       )}
     >
       <Container className="flex h-20 items-center justify-between gap-4">
         <a href="#top" className={cn("flex items-center gap-2.5 rounded-lg", FOCUS_RING)} aria-label="Deafference home">
           <BrandMark />
-          <span className="text-xl font-bold tracking-tight text-foreground">Deafference</span>
+          <span className="text-xl font-bold tracking-tight text-brand-navy">Deafference</span>
         </a>
 
-        <nav aria-label="Main Navigation" className="hidden md:block">
+        <nav aria-label="Main Navigation" className="hidden lg:block">
           <ul className="flex items-center gap-1">
             {LANDING_NAV.map((item) => (
               <li key={item.href}>
-                <NavLink href={item.href} label={item.label} className={navLinkClassName} />
+                <NavLink href={item.href} label={item.label} />
               </li>
             ))}
           </ul>
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <Link href={APP_ROUTES.login} className={loginLinkClassName}>
-            Login
-          </Link>
-          <Link href={APP_ROUTES.signup} className={signUpLinkClassName}>
-            Sign Up
+          <div className="hidden lg:block">
+            <CalmModeToggle />
+          </div>
+
+          <Link
+            href={APP_ROUTES.translate}
+            className={cn(
+              "group hidden items-center gap-2 rounded-full bg-brand-navy px-4 py-2.5 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(14,35,68,0.55)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_30px_-10px_rgba(14,35,68,0.6)] lg:inline-flex",
+              FOCUS_RING,
+            )}
+          >
+            Request a demo
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
 
           <button
@@ -132,7 +131,7 @@ export function Navbar() {
             aria-controls="mobile-nav"
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             className={cn(
-              "inline-flex size-11 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-muted md:hidden",
+              "inline-flex size-11 items-center justify-center rounded-lg text-brand-navy transition-colors hover:bg-black/5 lg:hidden",
               FOCUS_RING,
             )}
           >
@@ -149,7 +148,7 @@ export function Navbar() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="overflow-hidden border-t border-border bg-background md:hidden"
+            className="overflow-hidden border-t border-black/[0.06] bg-[#FAF8F4] lg:hidden"
           >
             <Container className="py-4">
               <nav id="mobile-nav" aria-label="Main Navigation">
@@ -159,7 +158,6 @@ export function Navbar() {
                       <NavLink
                         href={item.href}
                         label={item.label}
-                        className={cn(navLinkClassName, "block w-full text-left text-base")}
                         onClick={() => setIsMenuOpen(false)}
                       />
                     </li>
@@ -167,32 +165,24 @@ export function Navbar() {
                 </ul>
               </nav>
 
-              <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
+              <div className="mt-3 flex flex-col gap-3 border-t border-black/[0.06] pt-3">
+                <CalmModeToggle className="self-start" />
                 <Link
-                  href={APP_ROUTES.login}
+                  href={APP_ROUTES.translate}
                   onClick={() => setIsMenuOpen(false)}
                   className={cn(
-                    "inline-flex items-center justify-center rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted hover:text-foreground",
+                    "inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-navy px-4 py-3 text-sm font-semibold text-white",
                     FOCUS_RING,
                   )}
                 >
-                  Login
-                </Link>
-                <Link
-                  href={APP_ROUTES.signup}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={cn(
-                    "inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#14B8A6] to-[#FBBF24] px-4 py-2.5 text-sm font-semibold text-[#0F172A]",
-                    FOCUS_RING,
-                  )}
-                >
-                  Sign Up
+                  Request a demo
+                  <ArrowRight className="size-4" />
                 </Link>
               </div>
             </Container>
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </motion.header>
   )
 }

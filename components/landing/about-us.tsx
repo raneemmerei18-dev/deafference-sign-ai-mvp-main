@@ -226,7 +226,14 @@ function FutureGoalsPanel() {
 
 export function AboutUs() {
   return (
-    <section id="about" aria-labelledby="about-heading" className="py-24 sm:py-28">
+    <section
+      id="about"
+      aria-labelledby="about-heading"
+      className="py-24 sm:py-28"
+      data-mira-zone="0.15"
+      data-mira-mood="neutral"
+      data-mira-line="Here's who we're building this for."
+    >
       <Container>
         <SectionTitle
           headingId="about-heading"

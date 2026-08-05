@@ -209,7 +209,13 @@ function FeatureCard({
 
 export function Features() {
   return (
-    <section id="features" className="py-24 sm:py-28">
+    <section
+      id="features"
+      className="py-24 sm:py-28"
+      data-mira-zone="0.3"
+      data-mira-mood="happy"
+      data-mira-line="Built for real conversations."
+    >
       <Container>
         <SectionTitle
           eyebrow="Features"

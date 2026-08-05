@@ -14,21 +14,23 @@ export const APP_ROUTES = {
   signup: "/signup",
 } as const
 
-// Exact link set + order required for the primary navbar.
+// Exact link set + order required for the primary navbar. "For you" and "For
+// organisations" map to the closest existing sections (scenario grid and the
+// value-proposition section) rather than net-new pages.
 export const LANDING_NAV = [
-  { label: "Features", href: "#features" },
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "FAQ", href: "#faq" },
-  { label: "About Us", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "How it works", href: "#how-it-works" },
+  { label: "For you", href: "#use-cases" },
+  { label: "For organisations", href: "#why-choose-us" },
+  { label: "Resources", href: "#faq" },
+  { label: "Pricing", href: "#pricing" },
 ] as const
 
 // Additional site sections not in the primary nav, surfaced in the footer instead.
 export const FOOTER_EXPLORE_NAV = [
   ...LANDING_NAV,
-  { label: "Why Us", href: "#why-choose-us" },
-  { label: "Scenarios", href: "#use-cases" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Features", href: "#features" },
+  { label: "About Us", href: "#about" },
+  { label: "Contact", href: "#contact" },
   { label: "Translate", href: APP_ROUTES.translate },
 ] as const
 
