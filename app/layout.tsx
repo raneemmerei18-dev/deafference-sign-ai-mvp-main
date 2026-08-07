@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { AuthProvider } from '@/components/auth/auth-provider'
 import { DevRoleSwitcher } from '@/components/auth/dev-role-switcher'
+import { EmergencyQuickActions } from '@/components/deafference/emergency-quick-actions'
 import { SettingsProvider } from '@/components/deafference/settings-provider'
 import { parseSessionRole, SESSION_COOKIE_NAME } from '@/lib/auth/session'
 import { parseSettingsCookie, SETTINGS_COOKIE_NAME } from '@/lib/settings'
@@ -46,6 +47,7 @@ export default async function RootLayout({
           <SettingsProvider initialSettings={initialSettings}>
             {children}
             <DevRoleSwitcher />
+            <EmergencyQuickActions />
           </SettingsProvider>
         </AuthProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
