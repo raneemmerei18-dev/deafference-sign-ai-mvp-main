@@ -7,6 +7,7 @@ import { ArrowRight, Menu, X } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { LANDING_NAV, APP_ROUTES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import { AuthNavActions } from "@/components/auth/auth-nav-actions"
 import { CalmModeToggle } from "./calm-mode-toggle"
 
 const FOCUS_RING =
@@ -123,6 +124,8 @@ export function Navbar() {
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
 
+          <AuthNavActions className="hidden lg:flex" />
+
           <button
             ref={menuToggleRef}
             type="button"
@@ -167,6 +170,7 @@ export function Navbar() {
 
               <div className="mt-3 flex flex-col gap-3 border-t border-black/[0.06] pt-3">
                 <CalmModeToggle className="self-start" />
+                <AuthNavActions className="self-start" />
                 <Link
                   href={APP_ROUTES.translate}
                   onClick={() => setIsMenuOpen(false)}

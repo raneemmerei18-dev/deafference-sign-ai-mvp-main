@@ -1,16 +1,13 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Globe2, Mail, MessageSquare } from "lucide-react"
+import { Mail } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { FOOTER_EXPLORE_NAV, FOOTER_COMPANY_NAV } from "@/lib/constants"
 import { Logo } from "@/components/deafference/logo"
 
-const socialLinks = [
-  { label: "Email", href: "mailto:hello@deafference.ai", icon: Mail },
-  { label: "Updates", href: "#", icon: MessageSquare },
-  { label: "Website", href: "#", icon: Globe2 },
-]
+// Only real destinations here — no placeholder "#" links.
+const socialLinks = [{ label: "Email", href: "mailto:hello@deafference.ai", icon: Mail }]
 
 export function Footer() {
   return (

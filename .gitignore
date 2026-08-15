@@ -15,5 +15,8 @@ node_modules
 .next/
 .DS_Store
 
+# Local development Postgres (see scripts/local-db.mjs)
+.localdb/
+
 .zip
 *.zip

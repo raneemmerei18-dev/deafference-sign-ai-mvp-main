@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { Menu, X } from "lucide-react"
+import { AuthNavActions } from "@/components/auth/auth-nav-actions"
 import { Sidebar } from "./sidebar"
 import { cn } from "@/lib/utils"
 
@@ -92,7 +93,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
       </button>
 
-      <div className="min-w-0 flex-1">{children}</div>
+      <div className="min-w-0 flex-1">
+        <div className="sticky top-0 z-40 flex justify-end border-b border-border/70 bg-background/85 px-4 py-3 backdrop-blur-xl sm:px-6 lg:px-8">
+          <AuthNavActions />
+        </div>
+        {children}
+      </div>
     </div>
   )
 }

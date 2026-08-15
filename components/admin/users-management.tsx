@@ -14,32 +14,34 @@ import { EmptyState } from "./empty-state"
 import { Pagination } from "./pagination"
 
 const PAGE_SIZE = 5
-const ROLE_OPTIONS: UserRole[] = ["Admin", "Business", "Individual"]
+const ROLE_OPTIONS: UserRole[] = ["Admin", "Individual"]
 const STATUS_OPTIONS: UserStatus[] = ["Active", "Suspended"]
 
 export interface UsersManagementProps {
   users: AdminUser[]
+  loading?: boolean
+  error?: string | null
   onUpdateRole: (id: string, role: UserRole) => void
   onToggleStatus: (id: string) => void
   onDeleteUser: (id: string) => void
 }
 
 function roleBadgeClassName(role: UserRole) {
-  switch (role) {
-    case "Admin":
-      return "border-primary/30 bg-primary/10 text-primary"
-    case "Business":
-      return "border-accent-foreground/20 bg-accent text-accent-foreground"
-    default:
-      return ""
-  }
+  return role === "Admin" ? "border-primary/30 bg-primary/10 text-primary" : ""
 }
 
 function statusBadgeClassName(status: UserStatus) {
   return status === "Suspended" ? "border-destructive/30 bg-destructive/10 text-destructive" : ""
 }
 
-export function UsersManagement({ users, onUpdateRole, onToggleStatus, onDeleteUser }: UsersManagementProps) {
+export function UsersManagement({
+  users,
+  loading,
+  error,
+  onUpdateRole,
+  onToggleStatus,
+  onDeleteUser,
+}: UsersManagementProps) {
   const idPrefix = useId()
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState<"all" | UserRole>("all")
@@ -74,6 +76,16 @@ export function UsersManagement({ users, onUpdateRole, onToggleStatus, onDeleteU
         <h2 id={`${idPrefix}-heading`} className="text-lg font-semibold text-foreground">
           Users Management
         </h2>
+
+        {error ? (
+          <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
+
+        {loading && users.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Loading users…</p>
+        ) : null}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="flex-1">

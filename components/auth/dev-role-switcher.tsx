@@ -7,15 +7,24 @@ import { useAuth } from "./auth-provider"
 const ROLES: SessionRole[] = ["guest", "user", "admin"]
 
 /**
- * Floating widget for exercising the guest/user/admin mock session during
- * development. Renders nothing in production — this only exists so RBAC
- * behavior (route guards, conditional nav) can be tested without a real
- * backend issuing sessions.
+ * Floating widget for exercising the guest/user/admin session during
+ * development. Renders nothing in production. "Guest" signs the account out;
+ * "user"/"admin" call the real `/api/auth/dev-role` endpoint, which flips
+ * the signed-in account's role in the database — so this only works once
+ * you're actually signed in.
  */
 export function DevRoleSwitcher() {
-  const { role, setRole } = useAuth()
+  const { role, user, setRole, signOut } = useAuth()
 
   if (process.env.NODE_ENV === "production") return null
+
+  function handleClick(candidate: SessionRole) {
+    if (candidate === "guest") {
+      void signOut()
+      return
+    }
+    void setRole(candidate)
+  }
 
   return (
     <div
@@ -28,10 +37,12 @@ export function DevRoleSwitcher() {
         <button
           key={candidate}
           type="button"
-          onClick={() => setRole(candidate)}
+          disabled={candidate !== "guest" && !user}
+          onClick={() => handleClick(candidate)}
+          title={candidate !== "guest" && !user ? "Sign in first to change your role" : undefined}
           aria-pressed={role === candidate}
           className={cn(
-            "rounded-full px-2.5 py-1 font-medium capitalize transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "rounded-full px-2.5 py-1 font-medium capitalize transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-40",
             role === candidate ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted",
           )}
         >

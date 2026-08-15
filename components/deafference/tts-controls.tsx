@@ -9,13 +9,17 @@ import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { getServerSnapshot, getSnapshot, setVoice, speak, stop, subscribe } from "@/lib/speech"
 
-export function TTSControls() {
+export interface TTSControlsProps {
+  /** Lifted up to `DeafferenceApp` and shared with `TranslationPanel` — manual entry
+   * for now; once the AI pipeline produces real translations, feed its output into
+   * that same shared state instead. */
+  translationText: string
+  onTranslationTextChange: (value: string) => void
+}
+
+export function TTSControls({ translationText, onTranslationTextChange }: TTSControlsProps) {
   const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
   const [notice, setNotice] = useState<string | null>(null)
-  // Manual entry for now — once the AI pipeline produces real translations,
-  // feed its output in here (e.g. via a `useEffect` calling `setTranslationText`,
-  // or by lifting this state up and passing it in as a prop).
-  const [translationText, setTranslationText] = useState("")
 
   const hasText = translationText.trim().length > 0
   const isBusy = state.speaking || state.queue.length > 0
@@ -70,7 +74,7 @@ export function TTSControls() {
               <Textarea
                 id="tts-text"
                 value={translationText}
-                onChange={(e) => setTranslationText(e.target.value)}
+                onChange={(e) => onTranslationTextChange(e.target.value)}
                 placeholder="Type text to speak..."
                 rows={3}
               />

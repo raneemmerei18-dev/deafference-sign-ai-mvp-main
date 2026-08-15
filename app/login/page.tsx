@@ -21,7 +21,7 @@ export default async function LoginPage({
       >
         Skip to sign in form
       </a>
-      <main id="auth" className="flex min-h-dvh items-center justify-center bg-background p-4 sm:p-6">
+      <main id="auth" className="min-h-dvh bg-background">
         <AuthFlow defaultMode="signin" redirectTo={params.redirectTo} reason={params.reason} />
       </main>
     </>

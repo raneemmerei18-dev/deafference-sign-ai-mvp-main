@@ -7,6 +7,7 @@ import { DangerZone, type DangerZoneProps } from './danger-zone'
 
 export interface ProfileSettingsProps {
   defaultValues?: PersonalInfoFormProps['defaultValues']
+  initialAvatarUrl?: AvatarSectionProps['initialAvatarUrl']
   onUploadAvatar?: AvatarSectionProps['onUpload']
   onRemoveAvatar?: AvatarSectionProps['onRemove']
   onSavePersonalInfo?: PersonalInfoFormProps['onSave']
@@ -17,6 +18,7 @@ export interface ProfileSettingsProps {
 
 export function ProfileSettings({
   defaultValues,
+  initialAvatarUrl,
   onUploadAvatar,
   onRemoveAvatar,
   onSavePersonalInfo,
@@ -26,7 +28,7 @@ export function ProfileSettings({
 }: ProfileSettingsProps) {
   return (
     <div className="flex flex-col gap-6">
-      <AvatarSection onUpload={onUploadAvatar} onRemove={onRemoveAvatar} />
+      <AvatarSection initialAvatarUrl={initialAvatarUrl} onUpload={onUploadAvatar} onRemove={onRemoveAvatar} />
       <PersonalInfoForm defaultValues={defaultValues} onSave={onSavePersonalInfo} />
       <SecurityForm onUpdatePassword={onUpdatePassword} />
       <DangerZone onSignOut={onSignOut} onDeleteAccount={onDeleteAccount} />

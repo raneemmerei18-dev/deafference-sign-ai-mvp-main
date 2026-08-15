@@ -1,25 +1,20 @@
 import { cn } from "@/lib/utils"
 
 /**
- * Deafference wordmark. Rendered from alpha-transparent PNGs (background
- * chroma-keyed out) so it sits directly on the page with no bounding box.
- * The wordmark ink is baked dark-on-transparent for light mode and
- * light-on-transparent for dark mode, swapped via the `dark:` variant,
- * since a single static raster can't adapt its own ink color at runtime.
+ * Deafference wordmark. The source PNG bakes dark-navy ink on a transparent
+ * background, so it disappears on dark surfaces — wrapped in a light chip
+ * (only visible in dark mode) rather than shipping a second raster, since a
+ * single static image can't re-tint its own ink at runtime.
  */
 export function Logo({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex items-center bg-transparent", className)}>
-      <img
-        src="/deafference-logo-transparent.png"
-        alt="Deafference"
-        className="h-9 w-auto object-contain dark:hidden"
-      />
-      <img
-        src="/deafference-logo-transparent-dark.png"
-        alt="Deafference"
-        className="hidden h-9 w-auto object-contain dark:block"
-      />
+    <span
+      className={cn(
+        "inline-flex items-center rounded-lg bg-transparent px-0 py-0 dark:bg-white/95 dark:px-2 dark:py-1 dark:shadow-sm",
+        className,
+      )}
+    >
+      <img src="/deafference-logo.png" alt="Deafference" className="h-8 w-auto object-contain sm:h-9" />
     </span>
   )
 }

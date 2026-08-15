@@ -78,27 +78,35 @@ function FederatedButtons({
   mode: AuthMode
   onFederatedAuth?: AuthFormProps['onFederatedAuth']
 }) {
+  // No OAuth provider is wired up yet — disabled with a clear "coming soon"
+  // rather than a silent no-op that looks like it should do something.
+  const comingSoon = !onFederatedAuth
+
   return (
     <div className="flex flex-col gap-2.5">
       <Button
         type="button"
         variant="outline"
         size="lg"
+        disabled={comingSoon}
+        title={comingSoon ? 'Coming soon' : undefined}
         className="w-full justify-center gap-2.5"
         onClick={() => onFederatedAuth?.('google', mode)}
       >
         <GoogleIcon />
-        Continue with Google
+        Continue with Google{comingSoon ? ' (coming soon)' : ''}
       </Button>
       <Button
         type="button"
         variant="outline"
         size="lg"
+        disabled={comingSoon}
+        title={comingSoon ? 'Coming soon' : undefined}
         className="w-full justify-center gap-2.5"
         onClick={() => onFederatedAuth?.('apple', mode)}
       >
         <AppleIcon />
-        Continue with Apple
+        Continue with Apple{comingSoon ? ' (coming soon)' : ''}
       </Button>
     </div>
   )
@@ -133,6 +141,7 @@ function SignInForm({
   const [values, setValues] = useState<SignInValues>(initialSignIn)
   const [errors, setErrors] = useState<SignInErrors>({})
   const [status, setStatus] = useState<SubmitStatus>('idle')
+  const [formError, setFormError] = useState<string | null>(null)
 
   function validate(current: SignInValues): SignInErrors {
     const next: SignInErrors = {}
@@ -147,12 +156,14 @@ function SignInForm({
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
 
+    setFormError(null)
     setStatus('submitting')
     try {
       await onSignIn?.(values)
       setStatus('success')
-    } catch {
+    } catch (err) {
       setStatus('error')
+      setFormError(err instanceof Error ? err.message : 'Sign in failed. Please try again.')
     }
   }
 
@@ -164,6 +175,12 @@ function SignInForm({
       <form onSubmit={handleSubmit}>
         <fieldset className="flex flex-col gap-4" disabled={status === 'submitting'}>
           <legend className="sr-only">Sign in to your account</legend>
+
+          {formError ? (
+            <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {formError}
+            </p>
+          ) : null}
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor={`${idPrefix}-identifier`} className="text-sm font-medium">
@@ -213,7 +230,7 @@ function SignInForm({
           <p aria-live="polite" className="sr-only">
             {status === 'submitting' && 'Signing in, please wait.'}
             {status === 'success' && 'Signed in successfully.'}
-            {status === 'error' && 'Sign in failed. Please try again.'}
+            {status === 'error' && (formError ?? 'Sign in failed. Please try again.')}
           </p>
         </fieldset>
       </form>
@@ -240,6 +257,7 @@ function SignUpForm({
   const [values, setValues] = useState<SignUpValues>(initialSignUp)
   const [errors, setErrors] = useState<SignUpErrors>({})
   const [status, setStatus] = useState<SubmitStatus>('idle')
+  const [formError, setFormError] = useState<string | null>(null)
 
   const strength = useMemo(() => getPasswordStrength(values.password), [values.password])
 
@@ -273,12 +291,14 @@ function SignUpForm({
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
 
+    setFormError(null)
     setStatus('submitting')
     try {
       await onSignUp?.(values)
       setStatus('success')
-    } catch {
+    } catch (err) {
       setStatus('error')
+      setFormError(err instanceof Error ? err.message : 'Account creation failed. Please try again.')
     }
   }
 
@@ -297,6 +317,12 @@ function SignUpForm({
       <form onSubmit={handleSubmit}>
         <fieldset className="flex flex-col gap-4" disabled={status === 'submitting'}>
           <legend className="sr-only">Create a new account</legend>
+
+          {formError ? (
+            <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {formError}
+            </p>
+          ) : null}
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor={`${idPrefix}-name`} className="text-sm font-medium">
@@ -406,7 +432,7 @@ function SignUpForm({
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="font-medium text-primary underline-offset-4 hover:underline">
+                <Link href="/#privacy" className="font-medium text-primary underline-offset-4 hover:underline">
                   Privacy Policy
                 </Link>
               </label>
@@ -421,7 +447,7 @@ function SignUpForm({
           <p aria-live="polite" className="sr-only">
             {status === 'submitting' && 'Creating account, please wait.'}
             {status === 'success' && 'Account created successfully.'}
-            {status === 'error' && 'Account creation failed. Please try again.'}
+            {status === 'error' && (formError ?? 'Account creation failed. Please try again.')}
           </p>
         </fieldset>
       </form>
@@ -444,7 +470,7 @@ export function AuthForm({ defaultMode = 'signin', onSignIn, onSignUp, onFederat
   ]
 
   return (
-    <Card className="mx-auto w-full max-w-md">
+    <Card className="mx-auto w-full max-w-md border-border/60 p-7 shadow-xl shadow-black/[0.03] sm:p-8">
       <Tabs tabs={tabs} defaultValue={defaultMode} label="Authentication mode" />
     </Card>
   )

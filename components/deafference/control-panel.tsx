@@ -5,7 +5,12 @@ import { Camera, Upload, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
-export function ControlPanel() {
+export interface ControlPanelProps {
+  onStartCamera?: () => void
+  onClearTranslation?: () => void
+}
+
+export function ControlPanel({ onStartCamera, onClearTranslation }: ControlPanelProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
@@ -17,15 +22,18 @@ export function ControlPanel() {
           Controls
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <Button className="h-12 rounded-full bg-foreground text-background hover:bg-foreground/90">
+          <Button
+            className="h-12 rounded-full bg-foreground text-background hover:bg-foreground/90"
+            onClick={onStartCamera}
+          >
             <Camera className="size-4" />
             Start Camera
           </Button>
-          <Button variant="outline" className="h-12 rounded-full">
+          <Button variant="outline" className="h-12 rounded-full" disabled title="Video upload isn't available yet — coming soon.">
             <Upload className="size-4" />
             Upload Video
           </Button>
-          <Button variant="outline" className="h-12 rounded-full">
+          <Button variant="outline" className="h-12 rounded-full" onClick={onClearTranslation}>
             <Trash2 className="size-4" />
             Clear Translation
           </Button>
