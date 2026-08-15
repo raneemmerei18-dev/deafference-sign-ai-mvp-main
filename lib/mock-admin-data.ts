@@ -1,4 +1,7 @@
-export type UserRole = "Admin" | "Business" | "Individual"
+// "Admin" gates real backend access (the /admin panel, /api/admin/*); it maps
+// 1:1 to the `User.role` column. "Individual" is everyone else — there's no
+// separate business tier in the schema yet, so this is the only non-admin value.
+export type UserRole = "Admin" | "Individual"
 export type UserStatus = "Active" | "Suspended"
 
 export interface AdminUser {
@@ -32,73 +35,6 @@ export interface ContactSubmission {
   receivedDate: string
   read: boolean
 }
-
-export const MOCK_USERS: AdminUser[] = [
-  {
-    id: "usr_1001",
-    name: "Amara Okafor",
-    email: "amara.okafor@example.com",
-    role: "Admin",
-    status: "Active",
-    joinedDate: "2025-11-04",
-  },
-  {
-    id: "usr_1002",
-    name: "Priya Natarajan",
-    email: "priya.n@northline-clinic.com",
-    role: "Business",
-    status: "Active",
-    joinedDate: "2025-12-19",
-  },
-  {
-    id: "usr_1003",
-    name: "Diego Fernandez",
-    email: "diego.fernandez@example.com",
-    role: "Individual",
-    status: "Active",
-    joinedDate: "2026-01-08",
-  },
-  {
-    id: "usr_1004",
-    name: "Hana Kobayashi",
-    email: "hana.k@rivertown-bank.com",
-    role: "Business",
-    status: "Suspended",
-    joinedDate: "2026-02-14",
-  },
-  {
-    id: "usr_1005",
-    name: "Malik Johnson",
-    email: "malik.johnson@example.com",
-    role: "Individual",
-    status: "Active",
-    joinedDate: "2026-03-22",
-  },
-  {
-    id: "usr_1006",
-    name: "Sofia Marchetti",
-    email: "sofia.marchetti@example.com",
-    role: "Individual",
-    status: "Suspended",
-    joinedDate: "2026-04-11",
-  },
-  {
-    id: "usr_1007",
-    name: "Tunde Adebayo",
-    email: "tunde.a@lagoscare-hospital.com",
-    role: "Business",
-    status: "Active",
-    joinedDate: "2026-05-30",
-  },
-  {
-    id: "usr_1008",
-    name: "Ellen Vance",
-    email: "ellen.vance@example.com",
-    role: "Admin",
-    status: "Active",
-    joinedDate: "2026-06-17",
-  },
-]
 
 export const MOCK_FEEDBACK: FeedbackEntry[] = [
   {

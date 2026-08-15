@@ -120,6 +120,8 @@ export function AdminShell() {
           <div id="admin-panel-users" role="tabpanel" aria-labelledby="admin-tab-users" hidden={activeView !== "users"}>
             <UsersManagement
               users={data.users}
+              loading={data.usersLoading}
+              error={data.usersError}
               onUpdateRole={data.updateUserRole}
               onToggleStatus={data.toggleUserStatus}
               onDeleteUser={data.deleteUser}

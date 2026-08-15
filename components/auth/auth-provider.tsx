@@ -2,7 +2,8 @@
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react"
 import { useRouter } from "next/navigation"
-import { SESSION_COOKIE_NAME, type SessionRole } from "@/lib/auth/session"
+import type { SessionRole } from "@/lib/auth/session"
+import type { SignInValues, SignUpValues } from "./auth-form"
 
 export interface AuthUser {
   name: string
@@ -10,66 +11,89 @@ export interface AuthUser {
   role: Exclude<SessionRole, "guest">
 }
 
+interface AuthApiError {
+  error?: string
+}
+
 export interface AuthContextValue {
   role: SessionRole
   user: AuthUser | null
-  /** Dev-only: force the mock session to a given role. No-ops in production builds. */
-  setRole: (role: SessionRole) => void
-  /** Mock sign-in: sets the session role (defaults to "user") — a stand-in for a real auth call. */
-  signIn: (role?: Exclude<SessionRole, "guest">) => void
-  signOut: () => void
+  /** Dev-only: flips the signed-in account's own role via the backend. No-ops (and hidden) in production. */
+  setRole: (role: Exclude<SessionRole, "guest">) => Promise<void>
+  /** Calls POST /api/auth/login. Throws an Error with a user-facing message on failure. */
+  signIn: (values: SignInValues) => Promise<void>
+  /** Calls POST /api/auth/signup. Throws an Error with a user-facing message on failure. */
+  signUp: (values: SignUpValues) => Promise<void>
+  signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
-const MOCK_USERS: Record<Exclude<SessionRole, "guest">, AuthUser> = {
-  user: { name: "Jordan Lee", email: "jordan.lee@example.com", role: "user" },
-  admin: { name: "Ellen Vance", email: "ellen.vance@example.com", role: "admin" },
-}
-
-const ONE_WEEK_SECONDS = 60 * 60 * 24 * 7
-
-function writeSessionCookie(role: SessionRole) {
-  if (role === "guest") {
-    document.cookie = `${SESSION_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`
-    return
+async function postJson(url: string, body: unknown) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  const data = (await response.json().catch(() => ({}))) as AuthApiError & { user?: AuthUser }
+  if (!response.ok) {
+    throw new Error(data.error ?? "Something went wrong. Please try again.")
   }
-  document.cookie = `${SESSION_COOKIE_NAME}=${role}; path=/; max-age=${ONE_WEEK_SECONDS}; samesite=lax`
+  return data
 }
 
-export function AuthProvider({ initialRole, children }: { initialRole: SessionRole; children: ReactNode }) {
-  const [role, setRoleState] = useState<SessionRole>(initialRole)
+export function AuthProvider({ initialUser, children }: { initialUser: AuthUser | null; children: ReactNode }) {
+  const [user, setUser] = useState<AuthUser | null>(initialUser)
   const router = useRouter()
 
-  const setRole = useCallback(
-    (next: SessionRole) => {
-      // The mock cookie is client-writable by design (see lib/auth/session.ts) —
-      // never let it be set outside development, even if this code somehow ships.
-      if (process.env.NODE_ENV === "production") return
-      writeSessionCookie(next)
-      setRoleState(next)
-      // middleware and any server components (e.g. the sidebar's admin link)
-      // read the cookie fresh, so re-run the server render after it changes.
+  const signIn = useCallback(
+    async (values: SignInValues) => {
+      const data = await postJson("/api/auth/login", values)
+      if (data.user) setUser(data.user)
       router.refresh()
     },
     [router],
   )
 
-  const signIn = useCallback(
-    (next: Exclude<SessionRole, "guest"> = "user") => setRole(next),
-    [setRole],
+  const signUp = useCallback(
+    async (values: SignUpValues) => {
+      const data = await postJson("/api/auth/signup", {
+        fullName: values.fullName,
+        email: values.email,
+        password: values.password,
+      })
+      if (data.user) setUser(data.user)
+      router.refresh()
+    },
+    [router],
   )
-  const signOut = useCallback(() => setRole("guest"), [setRole])
+
+  const signOut = useCallback(async () => {
+    await fetch("/api/auth/logout", { method: "POST" })
+    setUser(null)
+    router.refresh()
+  }, [router])
+
+  const setRole = useCallback(
+    async (role: Exclude<SessionRole, "guest">) => {
+      if (process.env.NODE_ENV === "production") return
+      const data = await postJson("/api/auth/dev-role", { role })
+      if (data.user) setUser(data.user)
+      router.refresh()
+    },
+    [router],
+  )
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      role,
-      user: role === "guest" ? null : MOCK_USERS[role],
+      role: user?.role ?? "guest",
+      user,
       setRole,
       signIn,
+      signUp,
       signOut,
     }),
-    [role, setRole, signIn, signOut],
+    [user, setRole, signIn, signUp, signOut],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

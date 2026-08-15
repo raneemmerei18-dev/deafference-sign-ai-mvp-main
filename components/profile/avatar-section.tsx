@@ -9,22 +9,25 @@ import { FieldError } from '@/components/shared/field-error'
 const ACCEPTED_TYPES = ['image/png', 'image/jpeg']
 
 export interface AvatarSectionProps {
+  initialAvatarUrl?: string | null
   onUpload?: (file: File) => void | Promise<void>
   onRemove?: () => void | Promise<void>
 }
 
-export function AvatarSection({ onUpload, onRemove }: AvatarSectionProps) {
+export function AvatarSection({ initialAvatarUrl, onUpload, onRemove }: AvatarSectionProps) {
   const idPrefix = useId()
   const inputRef = useRef<HTMLInputElement>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(initialAvatarUrl ?? null)
+  const [isObjectUrl, setIsObjectUrl] = useState(false)
   const [error, setError] = useState<string>()
 
-  // Revoke the previous object URL whenever it's replaced or the section unmounts.
+  // Revoke the previous object URL whenever it's replaced or the section unmounts
+  // — but only ones we created via createObjectURL, never the persisted data URL.
   useEffect(() => {
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl)
+      if (previewUrl && isObjectUrl) URL.revokeObjectURL(previewUrl)
     }
-  }, [previewUrl])
+  }, [previewUrl, isObjectUrl])
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
@@ -38,17 +41,19 @@ export function AvatarSection({ onUpload, onRemove }: AvatarSectionProps) {
 
     setError(undefined)
     setPreviewUrl((current) => {
-      if (current) URL.revokeObjectURL(current)
+      if (current && isObjectUrl) URL.revokeObjectURL(current)
       return URL.createObjectURL(file)
     })
+    setIsObjectUrl(true)
     await onUpload?.(file)
   }
 
   async function handleRemove() {
     setPreviewUrl((current) => {
-      if (current) URL.revokeObjectURL(current)
+      if (current && isObjectUrl) URL.revokeObjectURL(current)
       return null
     })
+    setIsObjectUrl(false)
     setError(undefined)
     if (inputRef.current) inputRef.current.value = ''
     await onRemove?.()

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { AppShell } from '@/components/app-shell/app-shell'
 import { Container } from '@/components/shared/container'
-import { ProfileSettings } from '@/components/profile/profile-settings'
+import { ProfilePageClient } from '@/components/profile/profile-page-client'
 
 export const metadata: Metadata = {
   title: 'Deafference — Account Settings',
@@ -21,7 +21,7 @@ export default function ProfilePage() {
           </p>
 
           <div className="mt-8 max-w-2xl">
-            <ProfileSettings />
+            <ProfilePageClient />
           </div>
         </Container>
       </main>

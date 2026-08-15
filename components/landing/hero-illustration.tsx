@@ -222,9 +222,9 @@ export function HeroIllustration() {
               <div className="relative size-20 overflow-hidden rounded-full sm:size-24">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/deafference-logo-transparent.png"
+                  src="/deafference-logo.png"
                   alt="Deafference"
-                  className="absolute top-1/2 left-0 h-[124px] w-auto max-w-none -translate-y-1/2 sm:h-[149px]"
+                  className="absolute top-1/2 left-0 h-11 w-auto max-w-none -translate-y-1/2 sm:h-[52px]"
                 />
               </div>
             </div>

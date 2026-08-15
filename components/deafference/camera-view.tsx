@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { AlertTriangle, Bug, Loader2, RotateCcw, ShieldAlert, VideoOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,11 @@ import { loadPersistedCameraPermission, updateCameraPermission } from "@/lib/cam
 
 type CameraStatus = "loading" | "streaming" | "denied" | "unsupported" | "error" | "no-devices" | "simulation"
 
+export interface CameraViewHandle {
+  /** Re-requests camera access, same as clicking the in-card "Try Again" button. */
+  restart: () => void
+}
+
 const LOG_PREFIX = "[CameraView]"
 
 // Some headless/fake-device environments never resolve (or reject) the
@@ -18,7 +23,7 @@ const LOG_PREFIX = "[CameraView]"
 // access..." forever.
 const REQUEST_TIMEOUT_MS = 6000
 
-export function CameraView() {
+export const CameraView = forwardRef<CameraViewHandle>(function CameraView(_props, ref) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -201,6 +206,8 @@ export function CameraView() {
     setRetryToken((t) => t + 1)
   }, [])
 
+  useImperativeHandle(ref, () => ({ restart: handleRetry }), [handleRetry])
+
   const statusCopy: Record<
     Exclude<CameraStatus, "streaming">,
     { icon: React.ReactNode; title: string; desc: string; retry: boolean }
@@ -328,4 +335,4 @@ export function CameraView() {
       </Card>
     </motion.div>
   )
-}
+})

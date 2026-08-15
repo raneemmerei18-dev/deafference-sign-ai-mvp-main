@@ -4,7 +4,9 @@ import { motion } from "framer-motion"
 import { Sparkles } from "lucide-react"
 import { Card } from "@/components/ui/card"
 
-export function TranslationPanel() {
+export function TranslationPanel({ text }: { text?: string }) {
+  const hasText = Boolean(text?.trim())
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
@@ -22,13 +24,17 @@ export function TranslationPanel() {
           </span>
         </div>
         <div className="mt-6 flex min-h-[14rem] items-center justify-center rounded-3xl border border-dashed border-border bg-background/65 px-6 text-center">
-          <motion.p
-            animate={{ opacity: [0.55, 1, 0.55] }}
-            transition={{ duration: 2.2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-            className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
-          >
-            Waiting for sign language...
-          </motion.p>
+          {hasText ? (
+            <p className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">{text}</p>
+          ) : (
+            <motion.p
+              animate={{ opacity: [0.55, 1, 0.55] }}
+              transition={{ duration: 2.2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+              className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl"
+            >
+              Waiting for sign language...
+            </motion.p>
+          )}
         </div>
       </Card>
     </motion.div>
