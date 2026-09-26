@@ -1,0 +1,7 @@
+export type TextSize = "normal" | "large" | "xlarge"
+export type Theme = "light" | "dark" | "system"
+export type Density = "comfortable" | "compact"
+export type Settings = { theme: Theme; density: Density; textSize: TextSize; language: string; signLanguageDialect: string; highContrast: boolean; reduceMotion: boolean; alwaysCaptions: boolean; textOnly: boolean; largeButtons: boolean; sound: boolean; shareUsageAnalytics: boolean; shareModelImprovementData: boolean; sessionHistoryEnabled: boolean; notifyProductUpdatesEmail: boolean; notifySecurityAlertsEmail: boolean; notifyUsageReportsEmail: boolean; notifySystemStatusInApp: boolean; notifyFeatureAnnouncementsInApp: boolean }
+export const DEFAULT_SETTINGS: Settings = { theme: "light", density: "comfortable", textSize: "normal", language: "English", signLanguageDialect: "asl", highContrast: false, reduceMotion: false, alwaysCaptions: true, textOnly: false, largeButtons: false, sound: true, shareUsageAnalytics: true, shareModelImprovementData: true, sessionHistoryEnabled: true, notifyProductUpdatesEmail: true, notifySecurityAlertsEmail: true, notifyUsageReportsEmail: false, notifySystemStatusInApp: true, notifyFeatureAnnouncementsInApp: true }
+export const SETTINGS_COOKIE_NAME = "df-settings"
+export function parseSettingsCookie(raw: string | undefined | null): Settings { if (!raw) return DEFAULT_SETTINGS; try { return { ...DEFAULT_SETTINGS, ...JSON.parse(decodeURIComponent(raw)) as Partial<Settings> } } catch { return DEFAULT_SETTINGS } }

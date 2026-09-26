@@ -1,0 +1,72 @@
+"use client"
+
+import { motion } from "framer-motion"
+import { Mail } from "lucide-react"
+import { Container } from "@/components/shared/container"
+import { FOOTER_EXPLORE_NAV, FOOTER_COMPANY_NAV } from "@/lib/constants"
+import { Logo } from "@/components/deafference/logo"
+
+// Only real destinations here — no placeholder "#" links.
+const socialLinks = [{ label: "Email", href: "mailto:hello@deafference.ai", icon: Mail }]
+
+export function Footer() {
+  return (
+    <motion.footer
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+      className="border-t border-border/60 py-10"
+      data-mira-zone="0.12"
+      data-mira-mood="neutral"
+      data-mira-line="See you soon."
+    >
+      <Container className="grid gap-8 lg:grid-cols-[1fr_auto_auto_auto] lg:items-start">
+        <div className="max-w-sm">
+          <Logo />
+          <p className="mt-4 text-sm leading-7 text-muted-foreground">
+            Professional AI landing architecture with a separate translation workflow and room for
+            future product pages.
+          </p>
+        </div>
+
+        <div>
+          <p className="text-sm font-semibold text-foreground">Explore</p>
+          <nav className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground">
+            {FOOTER_EXPLORE_NAV.map((item) => (
+              <a key={item.href} href={item.href} className="transition-colors hover:text-foreground">
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+
+        <div>
+          <p className="text-sm font-semibold text-foreground">Company</p>
+          <nav className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground">
+            {FOOTER_COMPANY_NAV.map((item) => (
+              <a key={item.href} href={item.href} className="transition-colors hover:text-foreground">
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+
+        <div>
+          <p className="text-sm font-semibold text-foreground">Social</p>
+          <div className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground">
+            {socialLinks.map((item) => {
+              const Icon = item.icon
+              return (
+                <a key={item.label} href={item.href} className="inline-flex items-center gap-2 transition-colors hover:text-foreground">
+                  <Icon className="size-4" />
+                  {item.label}
+                </a>
+              )
+            })}
+          </div>
+        </div>
+      </Container>
+    </motion.footer>
+  )
+}
