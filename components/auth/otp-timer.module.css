@@ -1,0 +1,45 @@
+.container {
+  display: grid;
+  gap: 12px;
+  text-align: center;
+}
+
+.timerDisplay {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.time {
+  color: var(--color-heading);
+  font-size: 1.75rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, "Courier New", monospace;
+  letter-spacing: 0.04em;
+}
+
+.expired {
+  color: var(--color-danger);
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.note {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.resendButton {
+  margin-block-start: 4px;
+}
+
+:global([dir="rtl"]) .time {
+  letter-spacing: 0;
+}

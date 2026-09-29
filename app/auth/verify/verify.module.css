@@ -1,0 +1,70 @@
+.page {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: var(--color-bg);
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  padding: clamp(28px, 5vw, 40px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.header {
+  margin-block-end: 32px;
+  text-align: center;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.description {
+  margin-block-start: 8px;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.actions {
+  margin-block-start: 24px;
+  text-align: center;
+}
+
+.backLink {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  font-weight: 550;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--color-accent-strong);
+}
+
+.demo {
+  margin-block-start: 32px;
+  padding: 16px;
+  border: 1px solid #f3d5c6;
+  border-radius: var(--radius-md);
+  background: #fff8f3;
+  color: #8b4513;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.demo p {
+  margin: 0;
+}
+
+:global([dir="rtl"]) .title {
+  letter-spacing: 0;
+}
