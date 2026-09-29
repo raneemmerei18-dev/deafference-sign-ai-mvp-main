@@ -1,0 +1,130 @@
+.section {
+  border-block: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg);
+}
+
+.card[data-recommended="true"] {
+  border: 2px solid var(--color-accent-strong);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.badge {
+  position: absolute;
+  top: -13px;
+  inset-inline-start: 22px;
+  padding: 3px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-strong);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.name {
+  font-size: 1.125rem;
+  font-weight: 750;
+}
+
+.audience {
+  margin-block-start: 6px;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.priceBlock {
+  padding-block-start: 20px;
+}
+
+/* Keep prices lined up across a row when audience copy wraps differently. */
+@media (min-width: 1100px) {
+  .audience {
+    min-height: 4.5em;
+  }
+}
+
+.priceRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.price {
+  color: var(--color-heading);
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.cadence {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.cta {
+  margin-block-start: 20px;
+}
+
+.includes {
+  margin-block-start: 24px;
+  padding-block-start: 16px;
+  border-block-start: 1px solid var(--color-border);
+  color: var(--color-heading);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.features {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+  font-size: 0.9375rem;
+  list-style: none;
+}
+
+.features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.features svg {
+  flex-shrink: 0;
+  margin-block-start: 3px;
+  color: var(--color-accent-strong);
+}
+
+.note {
+  margin-block-start: 28px;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+@media (min-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

@@ -1,0 +1,185 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-block-end: 1px solid transparent;
+  background: rgb(250 248 244 / 0.82);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.header[data-elevated="true"] {
+  border-block-end-color: var(--color-border);
+  background: rgb(255 255 255 / 0.94);
+  box-shadow: 0 8px 24px -18px rgb(23 33 51 / 0.35);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: var(--nav-height);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--radius-sm);
+  color: var(--color-heading);
+  font-size: 1.25rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.brand:hover {
+  color: var(--color-heading);
+}
+
+.desktopNav {
+  display: none;
+}
+
+.navList {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.navLink:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-heading);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.languageToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-heading);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.languageToggle:hover {
+  border-color: var(--color-heading);
+  background: var(--color-surface-muted);
+}
+
+.demoButton {
+  display: none;
+}
+
+.menuButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-heading);
+  cursor: pointer;
+}
+
+.menuButton:hover {
+  background: var(--color-surface-muted);
+}
+
+.mobilePanel {
+  border-block-start: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding-block: 12px 20px;
+}
+
+.mobileList {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mobileLink {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding-inline: 12px;
+  border-radius: var(--radius-md);
+  color: var(--color-heading);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.mobileLink:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-heading);
+}
+
+.mobileDemoButton {
+  margin-block-start: 12px;
+}
+
+@media (min-width: 600px) {
+  .demoButton {
+    display: inline-flex;
+  }
+
+  .mobileDemoButton {
+    display: none;
+  }
+}
+
+/* Keep in sync with DESKTOP_QUERY in navbar.tsx. */
+@media (min-width: 960px) {
+  .desktopNav {
+    display: block;
+  }
+
+  .menuButton,
+  .mobilePanel {
+    display: none;
+  }
+}
+
+:global([dir="rtl"]) .brand {
+  letter-spacing: 0;
+}
