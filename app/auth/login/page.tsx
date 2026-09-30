@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import styles from "./auth.module.css"
+import styles from "../auth.module.css"
 
 export default function LoginPage() {
   const router = useRouter()

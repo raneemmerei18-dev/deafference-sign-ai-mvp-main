@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { getPasswordStrength } from "@/lib/validation"
-import styles from "./auth.module.css"
+import styles from "../auth.module.css"
 
 export default function SignupPage() {
   const router = useRouter()
