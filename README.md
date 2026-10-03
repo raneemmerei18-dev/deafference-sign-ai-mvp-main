@@ -2,106 +2,53 @@
 
 Deafference is a modern, responsive web application MVP designed to bridge the communication gap between hearing individuals and the Deaf/Hard-of-Hearing (DHH) community. The application translates spoken speech or typed text into simplified, high-confidence sign language phrases with interactive visual support.
 
----
-
-## 🚀 Key Features
-
-- **Dual Input Modes**: Use voice recognition (Speech-to-Text) or manual typing to draft messages.
-- **Interactive Sign Language Avatar**: A simulated signing avatar interface that showcases visual translations, with support for replay and detailed text view.
-- **Speech-to-Sign Pipeline**: A real-time visual step indicator displaying the translation lifecycle:
-  `Listening` ➔ `Understanding` ➔ `Preparing Sign` ➔ `Showing Animation` ➔ `Complete`.
-- **Pre-Categorized Quick Phrases**: Instant access to context-specific, high-frequency phrases tailored for:
-  - 🍽️ **Restaurant**: Ordering, requesting water, allergen warnings.
-  - 🏥 **Healthcare**: Patient-doctor interactions, reporting pain, requesting help.
-  - 🛎️ **Reception**: Checking in, asking for directions, waiting room guidance.
-  - 🎓 **Education**: Classroom questions, requesting clarifications.
-  - 🌐 **General**: Everyday greetings, polite requests.
-- **Accessibility Customization**:
-  - Adjustable font sizes (Normal, Large, Extra Large).
-  - Configurable speech-to-text response rates.
-  - Toggleable high contrast and dark mode.
-  - Sound effects for state transitions.
-
----
-
-## 🛠️ Technology Stack
-
-- **Framework**: [Next.js](https://nextjs.org/) (v16) with App Router
-- **Core Library**: [React 19](https://react.dev/) & [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) & [PostCSS](https://postcss.org/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/) (for smooth, fluid transitions and UI alerts)
-- **UI Components**: [Base UI](https://base-ui.com/) & custom tailwind-designed components
-- **Icons**: [Lucide React](https://lucide.dev/)
+> **Status:** the previous frontend UI has been removed; a new frontend is
+> being rebuilt in this repo. Only the backend pieces below are currently
+> present.
 
 ---
 
 ## 📁 Project Structure
 
 ```text
-├── app/                  # Next.js App Router (Layouts, pages, styles)
-│   ├── globals.css       # Core design system and CSS classes
-│   ├── layout.tsx        # Base root layout
-│   └── page.tsx          # Main entry page calling DeafferenceApp
-├── components/           # Reusable UI components
-│   ├── deafference/      # Core logic and sub-components for the translation flow
-│   │   ├── accessibility-panel.tsx # Custom accessibility control interface
-│   │   ├── avatar-preview.tsx     # Sign language avatar visualization wrapper
-│   │   ├── data.ts                # Mock dictionaries, categorization, translation engine
-│   │   ├── deafference-app.tsx    # Primary controller component orchestrating the MVP
-│   │   ├── input-panel.tsx        # Voice & manual input controller
-│   │   ├── pipeline.tsx           # Progress and status step indicator
-│   │   ├── quick-phrases.tsx      # Multi-category quick-selection panel
-│   │   └── ...                    # Header, Footer, Hero, Disclaimer, and auxiliary files
-│   └── ui/               # Standard UI block components (buttons, badges, dialogs)
-├── public/               # Static assets (images, icons)
-├── package.json          # Dependency definition
-└── tsconfig.json         # TypeScript configuration
+├── app/api/              # Next.js route handlers: auth, account, admin users
+├── lib/
+│   ├── auth/             # Sessions (JWT via jose), cookies, passwords, admin guard
+│   ├── prisma.ts         # Shared Prisma client
+│   └── validation.ts     # Zod request schemas
+├── middleware.ts         # Gates /api/admin/* (401 guest, 403 non-admin)
+├── server/               # Express API (users, camera permission, sentences)
+├── prisma/               # Schema and migrations
+├── scripts/              # Local Postgres helpers (npm run db:start / db:stop)
+└── docs/                 # Identity strategy and privacy sign-off
 ```
 
----
-
-## ⚙️ Setup and Installation
-
-### Prerequisites
-
-Make sure you have [Node.js](https://nodejs.org/) installed (v18+ recommended).
-
-### Steps
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/ghozlan-mo/deafference-speech-to-sign-mvp.git
-   cd deafference-speech-to-sign-mvp
-   ```
-
-2. **Install Dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Run the Development Server**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
-
-4. **Build for Production**
-   ```bash
-   npm run build
-   npm run start
-   ```
+The new frontend goes in `app/` alongside `app/api/`. Before building it, read
+[`docs/IDENTITY.md`](docs/IDENTITY.md) for the anonymous device-UUID strategy
+(sent as an `X-User-Id` header, which the Express API's CORS config allows)
+and [`docs/PRIVACY.md`](docs/PRIVACY.md) for what it's approved to collect.
 
 ---
 
-## 🔌 Backend API
+## ⚙️ Setup
 
-A small Express + Prisma (PostgreSQL) API lives in [`server/`](server/) and is
-separate from the Next.js frontend.
+Requires [Node.js](https://nodejs.org/) v18+.
 
-- **Frontend (Next.js):** port **3000** (`npm run dev`)
-- **API (Express):** port **4000** (`npm run server:dev`)
+```bash
+npm install
+cp .env.example .env
+npm run db:start          # optional: local embedded Postgres
+npx prisma migrate dev
+```
+
+- **Next.js route handlers (`app/api/*`):** port **3000** (`npm run dev`)
+- **Express API (`server/`):** port **4000** (`npm run server:dev`)
 
 They use different ports so both can run at the same time.
+
+---
+
+## 🔌 Express API
 
 ### Database setup
 

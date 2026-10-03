@@ -6,27 +6,17 @@ import { verifySessionToken } from "@/lib/auth/jwt"
 export async function middleware(request: NextRequest) {
   const session = await verifySessionToken(request.cookies.get(SESSION_COOKIE_NAME)?.value)
   const role = session?.role ?? "guest"
-  const isApiRoute = request.nextUrl.pathname.startsWith("/api/")
 
-  if (role === "guest") {
-    if (isApiRoute) return NextResponse.json({ error: "Sign in first." }, { status: 401 })
-    const loginUrl = new URL("/login", request.url)
-    loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname)
-    loginUrl.searchParams.set("reason", "auth-required")
-    return NextResponse.redirect(loginUrl)
-  }
-
-  if (role !== "admin") {
-    if (isApiRoute) return NextResponse.json({ error: "Admin access required." }, { status: 403 })
-    return NextResponse.redirect(new URL("/forbidden", request.url))
-  }
+  if (role === "guest") return NextResponse.json({ error: "Sign in first." }, { status: 401 })
+  if (role !== "admin") return NextResponse.json({ error: "Admin access required." }, { status: 403 })
 
   return NextResponse.next()
 }
 
 // Defense in depth: /api/admin/* routes also self-check via requireAdmin(),
 // but gating them here too means a future route can't accidentally ship
-// without that check.
+// without that check. Page routes (e.g. an /admin UI) should handle 401/403
+// from the API themselves rather than being redirected here.
 export const config = {
-  matcher: ["/admin", "/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/api/admin/:path*"],
 }

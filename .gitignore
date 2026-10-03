@@ -20,9 +20,5 @@ node_modules
 
 .zip
 *.zip
-
-# TypeScript build cache (auto-generated)
+# TypeScript incremental build cache
 *.tsbuildinfo
-
-# Claude Code local tool state
-.claude/

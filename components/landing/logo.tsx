@@ -1,0 +1,14 @@
+export function LogoMark({ size = 34 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 34 34" fill="none" aria-hidden="true" focusable="false">
+      <rect width="34" height="34" rx="9" fill="var(--color-accent)" />
+      <rect x="7" y="16" width="2.2" height="7" rx="1.1" fill="white" fillOpacity="0.55" />
+      <rect x="10.5" y="12" width="2.2" height="14" rx="1.1" fill="white" fillOpacity="0.7" />
+      <rect x="14" y="9" width="2.2" height="20" rx="1.1" fill="white" fillOpacity="0.85" />
+      <path
+        d="M18.5 21.5c0-4.6.9-8.3 1.9-8.3.9 0 1.5 2.6 1.5 5.5 0-3.7 1.3-6.8 2.3-6.6.9.2 1.1 3 1 5.9.9-2.7 2-4.5 2.8-4.1.8.4.3 3.6-.6 5.8-.9 2.3-2.6 4.3-5 4.3-2.7 0-3.9-1.3-3.9-2.5Z"
+        fill="white"
+      />
+    </svg>
+  )
+}
