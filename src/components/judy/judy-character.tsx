@@ -1,0 +1,486 @@
+"use client"
+
+import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react"
+import "./judy-character.css"
+
+// Judy, ported from JudyCompanion.vue: the artwork and CSS animations only.
+// None of the original's automatic behaviour (route watching, section
+// detection, timers, auto-walking, chat) came across — the parent decides
+// what she does through props.
+
+export type JudyMood = "neutral" | "happy" | "listen" | "think" | "sad"
+
+export type JudyPose =
+  | "idle"
+  | "walk"
+  | "run"
+  | "wave"
+  | "point"
+  | "ponder"
+  | "listen"
+  | "cute-think"
+  | "laugh"
+  | "party"
+  | "cheer-loop"
+  | "twirl"
+  | "dance"
+  | "drive"
+  | "eat"
+  | "hungry"
+  | "phone"
+  | "sleep"
+
+// Each pose turns on the same state classes the Vue file combined for it, and
+// the mood (face) the original paired it with. `mood` overrides the face.
+const POSES: Record<JudyPose, { classes: string[]; mood: JudyMood }> = {
+  idle: { classes: [], mood: "neutral" },
+  walk: { classes: ["judy-walking"], mood: "neutral" },
+  run: { classes: ["judy-walking", "judy-running"], mood: "neutral" },
+  wave: { classes: ["judy-waving"], mood: "happy" },
+  point: { classes: ["judy-reaching", "judy-excited"], mood: "happy" },
+  ponder: { classes: ["judy-pondering"], mood: "think" },
+  listen: { classes: ["judy-cupping"], mood: "listen" },
+  "cute-think": { classes: ["judy-cute-thinking", "judy-pondering"], mood: "think" },
+  laugh: { classes: ["judy-laughing"], mood: "happy" },
+  party: { classes: ["judy-partying"], mood: "happy" },
+  "cheer-loop": { classes: ["judy-subscribing"], mood: "happy" },
+  twirl: { classes: ["judy-twirling"], mood: "happy" },
+  dance: { classes: ["judy-happy-dancing"], mood: "happy" },
+  drive: { classes: ["judy-driving"], mood: "happy" },
+  eat: { classes: ["judy-eating"], mood: "happy" },
+  hungry: { classes: ["judy-hungry"], mood: "happy" },
+  phone: { classes: ["judy-phone-talking"], mood: "happy" },
+  sleep: { classes: ["judy-sleeping"], mood: "neutral" },
+}
+
+const DRAG_THRESHOLD = 4
+
+type Point = { x: number; y: number }
+
+export interface JudyCharacterProps {
+  pose?: JudyPose
+  /** Face expression; defaults to the one the original paired with `pose`. */
+  mood?: JudyMood
+  /** CSS `left` of the fixed-position character. Numbers are px. */
+  x?: number | string
+  /** CSS `bottom` of the fixed-position character. Numbers are px. */
+  y?: number | string
+  facing?: "left" | "right"
+  /** Width in px (height follows). Default: 132, or 100 below 640px wide. */
+  size?: number
+  /** Speech bubble text; the bubble hides when empty. */
+  message?: string
+  draggable?: boolean
+  /** Called with the dropped `left`/`bottom` in px after a drag. */
+  onDragEnd?: (position: Point) => void
+  className?: string
+}
+
+const toCss = (value: number | string) => (typeof value === "number" ? `${value}px` : value)
+
+export function JudyCharacter({
+  pose = "idle",
+  mood,
+  x = 16,
+  y = 10,
+  facing = "right",
+  size,
+  message = "",
+  draggable = false,
+  onDragEnd,
+  className,
+}: JudyCharacterProps) {
+  // Keep the last text on screen while the bubble fades out.
+  const [bubbleText, setBubbleText] = useState(message)
+  if (message && message !== bubbleText) setBubbleText(message)
+
+  // A dragged position wins until the parent moves her through x/y.
+  const positionKey = `${x}|${y}`
+  const [dragged, setDragged] = useState<(Point & { key: string }) | null>(null)
+  const [dragging, setDragging] = useState(false)
+  const drag = useRef({ pointerId: -1, startX: 0, startY: 0, left: 0, bottom: 0, moved: false })
+  const current = dragged?.key === positionKey ? dragged : null
+
+  const { classes, mood: poseMood } = POSES[pose]
+  const visible = message.length > 0
+
+  function onPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    if (event.button !== 0 && event.pointerType === "mouse") return
+    const el = event.currentTarget
+    const style = window.getComputedStyle(el)
+    drag.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      left: parseFloat(style.left) || 0,
+      bottom: parseFloat(style.bottom) || 0,
+      moved: false,
+    }
+    setDragging(true)
+    el.setPointerCapture(event.pointerId)
+  }
+
+  function onPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+    const d = drag.current
+    if (!dragging || event.pointerId !== d.pointerId) return
+    const dx = event.clientX - d.startX
+    const dy = event.clientY - d.startY
+    if (!d.moved && Math.hypot(dx, dy) > DRAG_THRESHOLD) d.moved = true
+    if (!d.moved) return
+    const rect = event.currentTarget.getBoundingClientRect()
+    const maxLeft = Math.max(10, window.innerWidth - rect.width - 10)
+    const maxBottom = Math.max(10, window.innerHeight - rect.height - 10)
+    setDragged({
+      x: Math.min(maxLeft, Math.max(10, d.left + dx)),
+      y: Math.min(maxBottom, Math.max(10, d.bottom - dy)),
+      key: positionKey,
+    })
+  }
+
+  function endDrag(event: ReactPointerEvent<HTMLDivElement>) {
+    if (event.pointerId !== drag.current.pointerId) return
+    try {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    } catch {
+      // capture already released
+    }
+    setDragging(false)
+    drag.current.pointerId = -1
+    if (drag.current.moved && current) onDragEnd?.({ x: current.x, y: current.y })
+  }
+
+  const rootClass = [
+    "judy-companion",
+    `judy-${mood ?? poseMood}`,
+    ...classes,
+    visible && "judy-visible",
+    dragging && "judy-dragging",
+    !draggable && "judy-static",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ")
+
+  return (
+    <div
+      className={rootClass}
+      style={{
+        left: toCss(current ? current.x : x),
+        bottom: toCss(current ? current.y : y),
+        width: size,
+      }}
+      aria-live="polite"
+      {...(draggable && {
+        onPointerDown,
+        onPointerMove,
+        onPointerUp: endDrag,
+        onPointerCancel: endDrag,
+      })}
+    >
+      <div
+        className={["judy-bubble", visible && "judy-bubble-visible", pose === "cheer-loop" && "judy-subscribe-bubble"]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        {bubbleText}
+      </div>
+      <div className="judy-sleep-zzz" aria-hidden="true">
+        <span>Z</span>
+        <span>Z</span>
+        <span>Z</span>
+      </div>
+      <div className={facing === "left" ? "judy-facing judy-facing-left" : "judy-facing"}>
+        <svg className="judy-figure" viewBox="0 0 220 380" aria-label="Judy, the Deafference companion" role="img">
+          <ellipse cx="110" cy="372" rx="46" ry="6" className="judy-shadow" />
+
+          <g className="judy-hair-wrap" transform="translate(0 -8)">
+            <g className="judy-hair-mass">
+              <ellipse cx="110" cy="81" rx="52" ry="55" />
+              <ellipse cx="70" cy="125" rx="24" ry="32" />
+              <ellipse cx="150" cy="125" rx="24" ry="32" />
+              <ellipse cx="78" cy="151" rx="18" ry="22" className="judy-hair-mid" />
+              <ellipse cx="142" cy="151" rx="18" ry="22" className="judy-hair-mid" />
+              <circle cx="66" cy="67" r="14" className="judy-hair-hi" />
+              <circle cx="83" cy="49" r="11" className="judy-hair-hi" />
+              <circle cx="155" cy="73" r="13" className="judy-hair-sh" />
+              <circle cx="142" cy="50" r="10" className="judy-hair-hi" />
+              <circle cx="62" cy="105" r="11" className="judy-hair-hi" />
+              <circle cx="159" cy="109" r="10" className="judy-hair-sh" />
+            </g>
+            <g className="judy-lock-left">
+              <ellipse cx="69" cy="155" rx="14" ry="23" />
+              <circle cx="66" cy="171" r="10" className="judy-hair-mid" />
+              <circle cx="72" cy="183" r="8" />
+              <circle cx="62" cy="148" r="7" className="judy-hair-hi" />
+            </g>
+            <g className="judy-lock-right">
+              <ellipse cx="151" cy="155" rx="14" ry="23" />
+              <circle cx="154" cy="171" r="10" className="judy-hair-mid" />
+              <circle cx="148" cy="183" r="8" />
+              <circle cx="158" cy="147" r="7" className="judy-hair-sh" />
+            </g>
+          </g>
+
+          <g className="judy-leg-left">
+            <path d="M98 212 L94 270" className="judy-thigh" />
+            <g className="judy-shin-left">
+              <path d="M94 270 L92 320" className="judy-shin" />
+              <ellipse cx="90" cy="323" rx="17" ry="8" className="judy-shoe-body" />
+              <path d="M74 326q16 6 32 0" className="judy-shoe-sole" />
+              <circle cx="87" cy="320" r="1.8" className="judy-shoe-eyelet" />
+            </g>
+          </g>
+          <g className="judy-leg-right">
+            <path d="M122 212 L126 270" className="judy-thigh" />
+            <g className="judy-shin-right">
+              <path d="M126 270 L128 320" className="judy-shin" />
+              <ellipse cx="128" cy="323" rx="17" ry="8" className="judy-shoe-body" />
+              <path d="M112 326q16 6 32 0" className="judy-shoe-sole" />
+              <circle cx="131" cy="320" r="1.8" className="judy-shoe-eyelet" />
+            </g>
+          </g>
+
+          <g className="judy-arm-left">
+            <path d="M82 108 L74 150" className="judy-upperarm" />
+            <g className="judy-fore-left">
+              <path d="M74 150 L70 212" className="judy-forearm" />
+              <path d="M79 152 L70 157" className="judy-cuff" />
+              <circle cx="70" cy="217" r="9" className="judy-hand" />
+              <g className="judy-fingers">
+                <path d="M62 220 L58 228" />
+                <path d="M66 225 L63 234" />
+                <path d="M70 227 L70 236" />
+                <path d="M74 225 L77 233" />
+              </g>
+            </g>
+          </g>
+
+          <g className="judy-torso">
+            <path
+              d="M110 104q-20 0-27 15-8 16-9 42l-3 40q0 7 7 7h64q7 0 7-7l-3-40q-1-26-9-42-8-15-27-15z"
+              className="judy-robe"
+            />
+            <path d="M101 84 L101 118 Q110 124 119 118 L119 84 Z" className="judy-neck" />
+            <path d="M99 108 L110 121 L121 108" className="judy-collar" />
+            <path d="M78 124q-10 18-13 46l-2 32" className="judy-seam" />
+            <rect x="131" y="140" width="8" height="24" rx="4" className="judy-ember" />
+          </g>
+
+          <g className="judy-sleep-arm" aria-hidden="true">
+            <path d="M82 112 C79 118 77 123 78 130" className="judy-sleep-sleeve" />
+            <path d="M78 130 C75 124 76 116 79 109" className="judy-sleep-forearm" />
+            <path d="M76 117 L81 119" className="judy-sleep-cuff" />
+            <circle cx="80" cy="105" r="9" className="judy-sleep-hand" />
+            <path d="M74 106l-6 2M75 110l-6 4M79 112l-3 5" className="judy-sleep-fingers" />
+          </g>
+
+          <g className="judy-laugh-arms" aria-hidden="true">
+            <path d="M82 112 C80 136 86 155 95 169" className="judy-laugh-sleeve" />
+            <path d="M95 169 C98 176 102 181 106 186" className="judy-laugh-forearm" />
+            <path d="M138 112 C140 136 134 155 125 169" className="judy-laugh-sleeve" />
+            <path d="M125 169 C122 176 118 181 114 186" className="judy-laugh-forearm" />
+            <path d="M99 178 L104 181M121 178 L116 181" className="judy-laugh-cuff" />
+            <circle cx="106" cy="187" r="9" className="judy-laugh-hand" />
+            <circle cx="114" cy="187" r="9" className="judy-laugh-hand" />
+            <path d="M101 191l-3 6M105 195l-1 6M111 195l1 6M119 191l3 6" className="judy-laugh-fingers" />
+          </g>
+
+          <g className="judy-arm-right">
+            <path d="M138 108 L146 150" className="judy-upperarm" />
+            <g className="judy-fore-right">
+              <path d="M141 152 L150 157" className="judy-cuff" />
+              <path d="M146 150 L150 212" className="judy-forearm" />
+              <g className="judy-hand-open-right">
+                <circle cx="150" cy="217" r="9" className="judy-hand" />
+                <g className="judy-fingers">
+                  <path d="M158 220 L162 228" />
+                  <path d="M154 225 L157 234" />
+                  <path d="M150 227 L150 236" />
+                  <path d="M146 225 L143 233" />
+                </g>
+              </g>
+              <g className="judy-hand-point-right">
+                <circle cx="150" cy="193" r="7" className="judy-hand" />
+                <path d="M150 187 L152 168" className="judy-point-finger" />
+              </g>
+            </g>
+          </g>
+
+          <g className="judy-catching-hand" aria-hidden="true">
+            <circle cx="152" cy="170" r="9" className="judy-hand" />
+            <path d="M145 173l-4 7M149 177l-2 8M153 178v8M157 176l3 7" className="judy-fingers" />
+          </g>
+          <g className="judy-eating-arm" aria-hidden="true">
+            <path d="M138 108 C154 126 158 150 150 169" className="judy-eating-sleeve" />
+            <path d="M150 169 C140 146 129 124 120 112" className="judy-eating-forearm" />
+            <circle cx="119" cy="110" r="9" className="judy-hand" />
+            <path d="M113 112l-5 5M116 116l-3 7M120 118v7M124 116l3 5" className="judy-fingers" />
+          </g>
+          <g className="judy-phone-arm" aria-hidden="true">
+            <path d="M138 108 C151 117 159 107 154 96" className="judy-phone-sleeve" />
+            <path d="M154 96 C151 90 147 85 144 80" className="judy-phone-forearm" />
+            <circle cx="144" cy="79" r="8" className="judy-hand" />
+            <path d="M140 83l-4 4M143 86l-2 5M147 85l2 4" className="judy-fingers" />
+          </g>
+
+          <g className="judy-head" transform="translate(0 -8)">
+            <path
+              d="M110 34 C92.3 34 78.8 47.6 78.3 68.4 C77.8 77.7 79.8 87.1 84.5 95.9 C90.2 105.3 99.6 110 110 110 C120.4 110 129.8 105.3 135.5 95.9 C140.2 87.1 142.2 77.7 141.7 68.4 C141.2 47.6 127.7 34 110 34 Z"
+              className="judy-face"
+            />
+
+            <path
+              d="M78.8 66.3 q5.2 -32.24 31.2 -32.24 q26 0 31.2 32.24 q-7.28 -12.48 -15.08 -8.32 q-6.24 -10.4 -16.12 -7.28 q-9.88 3.12 -15.08 9.36 q-7.28 -3.12 -10.92 6.24 z"
+              className="judy-hairline"
+            />
+            <circle cx="87.1" cy="47.6" r="9.9" className="judy-hairline-fill" />
+            <circle cx="104.8" cy="39.2" r="10.9" className="judy-hairline-fill" />
+            <circle cx="122.5" cy="41.3" r="9.9" className="judy-hairline-fill" />
+            <circle cx="136" cy="52.8" r="8.8" className="judy-hairline-fill" />
+            <circle cx="95.4" cy="43.4" r="5.7" className="judy-hair-hi" />
+            <circle cx="116.2" cy="38.2" r="5.2" className="judy-hair-hi" />
+            <path d="M77.8 71.5 q-4.16 15.6 1.56 28.08 q-7.28 -11.96 -5.2 -28.08 z" className="judy-hairline-fill" />
+            <path d="M142.2 71.5 q4.16 15.6 -1.56 28.08 q7.28 -11.96 5.2 -28.08 z" className="judy-hairline-fill" />
+
+            <ellipse cx="140.7" cy="78.8" rx="4.2" ry="6.8" className="judy-ear" />
+            <rect x="137.6" y="72.5" width="6.2" height="13" rx="3.1" className="judy-aid" />
+            <circle className="judy-aid-light" cx="140.7" cy="75.6" r="1.8" />
+
+            <g className="judy-brow-neutral">
+              <path d="M91.3 65.2 C95.4 60.6 103.2 59.0 108.4 62.1 C109.0 63.2 108.4 64.7 107.4 64.2 C102.7 62.1 97.0 63.2 92.8 67.3 C91.8 67.8 90.8 66.3 91.3 65.2 Z" />
+              <path d="M128.7 65.2 C124.6 60.6 116.8 59.0 111.6 62.1 C111.0 63.2 111.6 64.7 112.6 64.2 C117.3 62.1 123.0 63.2 127.2 67.3 C128.2 67.8 129.2 66.3 128.7 65.2 Z" />
+            </g>
+            <g className="judy-brow-think">
+              <path d="M91.8 67.3 C96.0 63.7 102.7 62.6 107.4 64.7 C107.9 65.8 107.4 66.8 106.4 66.3 C102.2 64.7 96.5 65.8 92.8 69.4 C91.8 69.9 90.8 68.4 91.8 67.3 Z" />
+              <path d="M129.2 63.2 C124.6 58.0 116.8 56.9 111.6 60.6 C111.0 61.7 111.6 63.2 112.6 62.7 C117.3 60.6 123.5 61.7 127.7 65.2 C128.7 65.8 129.8 64.2 129.2 63.2 Z" />
+            </g>
+            <g className="judy-brow-high" />
+
+            <g className="judy-eye-open">
+              <path
+                d="M89.7 75.1 C91.3 69.4 94.4 66.8 98.0 66.8 C102.2 66.8 105.8 69.9 106.9 75.1 C105.3 80.8 102.2 83.4 98.0 83.4 C93.9 83.4 91.3 80.3 89.7 75.1 Z"
+                className="judy-eye-white"
+              />
+              <path
+                d="M113.1 75.1 C114.2 69.9 117.8 66.8 122.0 66.8 C125.6 66.8 128.7 69.4 130.3 75.1 C128.7 80.3 126.1 83.4 122.0 83.4 C117.8 83.4 114.7 80.8 113.1 75.1 Z"
+                className="judy-eye-white"
+              />
+              <circle cx="98.6" cy="75.6" r="5.7" className="judy-iris" />
+              <circle cx="121.4" cy="75.6" r="5.7" className="judy-iris" />
+              <circle cx="98.6" cy="76.7" r="4.2" className="judy-iris-mid" />
+              <circle cx="121.4" cy="76.7" r="4.2" className="judy-iris-mid" />
+              <circle cx="98.6" cy="75.6" r="2.6" className="judy-pupil" />
+              <circle cx="121.4" cy="75.6" r="2.6" className="judy-pupil" />
+              <circle cx="96.5" cy="72.5" r="1.9" className="judy-catchlight" />
+              <circle cx="119.4" cy="72.5" r="1.9" className="judy-catchlight" />
+              <path d="M89.7 74.1 C91.3 68.4 94.4 65.8 98.0 65.8 C102.7 65.8 106.4 69.4 107.4 74.6" className="judy-lash" />
+              <path d="M130.3 74.6 C129.2 69.4 125.6 65.8 122.0 65.8 C118.3 65.8 114.7 68.4 113.1 74.1" className="judy-lash" />
+            </g>
+            <g className="judy-eye-arc">
+              <path d="M90.2 77.7 C92.3 71.0 95.4 68.9 98.6 68.9 C102.2 68.9 105.3 72.0 106.9 77.7" />
+              <path d="M129.8 77.7 C128.2 72.0 125.1 68.9 121.4 68.9 C118.3 68.9 115.2 71.0 113.1 77.7" />
+              <path d="M90.8 75.1 L86.6 72.5" className="judy-eye-tick" />
+              <path d="M129.2 75.1 L133.4 72.5" className="judy-eye-tick" />
+            </g>
+            <g className="judy-eye-wide">
+              <path
+                d="M88.7 75.1 C90.8 68.4 93.9 65.2 98.0 65.2 C102.7 65.2 106.4 68.9 107.9 75.1 C106.4 81.9 102.7 85.0 98.0 85.0 C93.4 85.0 90.8 81.4 88.7 75.1 Z"
+                className="judy-eye-white"
+              />
+              <path
+                d="M112.1 75.1 C113.6 68.9 117.3 65.2 122.0 65.2 C126.1 65.2 129.8 68.4 131.3 75.1 C129.8 81.4 126.6 85.0 122.0 85.0 C117.3 85.0 113.6 81.9 112.1 75.1 Z"
+                className="judy-eye-white"
+              />
+              <circle cx="98.6" cy="75.6" r="6.2" className="judy-iris" />
+              <circle cx="121.4" cy="75.6" r="6.2" className="judy-iris" />
+              <circle cx="98.6" cy="75.6" r="3" className="judy-pupil" />
+              <circle cx="121.4" cy="75.6" r="3" className="judy-pupil" />
+              <circle cx="96.0" cy="72.0" r="2.1" className="judy-catchlight" />
+              <circle cx="118.8" cy="72.0" r="2.1" className="judy-catchlight" />
+            </g>
+
+            <g className="judy-cheek">
+              <ellipse cx="90.2" cy="86.0" rx="6.8" ry="3.9" />
+              <ellipse cx="129.8" cy="86.0" rx="6.8" ry="3.9" />
+            </g>
+            <g className="judy-laugh-tears" aria-hidden="true">
+              <path d="M89 82c-3 5-3 8 0 10 3-2 3-5 0-10Z" />
+              <path d="M131 82c-3 5-3 8 0 10 3-2 3-5 0-10Z" />
+            </g>
+
+            <path d="M110 77.7 q2.08 6.24 0.52 9.36" className="judy-nose" />
+            <ellipse cx="110" cy="88.1" rx="3.1" ry="2.1" className="judy-nose-tip" />
+            <path d="M106.9 89.2 q1.56 1.56 2.6 0.52" className="judy-nostril" />
+            <path d="M113.1 89.2 q-1.56 1.56 -2.6 0.52" className="judy-nostril" />
+
+            <g className="judy-mouth-neutral">
+              <path d="M102.2 98 q7.8 5 15.6 0" />
+            </g>
+            <g className="judy-mouth-smile">
+              <path d="M102.2 97.5 q7.8 7.28 15.6 0" />
+              <path d="M105.3 102.7 q4.68 2.08 9.36 0" className="judy-lip-hi" />
+            </g>
+            <g className="judy-mouth-flat">
+              <path d="M102.2 100 h15.6" />
+            </g>
+            <g className="judy-mouth-o">
+              <ellipse cx="110" cy="99.6" rx="4.68" ry="6.24" />
+              <ellipse cx="110" cy="95.9" rx="3.38" ry="1.56" className="judy-mouth-hi" />
+            </g>
+            <g className="judy-mouth-laugh">
+              <path d="M98.6 96.4q11.4 17.2 22.8 0q-11.4 5.7-22.8 0Z" />
+              <path d="M101.2 97.1q8.8 4.4 17.6 0" />
+            </g>
+          </g>
+
+          <g className="judy-phone" aria-hidden="true">
+            <rect x="145" y="61" width="13" height="29" rx="3.3" className="judy-phone-body" />
+            <rect x="147" y="66" width="9" height="16" rx="1.5" className="judy-phone-screen" />
+            <circle cx="151.5" cy="64" r=".9" className="judy-phone-camera" />
+            <path d="M149.2 86h4.6" className="judy-phone-speaker" />
+          </g>
+
+          <g className="judy-sparkles" aria-hidden="true">
+            <path d="M40 108l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" />
+            <path d="M182 122l2.5 6 6 2.5-6 2.5-2.5 6-2.5-6-6-2.5 6-2.5z" />
+            <circle cx="28" cy="88" r="3" />
+            <circle cx="196" cy="100" r="4" />
+          </g>
+
+          <g className="judy-snack" aria-hidden="true">
+            <path d="M126 109q10-11 20 0z" className="judy-burger-bun" />
+            <path d="M125 110h22l-3 4h-16z" className="judy-burger-lettuce" />
+            <path d="M126 114h20v5h-20z" className="judy-burger-patty" />
+            <path d="M126 119h20q-10 7-20 0z" className="judy-burger-bun" />
+          </g>
+
+          <g className="judy-hunger-rumble" aria-hidden="true">
+            <path d="M96 174q7-5 14 0t14 0" />
+            <path d="M99 181q5-4 11 0t11 0" />
+          </g>
+
+          <g className="judy-catch-burger" aria-hidden="true">
+            <path d="M126 109q10-11 20 0z" className="judy-burger-bun" />
+            <path d="M125 110h22l-3 4h-16z" className="judy-burger-lettuce" />
+            <path d="M126 114h20v5h-20z" className="judy-burger-patty" />
+            <path d="M126 119h20q-10 7-20 0z" className="judy-burger-bun" />
+          </g>
+
+          <g className="judy-car" aria-hidden="true">
+            <path d="M48 263q3-15 16-20l21-7h50l21 7q13 5 16 20v19q0 7-7 7H55q-7 0-7-7z" className="judy-car-body" />
+            <path d="M79 242l11-17h40l11 17z" className="judy-car-windshield" />
+            <path d="M110 227v15" className="judy-car-divider" />
+            <circle cx="74" cy="289" r="13" className="judy-car-wheel" />
+            <circle cx="146" cy="289" r="13" className="judy-car-wheel" />
+            <circle cx="74" cy="289" r="5" className="judy-car-hub" />
+            <circle cx="146" cy="289" r="5" className="judy-car-hub" />
+            <circle cx="58" cy="263" r="4" className="judy-car-light" />
+            <circle cx="162" cy="263" r="4" className="judy-car-light" />
+            <circle cx="110" cy="218" r="15" className="judy-steering-wheel" />
+            <path d="M110 203v30M96 218h28" className="judy-steering-spokes" />
+          </g>
+        </svg>
+      </div>
+    </div>
+  )
+}

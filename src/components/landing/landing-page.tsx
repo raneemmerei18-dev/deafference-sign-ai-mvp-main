@@ -14,14 +14,15 @@ import { FAQ } from "./faq"
 import { Contact } from "./contact"
 import { CTA } from "./cta"
 import { Footer } from "./footer"
-import { MiraCompanion } from "./mira-companion"
+import { JudyCharacter } from "@/components/judy/judy-character"
 
 export function LandingPage() {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <MiraCompanion />
+    <div className="landing-pop relative min-h-dvh bg-background text-foreground">
+      <div aria-hidden="true" className="pop-particles pointer-events-none fixed inset-0 z-0 opacity-60" />
+      <JudyCharacter pose="idle" x={16} y={10} />
       <Navbar />
-      <main>
+      <main className="relative z-10">
         <Hero />
         <AboutUs />
         <WhyChooseUs />

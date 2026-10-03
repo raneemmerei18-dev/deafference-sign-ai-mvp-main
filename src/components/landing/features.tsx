@@ -2,12 +2,12 @@
 
 import { motion } from "framer-motion"
 import { BrainCircuit, Radio, ShieldCheck, type LucideIcon } from "lucide-react"
-import { Card } from "@/components/ui/card"
 import { Container } from "@/components/shared/container"
 import { SectionTitle } from "@/components/shared/section-title"
 import { IconBadge } from "@/components/shared/icon-badge"
 import { cn } from "@/lib/utils"
 import { FeatureCardGrid } from "@/components/landing/features/feature-card-grid"
+import { GlassPanel } from "./ui/pop"
 
 const TRUST_CAPABILITIES = [
   {
@@ -36,11 +36,18 @@ function FeatureCard({
   emphasized?: boolean
 }) {
   return (
-    <Card className={cn("h-full p-6", emphasized && "border-brand-red/20 bg-brand-orange/[0.04]")}>
-      <IconBadge icon={Icon} variant={emphasized ? "solid" : "tint"} />
-      <h4 className="mt-5 text-lg font-semibold text-foreground">{title}</h4>
-      <p className="mt-3 text-sm leading-7 text-muted-foreground">{description}</p>
-    </Card>
+    <GlassPanel
+      tilt
+      className={cn(
+        "relative h-full overflow-hidden p-6",
+        emphasized && "bg-gradient-to-br from-[color:var(--primary)]/6 via-transparent to-brand-orange/[0.05]",
+      )}
+    >
+      <div className="pointer-events-none absolute top-0 right-0 -mt-10 -mr-10 h-32 w-32 rounded-full bg-[color:var(--primary)]/12 blur-2xl" />
+      <IconBadge icon={Icon} variant={emphasized ? "solid" : "tint"} className="relative z-10" />
+      <h4 className="relative z-10 mt-5 text-lg font-semibold text-foreground">{title}</h4>
+      <p className="relative z-10 mt-3 text-sm leading-7 text-muted-foreground">{description}</p>
+    </GlassPanel>
   )
 }
 
@@ -49,9 +56,6 @@ export function Features() {
     <section
       id="features"
       className="py-24 sm:py-28"
-      data-mira-zone="0.3"
-      data-mira-mood="happy"
-      data-mira-line="Built for real conversations."
     >
       <Container>
         <SectionTitle
@@ -82,23 +86,26 @@ export function Features() {
           transition={{ duration: 0.55, ease: "easeOut", delay: 0.05 }}
           className="mt-6"
         >
-          <Card className="relative overflow-hidden border-foreground/10 bg-foreground p-6 text-background sm:p-8">
-            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <GlassPanel className="relative overflow-hidden p-6 sm:p-8">
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[color:var(--primary)]/10 via-transparent to-[color:var(--pop-lavender)]/10" />
+            <div className="pointer-events-none absolute -top-10 -right-10 h-56 w-56 rounded-full bg-[color:var(--primary)]/18 blur-3xl" />
+            <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="flex items-start gap-4">
-                <IconBadge icon={Radio} variant="solid" className="bg-background/15" />
+                <IconBadge icon={Radio} variant="solid" />
                 <div>
-                  <h3 className="text-lg font-semibold sm:text-xl">Live Translation</h3>
-                  <p className="mt-2 max-w-xl text-sm leading-7 text-background/75 sm:text-base">
+                  <h3 className="text-lg font-semibold text-foreground sm:text-xl">Live Translation</h3>
+                  <p className="mt-2 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
                     A low-latency, continuous, bi-directional stream — so a conversation flows both
                     ways at once instead of taking turns waiting on a translation.
                   </p>
                 </div>
               </div>
-              <span className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-background/10 px-3 py-1.5 text-xs font-semibold text-background">
+              <span className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-[color:var(--primary)]/10 px-3 py-1.5 text-xs font-semibold text-[color:var(--primary)]">
+                <span className="pop-pulse size-1.5 rounded-full bg-brand-orange" />
                 &lt; 300ms round-trip
               </span>
             </div>
-          </Card>
+          </GlassPanel>
         </motion.div>
 
         <div className="mt-12">

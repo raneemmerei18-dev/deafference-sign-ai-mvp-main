@@ -18,8 +18,8 @@ export function CalmModeToggle({ className }: { className?: string }) {
       aria-checked={calm}
       onClick={() => setCalm((v) => !v)}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border border-black/8 bg-white/70 px-3 py-1.5 text-sm font-medium text-foreground/80 shadow-sm backdrop-blur-sm transition-colors hover:text-foreground",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "glass-pop inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         className,
       )}
     >
@@ -28,7 +28,7 @@ export function CalmModeToggle({ className }: { className?: string }) {
       <span
         className={cn(
           "relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-300",
-          calm ? "bg-brand-navy" : "bg-black/15",
+          calm ? "bg-[color:var(--primary)]" : "bg-[color:var(--primary)]/15",
         )}
       >
         <motion.span

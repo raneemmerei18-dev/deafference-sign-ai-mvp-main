@@ -26,14 +26,14 @@ export function SignToTextIllustration({ reducedMotion = false }: { reducedMotio
                     scale: [0.95, 1.05, 0.95],
                     boxShadow: [
                       "0 2px 6px rgba(0,0,0,0.1)",
-                      "0 4px 12px rgba(238,108,43,0.3)",
+                      "0 4px 12px rgba(255,138,61,0.3)",
                       "0 2px 6px rgba(0,0,0,0.1)",
                     ],
                   }
             }
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
           >
-            <span className="h-1.5 w-1.5 animate-ping rounded-full bg-[#EE6C2B]" />
+            <span className="h-1.5 w-1.5 animate-ping rounded-full bg-brand-orange" />
             <span>SIGN IN</span>
           </motion.div>
 
@@ -47,7 +47,7 @@ export function SignToTextIllustration({ reducedMotion = false }: { reducedMotio
                     scale: [0.9, 1.04, 0.9],
                     boxShadow: [
                       "0 2px 6px rgba(0,0,0,0.1)",
-                      "0 4px 12px rgba(56,189,248,0.3)",
+                      "0 4px 12px rgba(59,130,246,0.35)",
                       "0 2px 6px rgba(0,0,0,0.1)",
                     ],
                   }
@@ -78,7 +78,7 @@ export function SignToTextIllustration({ reducedMotion = false }: { reducedMotio
 
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
             <motion.div
-              className="h-full rounded-full bg-amber-500"
+              className="h-full rounded-full bg-sky-400"
               animate={
                 reducedMotion
                   ? { width: "80%" }

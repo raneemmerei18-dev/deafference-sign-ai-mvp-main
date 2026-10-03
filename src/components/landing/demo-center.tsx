@@ -19,9 +19,12 @@ import {
 import { Container } from "@/components/shared/container"
 import { APP_ROUTES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import { GlowOrb, Magnetic, PopEyebrow, Reveal, focusRingPop } from "./ui/pop"
 
-const FOCUS_RING =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+const FOCUS_RING = focusRingPop
+
+const PRIMARY_BUTTON =
+  "inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#3B82F6] font-bold text-white shadow-[0_18px_36px_-14px_rgba(37,99,235,0.5)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_44px_-14px_rgba(37,99,235,0.6)]"
 
 const DEMO_STEPS = [
   { label: "Speech detected", caption: "“Where is the nearest exit?”" },
@@ -104,9 +107,12 @@ function FlagshipDemo() {
   }
 
   return (
-    <article aria-labelledby="flagship-demo-heading" className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-6 shadow-[0_30px_80px_-28px_rgba(0,0,0,0.5)] sm:p-8">
+    <article
+      aria-labelledby="flagship-demo-heading"
+      className="glass-pop glow-border-pop relative overflow-hidden rounded-3xl p-6 sm:p-8"
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 id="flagship-demo-heading" className="text-lg font-bold text-white sm:text-xl">
+        <h3 id="flagship-demo-heading" className="text-lg font-bold text-brand-navy sm:text-xl">
           Real-Time Sign Translation
         </h3>
         <span className="inline-flex items-center rounded-full bg-brand-orange/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-orange">
@@ -120,7 +126,7 @@ function FlagshipDemo() {
             {WAVE_BARS.map((h, i) => (
               <motion.span
                 key={i}
-                className="w-1.5 rounded-full bg-brand-orange"
+                className="w-1.5 rounded-full bg-[color:var(--primary)]"
                 style={{ height: h }}
                 animate={playing ? { scaleY: [1, 1.6, 0.7, 1] } : { scaleY: 0.5 }}
                 transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.06, ease: "easeInOut" }}
@@ -128,48 +134,61 @@ function FlagshipDemo() {
             ))}
           </div>
 
-          <div className="mt-6 space-y-3">
+          {/* Progress indicator synced to the active demo step */}
+          <div
+            className="mt-5 h-1.5 w-full overflow-hidden rounded-full bg-[color:var(--primary)]/10"
+            role="progressbar"
+            aria-label="Demo progress"
+            aria-valuemin={1}
+            aria-valuemax={DEMO_STEPS.length}
+            aria-valuenow={step + 1}
+          >
+            <motion.div
+              className="h-full rounded-full bg-gradient-to-r from-[#2563EB] to-[#3B82F6]"
+              animate={{ width: `${((step + 1) / DEMO_STEPS.length) * 100}%` }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            />
+          </div>
+
+          <div className="mt-5 space-y-3">
             {DEMO_STEPS.map((s, i) => (
               <div
                 key={s.label}
                 className={cn(
                   "flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors duration-300",
-                  i === step ? "border-brand-orange/50 bg-brand-orange/10" : "border-white/5 bg-black/20 opacity-50",
+                  i === step
+                    ? "border-[color:var(--primary)]/35 bg-[color:var(--primary)]/8"
+                    : "border-border bg-muted/40 opacity-60",
                 )}
               >
                 <span
                   className={cn(
-                    "flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
-                    i === step ? "bg-brand-orange text-white" : "bg-white/10 text-slate-400",
+                    "flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-colors",
+                    i === step ? "bg-[color:var(--primary)] text-white" : "bg-[color:var(--primary)]/10 text-muted-foreground",
                   )}
                 >
                   {i + 1}
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-white">{s.label}</p>
-                  {captionsOn ? <p className="text-xs text-slate-400">{s.caption}</p> : null}
+                  <p className="text-sm font-semibold text-brand-navy">{s.label}</p>
+                  {captionsOn ? <p className="text-xs text-muted-foreground">{s.caption}</p> : null}
                 </div>
               </div>
             ))}
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={handlePlay}
-              className={cn(
-                "brand-gradient inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-bold text-white transition-all hover:brightness-110",
-                FOCUS_RING,
-              )}
-            >
-              {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
-              {playing ? "Pause" : step >= DEMO_STEPS.length - 1 && !playing ? "Replay" : "Play demo"}
-            </button>
+            <Magnetic>
+              <button type="button" onClick={handlePlay} className={cn(PRIMARY_BUTTON, "h-11 px-5 text-sm", FOCUS_RING)}>
+                {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
+                {playing ? "Pause" : step >= DEMO_STEPS.length - 1 && !playing ? "Replay" : "Play demo"}
+              </button>
+            </Magnetic>
             <button
               type="button"
               onClick={handleReplay}
               className={cn(
-                "inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-700 px-4 text-sm font-medium text-slate-300 transition-colors hover:border-slate-500 hover:text-white",
+                "inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border px-4 text-sm font-medium text-muted-foreground transition-colors hover:border-[color:var(--primary)]/35 hover:text-brand-navy",
                 FOCUS_RING,
               )}
             >
@@ -182,7 +201,9 @@ function FlagshipDemo() {
               aria-pressed={captionsOn}
               className={cn(
                 "inline-flex h-11 items-center justify-center gap-2 rounded-xl border px-4 text-sm font-medium transition-colors",
-                captionsOn ? "border-brand-orange/40 bg-brand-orange/10 text-brand-orange" : "border-slate-700 text-slate-400 hover:text-white",
+                captionsOn
+                  ? "border-brand-orange/40 bg-brand-orange/10 text-brand-orange"
+                  : "border-border text-muted-foreground hover:text-brand-navy",
                 FOCUS_RING,
               )}
             >
@@ -192,7 +213,8 @@ function FlagshipDemo() {
           </div>
         </div>
 
-        <figure className="rounded-2xl border border-white/10 bg-black/30 p-6">
+        {/* Inset device-style preview screen — deliberately kept dark for contrast, like a real screen mockup */}
+        <figure className="rounded-2xl border border-white/10 bg-[#0b1220] p-6 shadow-[0_20px_50px_-24px_rgba(15,23,42,0.5)]">
           <figcaption className="text-[11px] font-medium tracking-[0.2em] text-slate-400 uppercase">
             Sign output preview
           </figcaption>
@@ -237,17 +259,18 @@ function MediaCard({ item }: { item: MediaItem }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
+      className="glass-pop group flex flex-col overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--pop-glow)]"
     >
-      <figure className="relative m-0 aspect-video overflow-hidden bg-slate-900">
+      {/* Inset device-style preview screen — deliberately kept dark, like a real screen mockup */}
+      <figure className="relative m-0 aspect-video overflow-hidden bg-[#0b1220]">
         <div
           aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_50%_40%,_rgba(240,165,28,0.18),_transparent_60%)]"
+          className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_50%_40%,_rgba(59,130,246,0.22),_transparent_60%)]"
         >
           <Icon
             className={cn(
-              "size-10 text-brand-orange/40 transition-transform duration-500",
-              isPlaying && "scale-110 text-brand-orange/70",
+              "size-10 text-[color:var(--primary)]/45 transition-transform duration-500",
+              isPlaying && "scale-110 text-[color:var(--primary)]/80",
             )}
           />
         </div>
@@ -259,7 +282,7 @@ function MediaCard({ item }: { item: MediaItem }) {
           aria-label={`${isPlaying ? "Pause" : "Play"} preview: ${item.title}`}
           className={cn("absolute inset-0 flex items-center justify-center bg-black/20 transition-colors hover:bg-black/10", FOCUS_RING)}
         >
-          <span className="flex size-14 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-lg transition-transform hover:scale-105">
+          <span className="flex size-14 items-center justify-center rounded-full bg-white/95 text-brand-navy shadow-lg transition-transform group-hover:scale-105 hover:scale-105">
             {isPlaying ? (
               <Pause className="size-6" fill="currentColor" />
             ) : (
@@ -282,8 +305,8 @@ function MediaCard({ item }: { item: MediaItem }) {
       </figure>
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-base font-bold text-white">{item.title}</h3>
-        <p className="mt-2 text-sm leading-6 text-slate-300">{item.description}</p>
+        <h3 className="text-base font-bold text-brand-navy">{item.title}</h3>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
       </div>
     </motion.article>
   )
@@ -333,7 +356,7 @@ function DemoCenterTabs() {
   return (
     <div>
       <nav aria-label="Demo center categories">
-        <div role="tablist" aria-label="Demo center categories" className="flex flex-wrap gap-2">
+        <div role="tablist" aria-label="Demo center categories" className="glass-pop inline-flex flex-wrap gap-1.5 rounded-full p-1.5">
           {TABS.map((tab, index) => {
             const selected = tab.key === active
             return (
@@ -351,10 +374,10 @@ function DemoCenterTabs() {
                 onClick={() => setActive(tab.key)}
                 onKeyDown={(event) => handleKeyDown(event, index)}
                 className={cn(
-                  "rounded-full border px-4 py-2 text-sm font-semibold whitespace-nowrap transition-colors",
+                  "rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-colors",
                   selected
-                    ? "border-brand-orange/50 bg-brand-orange/15 text-brand-orange"
-                    : "border-slate-700 text-slate-300 hover:border-slate-600 hover:text-white",
+                    ? "bg-[color:var(--primary)] text-white shadow-[0_8px_20px_-8px_rgba(59,130,246,0.6)]"
+                    : "text-muted-foreground hover:text-brand-navy",
                   FOCUS_RING,
                 )}
               >
@@ -409,32 +432,23 @@ export function DemoCenter() {
   return (
     <section
       id="demo"
-      className="relative overflow-hidden bg-slate-950 py-24 sm:py-28"
-      data-mira-zone="0.78"
-      data-mira-mood="listen"
-      data-mira-line="Watch it translate live."
+      className="pop-atmosphere relative overflow-hidden py-24 sm:py-28"
     >
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_50%_100%,_rgba(240,165,28,0.16),_transparent_50%)]" />
+      <div className="pop-grid pointer-events-none absolute inset-0 -z-10 opacity-[0.05]" aria-hidden="true" />
+      <GlowOrb className="top-0 -right-24 size-[26rem] pop-float" color="rgba(59,130,246,0.16)" />
+      <GlowOrb className="-bottom-24 -left-16 size-[24rem] pop-float-delay" color="rgba(127,224,224,0.18)" />
 
       <Container>
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.55, ease: "easeOut" }}
-          className="max-w-2xl"
-        >
-          <span className="inline-flex items-center gap-2 rounded-full border border-brand-orange/30 bg-brand-red/10 px-3 py-1.5 text-xs font-semibold tracking-[0.2em] text-brand-orange uppercase">
-            ▶ Demo center
-          </span>
-          <h2 className="mt-5 text-3xl font-bold tracking-tight text-balance text-white sm:text-4xl">
+        <Reveal className="max-w-2xl">
+          <PopEyebrow>▶ Demo center</PopEyebrow>
+          <h2 className="mt-5 text-3xl font-bold tracking-tight text-balance text-brand-navy sm:text-4xl">
             See it in action, then explore how to set it up.
           </h2>
-          <p className="mt-4 text-base leading-7 text-slate-300">
+          <p className="mt-4 text-base leading-7 text-muted-foreground">
             Interactive product walkthroughs and step-by-step setup tutorials — no microphone or
             account required to preview.
           </p>
-        </motion.div>
+        </Reveal>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -451,25 +465,21 @@ export function DemoCenter() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-          className="mt-10 flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-center sm:p-8"
+          className="glass-pop glow-border-pop mt-10 flex flex-col items-center gap-3 rounded-3xl p-6 text-center sm:p-8"
         >
-          <p className="text-base font-semibold text-white sm:text-lg">
+          <p className="text-base font-semibold text-brand-navy sm:text-lg">
             Ready to go beyond the preview?
           </p>
-          <p className="max-w-md text-sm leading-6 text-slate-300">
+          <p className="max-w-md text-sm leading-6 text-muted-foreground">
             Launch the full live demo sandbox and try real-time translation with your own voice or
             camera.
           </p>
-          <Link
-            href={APP_ROUTES.translate}
-            className={cn(
-              "brand-gradient mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-base font-bold text-white transition-all hover:brightness-110",
-              FOCUS_RING,
-            )}
-          >
-            Launch the demo sandbox
-            <ArrowRight className="size-4" />
-          </Link>
+          <Magnetic className="mt-2">
+            <Link href={APP_ROUTES.translate} className={cn(PRIMARY_BUTTON, "h-12 px-6 text-base", FOCUS_RING)}>
+              Launch the demo sandbox
+              <ArrowRight className="size-4" />
+            </Link>
+          </Magnetic>
         </motion.div>
       </Container>
     </section>

@@ -10,7 +10,7 @@ const WAVEFORM_HEIGHTS = [
   [20, 60, 90, 40, 95, 30, 75, 20],
 ]
 
-const COLORS = ["#EAB308", "#FACC15", "#38BDF8", "#0284C7", "#EAB308", "#0284C7", "#FACC15", "#0369A1"]
+const COLORS = ["#93C5FD", "#60A5FA", "#3B82F6", "#2563EB", "#FF8A3D", "#2563EB", "#60A5FA", "#1D4ED8"]
 
 export function SignToSpeechIllustration({ reducedMotion = false }: { reducedMotion?: boolean }) {
   const duration = 2.0
@@ -31,7 +31,7 @@ export function SignToSpeechIllustration({ reducedMotion = false }: { reducedMot
               cx="95"
               cy="90"
               r="14"
-              stroke="#FACC15"
+              stroke="#FF8A3D"
               strokeWidth="2"
               fill="none"
               animate={{ scale: [0.9, 1.3, 0.9], opacity: [0.2, 0.8, 0.2] }}
@@ -41,7 +41,7 @@ export function SignToSpeechIllustration({ reducedMotion = false }: { reducedMot
               cx="135"
               cy="115"
               r="14"
-              stroke="#38BDF8"
+              stroke="#3B82F6"
               strokeWidth="2"
               fill="none"
               animate={{ scale: [0.9, 1.3, 0.9], opacity: [0.2, 0.8, 0.2] }}

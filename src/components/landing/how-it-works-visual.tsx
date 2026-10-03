@@ -5,9 +5,9 @@ import { motion } from "framer-motion"
 import { ArrowRight, Mic } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { cn } from "@/lib/utils"
+import { GlowOrb, PopEyebrow, Reveal, focusRingPop } from "./ui/pop"
 
-const FOCUS_RING =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+const FOCUS_RING = focusRingPop
 
 const WAVE_BARS = [8, 16, 11, 20, 13, 18, 9, 15] as const
 
@@ -58,13 +58,13 @@ function AIProcessingVisual({ active }: { active: boolean }) {
             y1={50}
             x2={x}
             y2={y}
-            stroke="var(--brand-orange)"
+            stroke="var(--primary)"
             strokeWidth="1.5"
             animate={active ? { opacity: [0.15, 0.9, 0.15] } : { opacity: 0.15 }}
             transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.25, ease: "easeInOut" }}
           />
         ))}
-        <circle cx={50} cy={50} r={9} fill="var(--brand-orange)" />
+        <circle cx={50} cy={50} r={9} fill="var(--primary)" />
         {nodes.map(([x, y], i) => (
           <circle key={i} cx={x} cy={y} r={5} fill="var(--brand-red)" fillOpacity={0.85} />
         ))}
@@ -77,24 +77,24 @@ function SignStreamVisual({ active }: { active: boolean }) {
   return (
     <div className="flex h-24 items-center justify-center" aria-hidden="true">
       <svg width="72" height="88" viewBox="0 0 72 88" fill="none">
-        <circle cx="36" cy="20" r="16" fill="white" fillOpacity="0.14" />
+        <circle cx="36" cy="20" r="16" fill="var(--brand-navy)" fillOpacity="0.12" />
         <path
           d="M8 84c0-24 8-38 28-38s28 14 28 38"
-          stroke="white"
-          strokeOpacity="0.14"
+          stroke="var(--brand-navy)"
+          strokeOpacity="0.12"
           strokeWidth="14"
           strokeLinecap="round"
         />
         <motion.path
           d="M40 48c8-6 16-6 20-14"
-          stroke="var(--brand-orange)"
+          stroke="var(--primary)"
           strokeWidth="3.5"
           strokeLinecap="round"
           fill="none"
           animate={active ? { pathLength: [0, 1, 1, 0] } : { pathLength: 0.6 }}
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
         />
-        <circle cx="60" cy="34" r="4" fill="var(--brand-orange)" />
+        <circle cx="60" cy="34" r="4" fill="var(--primary)" />
       </svg>
     </div>
   )
@@ -128,6 +128,63 @@ const STAGES = [
   },
 ] as const
 
+/** Animated connector that sits in the gap between two stages: a traveling
+ * glow dot along a dashed line, plus a pulsing arrow node. Horizontal on
+ * desktop (left-to-right flow), vertical on mobile (top-to-bottom flow). */
+function StageConnector({ active }: { active: boolean }) {
+  return (
+    <>
+      {/* Desktop: horizontal connector in the gap to the right of the card */}
+      <div
+        className="pointer-events-none absolute top-16 -right-4 z-20 hidden w-8 -translate-y-1/2 md:block"
+        aria-hidden="true"
+      >
+        <div className="relative h-px w-full overflow-visible rounded-full bg-gradient-to-r from-[color:var(--primary)]/10 via-[color:var(--primary)]/45 to-[color:var(--primary)]/10">
+          <motion.span
+            className="absolute top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[color:var(--primary)] shadow-[0_0_10px_2px_rgba(59,130,246,0.7)]"
+            animate={{ left: ["0%", "95%"], opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+        <motion.span
+          animate={active ? { scale: [1, 1.15, 1] } : { scale: 1 }}
+          transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+          className={cn(
+            "glass-pop absolute top-1/2 left-1/2 flex size-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-[color:var(--primary)] transition-colors",
+            active && "pop-pulse",
+          )}
+        >
+          <ArrowRight className="size-4" />
+        </motion.span>
+      </div>
+
+      {/* Mobile: vertical connector below the card */}
+      <div
+        className="pointer-events-none absolute -bottom-8 left-1/2 z-20 block h-8 w-px -translate-x-1/2 md:hidden"
+        aria-hidden="true"
+      >
+        <div className="relative h-full w-px overflow-visible rounded-full bg-gradient-to-b from-[color:var(--primary)]/10 via-[color:var(--primary)]/45 to-[color:var(--primary)]/10">
+          <motion.span
+            className="absolute left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-[color:var(--primary)] shadow-[0_0_10px_2px_rgba(59,130,246,0.7)]"
+            animate={{ top: ["0%", "95%"], opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+        <motion.span
+          animate={active ? { scale: [1, 1.15, 1] } : { scale: 1 }}
+          transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+          className={cn(
+            "glass-pop absolute top-1/2 left-1/2 flex size-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-[color:var(--primary)] transition-colors",
+            active && "pop-pulse",
+          )}
+        >
+          <ArrowRight className="size-3.5 rotate-90" />
+        </motion.span>
+      </div>
+    </>
+  )
+}
+
 export function HowItWorksVisual() {
   const [active, setActive] = useState(0)
   const [locked, setLocked] = useState(false)
@@ -141,30 +198,21 @@ export function HowItWorksVisual() {
   return (
     <section
       id="how-it-works"
-      className="relative overflow-hidden bg-[#090D16] py-24 sm:py-28"
-      data-mira-zone="0.2"
-      data-mira-mood="think"
-      data-mira-line="Three steps, both directions."
+      className="pop-atmosphere relative overflow-hidden py-24 sm:py-28"
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[30rem] bg-[radial-gradient(circle_at_50%_0%,_rgba(240,165,28,0.16),_transparent_50%)]" />
+      <div className="pop-grid pointer-events-none absolute inset-0 -z-10 opacity-[0.05]" aria-hidden="true" />
+      <GlowOrb className="-top-20 -left-16 size-[24rem] pop-float" color="rgba(59,130,246,0.16)" />
+      <GlowOrb className="top-24 -right-24 size-[26rem] pop-float-delay" color="rgba(167,180,255,0.18)" />
 
       <Container>
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.55, ease: "easeOut" }}
-          className="max-w-2xl"
-        >
-          <span className="inline-flex items-center gap-2 rounded-full border border-brand-orange/30 bg-brand-red/10 px-3 py-1.5 text-xs font-semibold tracking-[0.2em] text-brand-orange uppercase shadow-[0_0_24px_-6px_rgba(240,165,28,0.5)]">
-            ⚡ Pipeline architecture
-          </span>
-          <h2 className="mt-5 text-3xl font-bold tracking-tight text-balance text-white sm:text-4xl">
+        <Reveal className="max-w-2xl">
+          <PopEyebrow>⚡ Pipeline architecture</PopEyebrow>
+          <h2 className="mt-5 text-3xl font-bold tracking-tight text-balance text-brand-navy sm:text-4xl">
             3 steps from spoken word to visual sign.
           </h2>
-        </motion.div>
+        </Reveal>
 
-        <div className="relative mt-14 grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="relative mt-16 grid grid-cols-1 gap-14 md:grid-cols-3 md:gap-8">
           {STAGES.map((stage, i) => {
             const isActive = active === i
             const Visual = stage.Visual
@@ -180,54 +228,55 @@ export function HowItWorksVisual() {
                 }}
                 aria-current={isActive ? "step" : undefined}
                 className={cn(
-                  "group relative rounded-2xl border p-6 text-left transition-all duration-300",
+                  "glass-pop group relative rounded-3xl border p-6 text-left transition-all duration-300",
                   isActive
-                    ? "border-brand-orange/60 bg-slate-900/80 shadow-xl shadow-brand-orange/10"
-                    : "border-slate-800 bg-slate-900/40 hover:border-slate-700",
+                    ? "border-[color:var(--primary)]/45 shadow-[var(--pop-glow)]"
+                    : "border-transparent hover:border-[color:var(--primary)]/20 hover:-translate-y-1",
                   FOCUS_RING,
                 )}
               >
-                {/* connector to next stage */}
-                {i < STAGES.length - 1 && (
-                  <span
-                    className="pointer-events-none absolute top-1/2 -right-4 z-10 hidden -translate-y-1/2 md:block"
-                    aria-hidden="true"
+                {i < STAGES.length - 1 && <StageConnector active={isActive} />}
+
+                <div className="flex items-center gap-3">
+                  <motion.span
+                    animate={
+                      isActive
+                        ? { scale: [1, 1.08, 1], opacity: 1 }
+                        : { scale: 1, opacity: 0.7 }
+                    }
+                    transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                    className={cn(
+                      "relative flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-bold",
+                      isActive
+                        ? "bg-[color:var(--primary)] text-white shadow-[0_0_0_6px_rgba(59,130,246,0.14)]"
+                        : "bg-[color:var(--primary)]/10 text-[color:var(--primary)]",
+                    )}
                   >
-                    <motion.span
-                      animate={isActive ? { x: [0, 4, 0], opacity: [0.5, 1, 0.5] } : { opacity: 0.3 }}
-                      transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-                      className="flex size-8 items-center justify-center rounded-full border border-slate-700 bg-[#090D16] text-brand-orange"
-                    >
-                      <ArrowRight className="size-4" />
-                    </motion.span>
-                  </span>
-                )}
-
-                <Visual active={isActive} />
-
-                <div className="mt-4 flex items-center gap-2">
+                    {stage.index}
+                  </motion.span>
                   <span className="text-xl" aria-hidden="true">
                     {stage.emoji}
                   </span>
-                  <h3 className="text-lg font-bold text-white">
-                    {stage.index}. {stage.title}
-                  </h3>
                 </div>
-                <p className="mt-2 text-sm leading-6 text-slate-300">{stage.caption}</p>
+
+                <Visual active={isActive} />
+
+                <h3 className="mt-2 text-lg font-bold text-brand-navy">{stage.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{stage.caption}</p>
 
                 <div
                   className={cn(
                     "mt-4 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold transition-colors",
                     isActive
-                      ? "border-brand-orange/50 bg-brand-orange/10 text-brand-orange"
-                      : "border-slate-700 text-slate-400",
+                      ? "border-[color:var(--primary)]/35 bg-[color:var(--primary)]/10 text-[color:var(--primary)]"
+                      : "border-border text-muted-foreground",
                   )}
                 >
                   {"terminal" in stage && stage.terminal ? (
                     <>
                       <span className="relative flex size-1.5">
-                        <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                        <span className="relative inline-flex size-1.5 rounded-full bg-emerald-400" />
+                        <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+                        <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
                       </span>
                       {stage.tag}
                     </>

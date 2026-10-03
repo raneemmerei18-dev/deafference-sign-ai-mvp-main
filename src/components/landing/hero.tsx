@@ -6,9 +6,9 @@ import { ArrowRight, Check, Play } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { APP_ROUTES } from "@/lib/constants"
 import { HeroIllustration } from "./hero-illustration"
+import { GlowOrb, Magnetic, focusRingPop } from "./ui/pop"
 
-const FOCUS_RING =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+const FOCUS_RING = focusRingPop
 
 const HEADLINE_WORDS = ["BREAKING", "COMMUNICATION", "BARRIERS"]
 
@@ -27,18 +27,12 @@ export function Hero() {
   return (
     <section
       id="top"
-      className="relative overflow-hidden bg-[#FAF8F4] pt-16 sm:pt-24"
-      data-mira-zone="0.62"
-      data-mira-mood="happy"
-      data-mira-line="Hi — I'm Mira. I'll walk you through it."
+      className="pop-atmosphere relative overflow-hidden pt-16 sm:pt-24"
     >
-      {/* Very light radial glow behind the hero object -- almost no visible gradients elsewhere */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[40rem] bg-[radial-gradient(circle_at_75%_20%,_rgba(255,122,26,0.1),_transparent_50%)]" />
-      <div
-        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.035]"
-        style={{ backgroundImage: "radial-gradient(rgba(14,35,68,0.6) 1px, transparent 1px)", backgroundSize: "22px 22px" }}
-        aria-hidden="true"
-      />
+      <div className="pop-grid pointer-events-none absolute inset-0 -z-10 opacity-[0.05]" aria-hidden="true" />
+      <GlowOrb className="-top-24 -left-24 size-[26rem] pop-float" color="rgba(59,130,246,0.22)" />
+      <GlowOrb className="top-10 -right-32 size-[30rem] pop-float-delay" color="rgba(167,180,255,0.22)" />
+      <GlowOrb className="bottom-0 left-1/3 size-72" color="rgba(255,138,61,0.12)" />
 
       <Container className="pb-24 sm:pb-32">
         <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-12">
@@ -47,7 +41,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="inline-flex items-center gap-2 rounded-full border border-black/8 bg-white px-3 py-1.5 text-xs font-medium text-brand-navy shadow-sm"
+              className="glass-pop inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-brand-navy"
             >
               <span className="relative flex size-2">
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-orange opacity-75" />
@@ -64,7 +58,10 @@ export function Hero() {
             >
               {HEADLINE_WORDS.map((word, i) => (
                 <span key={word} className="inline-block overflow-hidden align-bottom">
-                  <motion.span variants={headlineWord} className="inline-block">
+                  <motion.span
+                    variants={headlineWord}
+                    className={i === HEADLINE_WORDS.length - 1 ? "pop-gradient-text inline-block" : "inline-block"}
+                  >
                     {word}
                     {i < HEADLINE_WORDS.length - 1 ? " " : ""}
                   </motion.span>
@@ -89,21 +86,20 @@ export function Hero() {
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.65 }}
               className="mt-9 flex flex-col gap-3 sm:flex-row"
             >
-              <Link
-                href={APP_ROUTES.translate}
-                data-mira-say="This is the one."
-                data-mira-cheer=""
-                className={`group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-brand-navy px-6 text-base font-bold text-white shadow-[0_18px_36px_-14px_rgba(14,35,68,0.55)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_44px_-14px_rgba(14,35,68,0.6)] ${FOCUS_RING}`}
-              >
-                Request a demo
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
+              <Magnetic>
+                <Link
+                  href={APP_ROUTES.translate}
+                  className={`group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#3B82F6] px-6 text-base font-bold text-white shadow-[0_18px_36px_-14px_rgba(37,99,235,0.55)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_44px_-14px_rgba(37,99,235,0.65)] ${FOCUS_RING}`}
+                >
+                  Request a demo
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Magnetic>
               <a
                 href="#demo"
-                data-mira-say="Good idea — let's look."
-                className={`group inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-brand-navy/20 px-6 text-base font-medium text-brand-navy transition-all hover:-translate-y-0.5 hover:border-brand-navy/40 hover:bg-brand-navy/[0.03] hover:shadow-[0_14px_28px_-16px_rgba(14,35,68,0.35)] ${FOCUS_RING}`}
+                className={`glass-pop group inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-base font-medium text-brand-navy transition-all hover:-translate-y-0.5 ${FOCUS_RING}`}
               >
-                <Play className="size-4 fill-current" />
+                <Play className="size-4 fill-current text-brand-orange" />
                 Watch it in action
               </a>
               <Link
@@ -123,7 +119,7 @@ export function Hero() {
               {TRUST_BADGES.map((label) => (
                 <span
                   key={label}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-black/8 bg-white/70 px-3.5 py-1.5 text-xs font-medium text-muted-foreground"
+                  className="glass-pop inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium text-muted-foreground"
                 >
                   <Check className="size-3.5 text-brand-orange" />
                   {label}
@@ -136,7 +132,28 @@ export function Hero() {
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
+            className="relative"
           >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 1.1 }}
+              className="glass-pop pop-float absolute -top-4 left-2 z-40 hidden rounded-2xl px-3.5 py-2 sm:block"
+            >
+              <p className="text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">Latency</p>
+              <p className="text-sm font-bold text-brand-navy">
+                0.3s <span className="text-brand-orange">live</span>
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 1.3 }}
+              className="glass-pop pop-float-delay absolute -bottom-3 right-0 z-40 hidden rounded-2xl px-3.5 py-2 sm:block"
+            >
+              <p className="text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">On-device</p>
+              <p className="text-sm font-bold text-brand-navy">100% private</p>
+            </motion.div>
             <HeroIllustration />
           </motion.div>
         </div>

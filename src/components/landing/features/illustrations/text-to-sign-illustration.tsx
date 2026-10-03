@@ -21,7 +21,7 @@ export function TextToSignIllustration({ reducedMotion = false }: { reducedMotio
       <div className="absolute inset-0 h-full w-full">
         {!reducedMotion && (
           <motion.div
-            className="absolute top-[68%] left-[45%] h-[15%] w-[25%] rounded-md bg-amber-300/30 blur-[2px]"
+            className="absolute top-[68%] left-[45%] h-[15%] w-[25%] rounded-md bg-sky-300/30 blur-[2px]"
             animate={{ opacity: [0.2, 0.8, 0.3, 0.9, 0.2], scale: [0.95, 1.05, 0.98, 1.02, 0.95] }}
             transition={{ repeat: Infinity, duration: 0.35, ease: "easeInOut" }}
           />
@@ -44,7 +44,7 @@ export function TextToSignIllustration({ reducedMotion = false }: { reducedMotio
 
           <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
             <motion.div
-              className="h-full rounded-full bg-amber-500"
+              className="h-full rounded-full bg-blue-400"
               animate={reducedMotion ? { width: "65%" } : { width: LINE_2_WIDTH.map((w) => `${w}%`) }}
               transition={{ repeat: Infinity, duration, ease: "easeOut" }}
             />
@@ -60,7 +60,7 @@ export function TextToSignIllustration({ reducedMotion = false }: { reducedMotio
 
           {!reducedMotion && (
             <motion.div
-              className="h-2 w-1 rounded-sm bg-[#EE6C2B]"
+              className="h-2 w-1 rounded-sm bg-brand-orange"
               animate={{ opacity: [1, 0, 1] }}
               transition={{ repeat: Infinity, duration: 0.8 }}
             />

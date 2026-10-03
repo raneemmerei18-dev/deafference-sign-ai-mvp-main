@@ -1,15 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import Link from "next/link"
 import { Building, Building2, Check, HeartPulse, UserRound, type LucideIcon } from "lucide-react"
-import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Container } from "@/components/shared/container"
 import { SectionTitle } from "@/components/shared/section-title"
 import { APP_ROUTES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import { GlassPanel, GlowOrb, Magnetic, staggerContainer, staggerItem } from "./ui/pop"
 
 const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -97,7 +97,7 @@ function BillingToggle({ billing, onChange }: { billing: Billing; onChange: (bil
   const isAnnual = billing === "annual"
 
   return (
-    <div className="mt-8 flex items-center justify-center gap-3">
+    <div className="glass-pop mx-auto mt-8 flex w-fit items-center gap-3 rounded-full px-5 py-2.5">
       <span className={cn("text-sm font-medium transition-colors", !isAnnual ? "text-foreground" : "text-muted-foreground")}>
         Monthly
       </span>
@@ -109,7 +109,7 @@ function BillingToggle({ billing, onChange }: { billing: Billing; onChange: (bil
         onClick={() => onChange(isAnnual ? "monthly" : "annual")}
         className={cn(
           "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors",
-          isAnnual ? "bg-brand-red" : "bg-muted-foreground/30",
+          isAnnual ? "bg-blue-accent" : "bg-muted-foreground/30",
           FOCUS_RING,
         )}
       >
@@ -135,12 +135,16 @@ export function Pricing() {
     <section
       id="pricing"
       aria-labelledby="pricing-heading"
-      className="border-y border-border/60 bg-muted/20 py-24 sm:py-28"
-      data-mira-zone="0.15"
-      data-mira-mood="neutral"
-      data-mira-line="Free to start, simple to scale."
+      className="relative border-y border-border/60 py-24 sm:py-28"
     >
-      <Container>
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        <div className="pop-atmosphere absolute inset-0" />
+        <div className="pop-grid absolute inset-0 opacity-30" />
+        <GlowOrb className="left-[-10%] top-10 size-80" color="rgba(59,130,246,0.16)" />
+        <GlowOrb className="right-[-8%] bottom-10 size-72" color="rgba(109,124,246,0.16)" />
+      </div>
+
+      <Container className="relative">
         <SectionTitle
           headingId="pricing-heading"
           eyebrow="Pricing"
@@ -152,73 +156,108 @@ export function Pricing() {
         <BillingToggle billing={billing} onChange={setBilling} />
 
         <motion.div
-          initial={{ opacity: 0, y: 22 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.55, ease: "easeOut" }}
-          className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.15 }}
+          className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:items-start"
         >
           {PLANS.map((plan) => {
             const Icon = plan.icon
             const price = billing === "annual" ? plan.annualPrice : plan.monthlyPrice
 
             return (
-              <Card
+              <motion.div
                 key={plan.name}
-                aria-labelledby={`plan-${plan.name}-heading`}
-                className={cn(
-                  "flex h-full flex-col p-6",
-                  plan.highlighted && "border-brand-red/50 ring-2 ring-brand-orange/30",
-                )}
+                variants={staggerItem}
+                whileHover={{ y: -10 }}
+                transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                className={cn("relative h-full", plan.highlighted && "lg:-translate-y-4 lg:scale-[1.05] z-10")}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-orange/12 text-brand-red" aria-hidden="true">
-                      <Icon className="size-4" />
-                    </span>
-                    <h3 id={`plan-${plan.name}-heading`} className="text-lg font-semibold text-foreground">
-                      {plan.name}
-                    </h3>
-                  </div>
-                  {plan.highlighted ? (
-                    <Badge className="border-brand-red/30 bg-brand-red/10 text-brand-red">Most Popular</Badge>
-                  ) : null}
-                </div>
+                {plan.highlighted ? (
+                  <span className="absolute -top-3.5 left-1/2 z-20 -translate-x-1/2">
+                    <Badge className="border-brand-orange/40 bg-brand-orange/15 text-brand-orange shadow-sm">
+                      Most Popular
+                    </Badge>
+                  </span>
+                ) : null}
 
-                <p className="mt-3 text-xs leading-5 text-muted-foreground">{plan.audience}</p>
-
-                <div className="mt-5 flex items-baseline gap-1.5">
-                  <span className="text-3xl font-semibold tracking-tight text-foreground">{price}</span>
-                  <span className="text-sm text-muted-foreground">{plan.cadenceSuffix}</span>
-                </div>
-
-                <ul className="mt-6 flex-1 space-y-3 text-sm leading-6 text-muted-foreground">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex gap-3">
-                      <Check className="mt-0.5 size-4 shrink-0 text-brand-red" aria-hidden="true" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  href={plan.href}
+                <GlassPanel
+                  as="div"
+                  glow={plan.highlighted}
                   className={cn(
-                    "mt-8 inline-flex h-11 items-center justify-center rounded-xl px-5 text-sm font-semibold transition-all",
-                    plan.highlighted
-                      ? "brand-gradient text-[#0F172A] hover:brightness-105"
-                      : "border border-border text-foreground hover:bg-muted",
-                    FOCUS_RING,
+                    "flex h-full flex-col p-6 transition-shadow duration-300",
+                    plan.highlighted && "ring-1 ring-[color:var(--primary)]/35",
                   )}
                 >
-                  {plan.cta}
-                </Link>
-              </Card>
+                  <div
+                    aria-labelledby={`plan-${plan.name}-heading`}
+                    className="flex flex-1 flex-col"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className={cn(
+                          "flex size-10 shrink-0 items-center justify-center rounded-xl",
+                          plan.highlighted ? "bg-brand-orange/15 text-brand-orange" : "bg-blue-accent/12 text-blue-accent",
+                        )}
+                        aria-hidden="true"
+                      >
+                        <Icon className="size-5" />
+                      </span>
+                      <h3 id={`plan-${plan.name}-heading`} className="text-lg font-semibold text-foreground">
+                        {plan.name}
+                      </h3>
+                    </div>
+
+                    <p className="mt-3 text-xs leading-5 text-muted-foreground">{plan.audience}</p>
+
+                    <div className="mt-5 flex items-baseline gap-1.5 overflow-hidden">
+                      <AnimatePresence mode="wait" initial={false}>
+                        <motion.span
+                          key={price}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.25, ease: "easeOut" }}
+                          className="pop-gradient-text text-3xl font-semibold tracking-tight"
+                        >
+                          {price}
+                        </motion.span>
+                      </AnimatePresence>
+                      <span className="text-sm text-muted-foreground">{plan.cadenceSuffix}</span>
+                    </div>
+
+                    <ul className="mt-6 flex-1 space-y-3 text-sm leading-6 text-muted-foreground">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex gap-3">
+                          <Check className="mt-0.5 size-4 shrink-0 text-blue-accent" aria-hidden="true" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Magnetic strength={8} className="mt-8 block w-full">
+                      <Link
+                        href={plan.href}
+                        className={cn(
+                          "inline-flex h-11 w-full items-center justify-center rounded-xl px-5 text-sm font-semibold transition-all",
+                          plan.highlighted
+                            ? "bg-gradient-to-r from-blue-accent to-[#1d4ed8] text-white shadow-[0_14px_32px_-14px_rgba(59,130,246,0.65)] hover:brightness-110"
+                            : "border border-border text-foreground hover:bg-muted",
+                          FOCUS_RING,
+                        )}
+                      >
+                        {plan.cta}
+                      </Link>
+                    </Magnetic>
+                  </div>
+                </GlassPanel>
+              </motion.div>
             )
           })}
         </motion.div>
 
-        <p className="mt-8 text-center text-sm text-muted-foreground">
+        <p className="mt-10 text-center text-sm text-muted-foreground">
           Prices shown are illustrative placeholders and subject to change before general availability.
           Enterprise pricing is a custom annual contract scoped to deployment size.
         </p>

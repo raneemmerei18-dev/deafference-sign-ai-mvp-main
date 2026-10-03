@@ -1,0 +1,429 @@
+/* Judy's look, ported verbatim from JudyCompanion.vue's <style scoped> block.
+   Every class is judy-prefixed, so the stylesheet is safe to load globally.
+   Only the block at the very end is new: hooks for the React props. */
+
+.judy-companion {
+  position: fixed;
+  bottom: 10px;
+  z-index: 40;
+  width: 132px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform: translateY(8px);
+  transition: left 900ms cubic-bezier(.16, 1, .3, 1), bottom 900ms cubic-bezier(.16, 1, .3, 1), transform 500ms cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.judy-dragging { transition: none !important; cursor: grabbing; }
+.judy-visible { transform: translateY(0); }
+.judy-excited { transform: translateY(-8px) scale(1.04); }
+.judy-figure { display: block; width: 100%; height: auto; overflow: visible; }
+.judy-figure { animation: judy-breathe 5.4s ease-in-out infinite; }
+.judy-shadow { fill: #DCEAFD; }
+
+/* joint pivots */
+.judy-leg-left { transform-box: view-box; transform-origin: 98px 212px; }
+.judy-shin-left { transform-box: view-box; transform-origin: 94px 270px; }
+.judy-leg-right { transform-box: view-box; transform-origin: 122px 212px; }
+.judy-shin-right { transform-box: view-box; transform-origin: 126px 270px; }
+.judy-arm-left { transform-box: view-box; transform-origin: 82px 108px; }
+.judy-fore-left { transform-box: view-box; transform-origin: 74px 150px; }
+.judy-arm-right { transform-box: view-box; transform-origin: 138px 108px; }
+.judy-fore-right { transform-box: view-box; transform-origin: 146px 150px; }
+.judy-hair-mass { transform-box: view-box; transform-origin: 110px 52px; }
+.judy-lock-left { transform-box: view-box; transform-origin: 70px 95px; }
+.judy-lock-right { transform-box: view-box; transform-origin: 150px 95px; }
+.judy-head { transform-box: view-box; transform-origin: 110px 112px; }
+.judy-torso { transform-box: view-box; transform-origin: 110px 205px; }
+
+.judy-thigh,.judy-shin { fill: none; stroke: #10264A; stroke-width: 18; stroke-linecap: round; }
+.judy-shoe-body { fill: #FCFBF9; stroke: #10264A; stroke-width: 2.4; }
+.judy-shoe-sole { fill: none; stroke: #10264A; stroke-width: 3; stroke-linecap: round; }
+.judy-shoe-eyelet { fill: #10264A; }
+.judy-upperarm { fill: none; stroke: #A9D6E5; stroke-width: 15; stroke-linecap: round; }
+.judy-forearm { fill: none; stroke: #F2CBA9; stroke-width: 13; stroke-linecap: round; }
+.judy-cuff { fill: none; stroke: #F47C20; stroke-width: 6; stroke-linecap: round; }
+.judy-hand { fill: #F2CBA9; stroke: #DBA983; stroke-width: 2.2; }
+.judy-fingers { fill: none; stroke: #DBA983; stroke-width: 2.4; stroke-linecap: round; }
+.judy-laugh-arms { display: none; transform-box: view-box; transform-origin: 110px 184px; }
+.judy-laugh-sleeve { fill: none; stroke: #A9D6E5; stroke-width: 15; stroke-linecap: round; }
+.judy-laugh-forearm { fill: none; stroke: #F2CBA9; stroke-width: 13; stroke-linecap: round; }
+.judy-laugh-cuff { fill: none; stroke: #F47C20; stroke-width: 6; stroke-linecap: round; }
+.judy-laugh-hand { fill: #F2CBA9; stroke: #DBA983; stroke-width: 2.2; }
+.judy-laugh-fingers { fill: none; stroke: #DBA983; stroke-width: 2.2; stroke-linecap: round; }
+.judy-sleep-arm { display: none; }
+.judy-sleep-sleeve { fill: none; stroke: #A9D6E5; stroke-width: 15; stroke-linecap: round; }
+.judy-sleep-forearm { fill: none; stroke: #F2CBA9; stroke-width: 13; stroke-linecap: round; }
+.judy-sleep-cuff { fill: none; stroke: #F47C20; stroke-width: 6; stroke-linecap: round; }
+.judy-sleep-hand { fill: #F2CBA9; stroke: #DBA983; stroke-width: 2.2; }
+.judy-sleep-fingers { fill: none; stroke: #DBA983; stroke-width: 2.2; stroke-linecap: round; }
+.judy-point-finger { fill: none; stroke: #F2CBA9; stroke-width: 7; stroke-linecap: round; }
+.judy-hand-point-right { display: none; }
+.judy-catching-hand,
+.judy-eating-arm,
+.judy-phone-arm,
+.judy-phone { display: none; }
+.judy-eating-sleeve { fill: none; stroke: #A9D6E5; stroke-width: 15; stroke-linecap: round; }
+.judy-eating-forearm { fill: none; stroke: #F2CBA9; stroke-width: 13; stroke-linecap: round; }
+.judy-phone-sleeve { fill: none; stroke: #A9D6E5; stroke-width: 15; stroke-linecap: round; }
+.judy-phone-forearm { fill: none; stroke: #F2CBA9; stroke-width: 13; stroke-linecap: round; }
+.judy-phone-body { fill: #10264A; stroke: #FCFBF9; stroke-width: 1.2; }
+.judy-phone-screen { fill: #57A4F9; }
+.judy-phone-camera { fill: #FCFBF9; }
+.judy-phone-speaker { fill: none; stroke: #FCFBF9; stroke-width: 1.1; stroke-linecap: round; }
+
+.judy-robe { fill: #A9D6E5; }
+.judy-neck { fill: #F2CBA9; stroke: #DBA983; stroke-width: 2.2; stroke-linejoin: round; }
+.judy-hair-mass,.judy-lock-left,.judy-lock-right,.judy-hairline,.judy-hairline-fill { fill: #5E3B27; }
+.judy-hair-mid { fill: #563523; }
+.judy-hair-hi { fill: #805339; opacity: .55; }
+.judy-hair-sh { fill: #3F2415; opacity: .45; }
+.judy-collar { fill: none; stroke: #EAF3FF; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.judy-face { fill: #F2CBA9; stroke: #DBA983; stroke-width: 2.4; }
+.judy-seam { fill: none; stroke: #B7A6E0; stroke-width: 3; stroke-linecap: round; }
+.judy-ember { fill: #F47C20; }
+.judy-ear { fill: #F2CBA9; stroke: #DBA983; stroke-width: 1.8; }
+.judy-aid { fill: #10264A; }
+.judy-aid-light { fill: #57A4F9; animation: judy-glow 2.3s ease-in-out infinite; }
+
+.judy-brow-neutral,.judy-brow-think,.judy-brow-high { fill: #3F2415; }
+.judy-eye-arc { fill: none; stroke: #3F2415; stroke-width: 2.6; stroke-linecap: round; }
+.judy-eye-tick { stroke-width: 1.3; }
+.judy-mouth-neutral,.judy-mouth-flat { fill: none; stroke: #3F2415; stroke-width: 3; stroke-linecap: round; }
+.judy-mouth-smile { fill: none; stroke: #9B4A3C; stroke-width: 2.2; stroke-linecap: round; }
+.judy-lip-hi { stroke: #E8A98C; stroke-width: 1.35; opacity: .7; }
+.judy-eye-open,.judy-eye-wide { transform-box: fill-box; transform-origin: center; animation: judy-blink 6s infinite; }
+.judy-eye-white { fill: #FCFBF9; }
+.judy-iris { fill: #4A2C18; }
+.judy-iris-mid { fill: #6B4028; opacity: .65; }
+.judy-pupil { fill: #22140A; }
+.judy-catchlight { fill: #FCFBF9; }
+.judy-lash { fill: none; stroke: #22140A; stroke-width: 2.3; stroke-linecap: round; }
+.judy-cheek { fill: #F47C20; opacity: .2; }
+.judy-nose { fill: none; stroke: #DBA983; stroke-width: 1.45; stroke-linecap: round; opacity: .8; }
+.judy-nose-tip { fill: #FADFC6; opacity: .55; }
+.judy-nostril { fill: none; stroke: #DBA983; stroke-width: 1; stroke-linecap: round; }
+.judy-mouth-o { fill: #8A3A34; }
+.judy-mouth-hi { fill: #FCFBF9; }
+.judy-mouth-laugh { fill: #6D2830; }
+.judy-mouth-laugh path:last-child { fill: none; stroke: #FCFBF9; stroke-width: 2; stroke-linecap: round; }
+.judy-laugh-tears { fill: #57A4F9; }
+
+/* expression sets: hidden unless the wrapper mood class turns them on */
+.judy-brow-think,.judy-brow-high,.judy-eye-arc,.judy-eye-wide,
+.judy-mouth-smile,.judy-mouth-flat,.judy-mouth-o,.judy-mouth-laugh,.judy-cheek,.judy-laugh-tears { display: none; }
+
+.judy-neutral .judy-brow-neutral,.judy-neutral .judy-eye-open,.judy-neutral .judy-mouth-neutral { display: block; }
+
+.judy-happy .judy-brow-neutral,.judy-happy .judy-mouth-smile,.judy-happy .judy-cheek,.judy-happy .judy-eye-arc { display: block; }
+.judy-happy .judy-eye-open { display: none; }
+
+.judy-listen .judy-brow-high,.judy-listen .judy-eye-wide,.judy-listen .judy-mouth-o { display: block; }
+.judy-listen .judy-eye-open,.judy-listen .judy-mouth-neutral { display: none; }
+
+.judy-think .judy-brow-think,.judy-think .judy-eye-open,.judy-think .judy-mouth-flat { display: block; }
+.judy-think .judy-brow-neutral,.judy-think .judy-mouth-neutral { display: none; }
+
+.judy-sad .judy-brow-think,.judy-sad .judy-eye-arc,.judy-sad .judy-mouth-flat,.judy-sad .judy-laugh-tears { display: block; }
+.judy-sad .judy-brow-neutral,.judy-sad .judy-eye-open,.judy-sad .judy-mouth-neutral { display: none; }
+
+.judy-sparkles { display: none; fill: #F47C20; transform-box: view-box; transform-origin: 110px 110px; }
+
+.judy-bubble { position: absolute; bottom: 100%; left: 50%; padding: 8px 12px; border: 1px solid rgba(51,42,34,.12); border-radius: 14px; background: #FCFBF9; color: #332A22; box-shadow: 0 14px 34px -20px rgba(51,42,34,.55); font: 500 12px/1.35 Inter, sans-serif; white-space: nowrap; opacity: 0; transform: translate(-50%, 4px) scale(.94); transition: opacity 240ms ease, transform 240ms ease; }
+.judy-bubble::after { content: ''; position: absolute; top: 100%; left: 50%; margin-left: -5px; border: 5px solid transparent; border-top-color: #FCFBF9; }
+.judy-bubble-visible { opacity: 1; transform: translate(-50%, -8px) scale(1); }
+
+@keyframes judy-breathe { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes judy-blink { 0%,95%,100% { transform: scaleY(1); } 97.2% { transform: scaleY(.08); } }
+@keyframes judy-glow { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+@keyframes judy-sway { 0%,100% { transform: rotate(-2.4deg); } 50% { transform: rotate(2.4deg); } }
+@keyframes judy-sway-left { 0%,100% { transform: rotate(3.4deg); } 50% { transform: rotate(-3.4deg); } }
+@keyframes judy-sway-right { 0%,100% { transform: rotate(-3.8deg); } 50% { transform: rotate(3.8deg); } }
+.judy-hair-mass { animation: judy-sway 5.2s ease-in-out infinite; }
+.judy-lock-left { animation: judy-sway-left 4.1s ease-in-out infinite; }
+.judy-lock-right { animation: judy-sway-right 4.6s ease-in-out infinite; }
+
+/* wave */
+@keyframes judy-wave-fore { 0%,100% { transform: rotate(-20deg); } 50% { transform: rotate(-56deg); } }
+.judy-waving .judy-arm-right { transform: rotate(-124deg); }
+.judy-waving .judy-fore-right { animation: judy-wave-fore .68s ease-in-out infinite; }
+.judy-waving .judy-arm-left { transform: rotate(8deg); }
+
+/* point / reach */
+.judy-reaching .judy-arm-right { transform: translateX(14px) rotate(-142deg); }
+.judy-reaching .judy-fore-right { transform: rotate(-10deg); }
+.judy-reaching .judy-hand-open-right { display: none; }
+.judy-reaching .judy-hand-point-right { display: block; }
+
+/* hand-to-chin pondering, gated so it never fights a movement pose */
+.judy-pondering .judy-arm-right { transform: rotate(-96deg); }
+.judy-pondering .judy-fore-right { transform: rotate(-88deg); }
+.judy-pondering .judy-head { transform: translateY(-8px) rotate(4deg); }
+
+@keyframes judy-cute-think-head {
+  0%, 100% { transform: translateY(-8px) rotate(4deg); }
+  50% { transform: translateY(-11px) rotate(7deg); }
+}
+@keyframes judy-cute-think-torso {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-1.5deg); }
+}
+.judy-cute-thinking .judy-head { animation: judy-cute-think-head 1.35s ease-in-out infinite; }
+.judy-cute-thinking .judy-torso { animation: judy-cute-think-torso 1.35s ease-in-out infinite; }
+
+@keyframes judy-twirl {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  45% { transform: translateY(-9px) rotate(360deg); }
+  60% { transform: translateY(-3px) rotate(360deg); }
+}
+.judy-twirling .judy-figure {
+  animation: judy-twirl 1.5s cubic-bezier(.45, 0, .25, 1) infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 84%;
+}
+
+@keyframes judy-happy-dance {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  25% { transform: translateY(-12px) rotate(3deg); }
+  50% { transform: translateY(0) rotate(3deg); }
+  75% { transform: translateY(-8px) rotate(-3deg); }
+}
+@keyframes judy-happy-dance-left-arm {
+  0%, 100% { transform: rotate(-22deg); }
+  50% { transform: rotate(26deg); }
+}
+@keyframes judy-happy-dance-right-arm {
+  0%, 100% { transform: rotate(22deg); }
+  50% { transform: rotate(-26deg); }
+}
+.judy-happy-dancing .judy-figure { animation: judy-happy-dance 760ms ease-in-out infinite; }
+.judy-happy-dancing .judy-arm-left { animation: judy-happy-dance-left-arm 760ms ease-in-out infinite; }
+.judy-happy-dancing .judy-arm-right { animation: judy-happy-dance-right-arm 760ms ease-in-out infinite; }
+
+.judy-car { display: none; }
+.judy-car-body { fill: #A9D6E5; stroke: #10264A; stroke-width: 3; stroke-linejoin: round; }
+.judy-car-windshield { fill: #EAF3FF; stroke: #10264A; stroke-width: 2.4; stroke-linejoin: round; }
+.judy-car-divider { fill: none; stroke: #B7A6E0; stroke-width: 2; }
+.judy-car-wheel { fill: #10264A; }
+.judy-car-hub { fill: #FCFBF9; }
+.judy-car-light { fill: #F8D66D; }
+.judy-steering-wheel { fill: #FCFBF9; stroke: #10264A; stroke-width: 3; }
+.judy-steering-spokes { fill: none; stroke: #10264A; stroke-width: 2.4; stroke-linecap: round; }
+@keyframes judy-drive-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(-1deg); }
+}
+@keyframes judy-drive-wheel {
+  0%, 100% { transform: rotate(-12deg); }
+  50% { transform: rotate(12deg); }
+}
+.judy-driving .judy-leg-left,
+.judy-driving .judy-leg-right { opacity: 0; }
+.judy-driving { transition: left 8.8s linear, bottom 900ms cubic-bezier(.16, 1, .3, 1), transform 500ms cubic-bezier(.34, 1.56, .64, 1); }
+.judy-driving .judy-car { display: block; animation: judy-drive-bob 520ms ease-in-out infinite; transform-box: view-box; transform-origin: 110px 289px; }
+.judy-driving .judy-steering-wheel,
+.judy-driving .judy-steering-spokes { animation: judy-drive-wheel 760ms ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.judy-driving .judy-arm-left { transform: rotate(-34deg); }
+.judy-driving .judy-arm-right { transform: rotate(34deg); }
+@keyframes judy-drive-hair {
+  0%, 100% { transform: rotate(-6deg) translateX(-3px); }
+  50% { transform: rotate(-11deg) translateX(-7px); }
+}
+@keyframes judy-drive-hair-left {
+  0%, 100% { transform: rotate(-13deg) translateX(-3px); }
+  50% { transform: rotate(-21deg) translateX(-7px); }
+}
+@keyframes judy-drive-hair-right {
+  0%, 100% { transform: rotate(-10deg) translateX(-2px); }
+  50% { transform: rotate(-17deg) translateX(-6px); }
+}
+.judy-driving .judy-hair-mass { animation: judy-drive-hair 430ms ease-in-out infinite; }
+.judy-driving .judy-lock-left { animation: judy-drive-hair-left 360ms ease-in-out infinite; }
+.judy-driving .judy-lock-right { animation: judy-drive-hair-right 390ms ease-in-out infinite; }
+
+.judy-snack { display: none; }
+.judy-burger-bun { fill: #E5A45B; stroke: #9C6334; stroke-width: 1.2; stroke-linejoin: round; }
+.judy-burger-lettuce { fill: #78B96A; }
+.judy-burger-patty { fill: #7B442C; }
+@keyframes judy-snack-nibble {
+  0%, 100% { transform: translateY(4px) rotate(0deg); }
+  45%, 55% { transform: translateY(-3px) rotate(-4deg); }
+}
+.judy-eating .judy-snack { display: block; animation: judy-snack-nibble 1.1s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.judy-eating .judy-arm-right { display: none; }
+.judy-eating .judy-eating-arm { display: block; }
+
+.judy-hunger-rumble { display: none; fill: none; stroke: #B7A6E0; stroke-width: 2.5; stroke-linecap: round; }
+@keyframes judy-hungry-tummy {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(1.06); }
+}
+@keyframes judy-hunger-rumble {
+  0%, 100% { opacity: .35; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(3px); }
+}
+@keyframes judy-catch-burger {
+  0%, 12% { opacity: 0; transform: translate(72px, -105px) rotate(-20deg) scale(.65); }
+  18% { opacity: 1; }
+  42% { opacity: 1; transform: translate(16px, 52px) rotate(8deg) scale(1); }
+  62% { opacity: 1; transform: translate(16px, 52px) rotate(0deg) scale(1); }
+  80% { opacity: 1; transform: translate(0, 0) rotate(-3deg) scale(1); }
+  90%, 100% { opacity: 0; transform: translate(0, -2px) scale(.72); }
+}
+@keyframes judy-catch-hand {
+  0%, 18% { opacity: 0; transform: translateY(5px); }
+  28%, 60% { opacity: 1; transform: translateY(0); }
+  66%, 100% { opacity: 0; transform: translateY(-4px); }
+}
+@keyframes judy-eating-arm-reveal {
+  0%, 60% { opacity: 0; transform: translateY(4px); }
+  68%, 100% { opacity: 1; transform: translateY(0); }
+}
+.judy-catch-burger { display: none; }
+.judy-hungry .judy-torso { animation: judy-hungry-tummy 1.1s ease-in-out infinite; }
+.judy-hungry .judy-hunger-rumble { display: block; animation: judy-hunger-rumble 780ms ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.judy-hungry .judy-catch-burger { display: block; animation: judy-catch-burger 3.5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.judy-hungry .judy-arm-right { display: none; }
+.judy-hungry .judy-catching-hand { display: block; animation: judy-catch-hand 3.5s ease-in-out infinite; }
+.judy-hungry .judy-eating-arm { display: block; animation: judy-eating-arm-reveal 3.5s ease-in-out infinite; }
+
+@keyframes judy-phone-head {
+  0%, 100% { transform: translateY(-8px) rotate(5deg); }
+  50% { transform: translateY(-9px) rotate(8deg); }
+}
+@keyframes judy-phone-wrist {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+.judy-phone-talking .judy-arm-right { display: none; }
+.judy-phone-talking .judy-phone-arm,
+.judy-phone-talking .judy-phone { display: block; }
+.judy-phone-talking .judy-head { animation: judy-phone-head 1.25s ease-in-out infinite; }
+.judy-phone-talking .judy-phone-arm { animation: judy-phone-wrist 900ms ease-in-out infinite; transform-box: fill-box; transform-origin: 144px 82px; }
+.judy-phone-talking .judy-phone { animation: judy-phone-wrist 900ms ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+
+/* cupped-ear listening, same gating */
+.judy-cupping .judy-arm-left { transform: rotate(-92deg); }
+.judy-cupping .judy-fore-left { transform: rotate(-58deg); }
+.judy-cupping .judy-head { transform: translateY(-8px) rotate(-6deg); }
+
+/* excited hop (used together with reaching, after the journal-shelf walk) */
+@keyframes judy-excited-bounce { 0%,100% { transform: translateY(-8px) scale(1.04); } 45% { transform: translateY(-30px) scale(1.06); } 65% { transform: translateY(-4px) scale(1.03); } }
+.judy-excited .judy-figure { animation: judy-excited-bounce 700ms ease-in-out infinite; }
+
+/* walk: nested FK so knees and elbows actually bend, transitions off so the loop is instant */
+.judy-walking .judy-figure,
+.judy-walking .judy-figure g { transition: none; }
+.judy-walking .judy-figure { animation: judy-bob .34s ease-in-out infinite; }
+@keyframes judy-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes judy-thigh-a { 0%,100% { transform: rotate(24deg); } 50% { transform: rotate(-20deg); } }
+@keyframes judy-thigh-b { 0%,100% { transform: rotate(-20deg); } 50% { transform: rotate(24deg); } }
+@keyframes judy-shin-a { 0% { transform: rotate(-4deg); } 25% { transform: rotate(-40deg); } 50% { transform: rotate(-2deg); } 75% { transform: rotate(-14deg); } 100% { transform: rotate(-4deg); } }
+@keyframes judy-shin-b { 0% { transform: rotate(-2deg); } 25% { transform: rotate(-14deg); } 50% { transform: rotate(-4deg); } 75% { transform: rotate(-40deg); } 100% { transform: rotate(-2deg); } }
+@keyframes judy-uparm-a { 0%,100% { transform: rotate(-26deg); } 50% { transform: rotate(22deg); } }
+@keyframes judy-uparm-b { 0%,100% { transform: rotate(26deg); } 50% { transform: rotate(-22deg); } }
+@keyframes judy-forearm-a { 0%,100% { transform: rotate(-30deg); } 50% { transform: rotate(-8deg); } }
+@keyframes judy-forearm-b { 0%,100% { transform: rotate(8deg); } 50% { transform: rotate(30deg); } }
+@keyframes judy-sway-walk { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@keyframes judy-sway-walk-left { 0%,100% { transform: rotate(7deg) translateX(-2px); } 50% { transform: rotate(-6deg) translateX(2px); } }
+@keyframes judy-sway-walk-right { 0%,100% { transform: rotate(-7deg) translateX(2px); } 50% { transform: rotate(6deg) translateX(-2px); } }
+.judy-walking .judy-leg-left { animation: judy-thigh-a .68s ease-in-out infinite; }
+.judy-walking .judy-shin-left { animation: judy-shin-a .68s ease-in-out infinite; }
+.judy-walking .judy-leg-right { animation: judy-thigh-b .68s ease-in-out infinite; }
+.judy-walking .judy-shin-right { animation: judy-shin-b .68s ease-in-out infinite; }
+.judy-walking .judy-arm-right { animation: judy-uparm-a .68s ease-in-out infinite; }
+.judy-walking .judy-fore-right { animation: judy-forearm-a .68s ease-in-out infinite; }
+.judy-walking .judy-arm-left { animation: judy-uparm-b .68s ease-in-out infinite; }
+.judy-walking .judy-fore-left { animation: judy-forearm-b .68s ease-in-out infinite; }
+.judy-walking .judy-hair-mass { animation: judy-sway-walk .68s ease-in-out infinite; }
+.judy-walking .judy-lock-left { animation: judy-sway-walk-left .68s ease-in-out infinite; }
+.judy-walking .judy-lock-right { animation: judy-sway-walk-right .68s ease-in-out infinite; }
+.judy-walking { transition-duration: 900ms, 500ms; }
+.judy-running { transition-duration: 450ms, 450ms, 300ms; }
+.judy-running .judy-figure,
+.judy-running .judy-figure g { animation-duration: .34s !important; }
+
+@keyframes judy-sleep-breathe { 0%,100% { transform: rotate(82deg) translateY(0); } 50% { transform: rotate(82deg) translateY(-5px); } }
+@keyframes judy-zzz { 0% { opacity: 0; transform: translate(0, 8px) scale(.75); } 30%,70% { opacity: 1; } 100% { opacity: 0; transform: translate(12px, -22px) scale(1.15); } }
+.judy-sleeping .judy-figure { animation: judy-sleep-breathe 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 84%; }
+.judy-sleeping .judy-arm-left { opacity: 0; }
+.judy-sleeping .judy-sleep-arm { display: block; }
+.judy-sleeping .judy-eye-open { display: none; }
+.judy-sleeping .judy-eye-arc { display: block; }
+.judy-sleep-zzz { display: none; position: absolute; inset-inline-end: -1.1rem; top: 3rem; color: #57A4F9; font: 800 1.1rem/1 Inter, sans-serif; text-shadow: 0 2px 8px rgba(16,38,74,.2); }
+.judy-sleep-zzz span { position: absolute; animation: judy-zzz 2s ease-out infinite; }
+.judy-sleep-zzz span:nth-child(1) { inset-inline-start: 0; top: 1.4rem; font-size: .75rem; animation-delay: 0s; }
+.judy-sleep-zzz span:nth-child(2) { inset-inline-start: .7rem; top: .6rem; font-size: 1rem; animation-delay: .55s; }
+.judy-sleep-zzz span:nth-child(3) { inset-inline-start: 1.5rem; top: -.25rem; font-size: 1.3rem; animation-delay: 1.1s; }
+.judy-sleeping .judy-sleep-zzz { display: block; }
+
+/* A friendly reaction that remains active while the reader is touching Judy. */
+@keyframes judy-laugh-head { 0%,100% { transform: translateY(-8px) rotate(-4deg); } 50% { transform: translateY(-11px) rotate(4deg); } }
+@keyframes judy-laugh-torso { 0%,100% { transform: rotate(-1deg); } 50% { transform: rotate(1deg); } }
+@keyframes judy-laugh-arm-left { 0%,100% { transform: rotate(-28deg); } 50% { transform: rotate(-22deg); } }
+@keyframes judy-laugh-arm-right { 0%,100% { transform: rotate(28deg); } 50% { transform: rotate(22deg); } }
+@keyframes judy-laugh-fore-left { 0%,100% { transform: rotate(15deg); } 50% { transform: rotate(21deg); } }
+@keyframes judy-laugh-fore-right { 0%,100% { transform: rotate(-10deg); } 50% { transform: rotate(-16deg); } }
+@keyframes judy-laugh-leg-left { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(7deg); } }
+@keyframes judy-laugh-leg-right { 0%,100% { transform: rotate(6deg); } 50% { transform: rotate(-7deg); } }
+@keyframes judy-laugh-tear { 0%,100% { opacity: .45; transform: translateY(0); } 50% { opacity: 1; transform: translateY(4px); } }
+@keyframes judy-laugh-hands { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(3px) rotate(1deg); } }
+.judy-laughing .judy-head { animation: judy-laugh-head 300ms ease-in-out infinite; }
+.judy-laughing .judy-torso { animation: judy-laugh-torso 300ms ease-in-out infinite; }
+.judy-laughing .judy-arm-left { animation: judy-laugh-arm-left 300ms ease-in-out infinite; }
+.judy-laughing .judy-arm-right { animation: judy-laugh-arm-right 300ms ease-in-out infinite; }
+.judy-laughing .judy-fore-left { animation: judy-laugh-fore-left 300ms ease-in-out infinite; }
+.judy-laughing .judy-fore-right { animation: judy-laugh-fore-right 300ms ease-in-out infinite; }
+.judy-laughing .judy-leg-left { animation: judy-laugh-leg-left 170ms ease-in-out infinite; }
+.judy-laughing .judy-leg-right { animation: judy-laugh-leg-right 170ms ease-in-out infinite; }
+.judy-laughing .judy-arm-left,.judy-laughing .judy-arm-right { opacity: 0; }
+.judy-laughing .judy-laugh-arms { display: block; animation: judy-laugh-hands 300ms ease-in-out infinite; }
+.judy-laughing .judy-eye-open { display: none; }
+.judy-laughing .judy-eye-arc,.judy-laughing .judy-mouth-laugh,.judy-laughing .judy-cheek { display: block; }
+.judy-laughing .judy-laugh-tears { display: block; animation: judy-laugh-tear 500ms ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+
+/* party / cheer */
+@keyframes judy-party { 0%,100% { transform: translateY(0) rotate(-3deg); } 25% { transform: translateY(-18px) rotate(5deg); } 50% { transform: translateY(0) rotate(-3deg); } 75% { transform: translateY(-12px) rotate(4deg); } }
+@keyframes judy-party-arm-left { 0%,100% { transform: rotate(28deg); } 50% { transform: rotate(58deg); } }
+@keyframes judy-party-arm-right { 0%,100% { transform: rotate(-28deg); } 50% { transform: rotate(-58deg); } }
+@keyframes judy-party-fore-left { 0%,100% { transform: rotate(10deg); } 50% { transform: rotate(28deg); } }
+@keyframes judy-party-fore-right { 0%,100% { transform: rotate(-10deg); } 50% { transform: rotate(-28deg); } }
+@keyframes judy-party-leg-left { 0%,100% { transform: rotate(12deg) translateY(0); } 50% { transform: rotate(-16deg) translateY(-5px); } }
+@keyframes judy-party-leg-right { 0%,100% { transform: rotate(-16deg) translateY(-5px); } 50% { transform: rotate(12deg) translateY(0); } }
+@keyframes judy-sparkle { 0%,100% { opacity: .35; transform: scale(.85) rotate(0deg); } 50% { opacity: 1; transform: scale(1.15) rotate(12deg); } }
+.judy-partying .judy-figure { animation: judy-party 900ms ease-in-out infinite; }
+.judy-partying .judy-arm-left { animation: judy-party-arm-left 900ms ease-in-out infinite; }
+.judy-partying .judy-arm-right { animation: judy-party-arm-right 900ms ease-in-out infinite; }
+.judy-partying .judy-fore-left { animation: judy-party-fore-left 900ms ease-in-out infinite; }
+.judy-partying .judy-fore-right { animation: judy-party-fore-right 900ms ease-in-out infinite; }
+.judy-partying .judy-leg-left { animation: judy-party-leg-left 900ms ease-in-out infinite; }
+.judy-partying .judy-leg-right { animation: judy-party-leg-right 900ms ease-in-out infinite; }
+.judy-partying .judy-sparkles { display: block; animation: judy-sparkle 700ms ease-in-out infinite; }
+
+.judy-subscribe-bubble { font-size: 18px; font-weight: 800; line-height: 1.15; padding: 12px 16px; }
+@keyframes judy-subscribe-loop { 0% { transform: translateX(-72px) translateY(0) rotate(0); } 23% { transform: translateX(-36px) translateY(-42px) rotate(100deg); } 50% { transform: translateX(72px) translateY(-104px) rotate(360deg); } 73% { transform: translateX(36px) translateY(-42px) rotate(620deg); } 100% { transform: translateX(-72px) translateY(0) rotate(720deg); } }
+@keyframes judy-subscribe-arm-left { 0%,100% { transform: rotate(30deg); } 50% { transform: rotate(52deg); } }
+@keyframes judy-subscribe-arm-right { 0%,100% { transform: rotate(-30deg); } 50% { transform: rotate(-52deg); } }
+.judy-subscribing .judy-figure { animation: judy-subscribe-loop 3600ms cubic-bezier(.45, 0, .25, 1) infinite; }
+.judy-subscribing .judy-arm-left { animation: judy-subscribe-arm-left 1200ms ease-in-out infinite; }
+.judy-subscribing .judy-arm-right { animation: judy-subscribe-arm-right 1200ms ease-in-out infinite; }
+.judy-subscribing .judy-leg-left { animation: judy-party-leg-left 1200ms ease-in-out infinite; }
+.judy-subscribing .judy-leg-right { animation: judy-party-leg-right 1200ms ease-in-out infinite; }
+.judy-subscribing .judy-sparkles { display: block; animation: judy-sparkle 1000ms ease-in-out infinite; }
+
+@media (max-width: 640px) { .judy-companion { width: 100px; bottom: 6px; } .judy-bubble { font-size: 11px; } }
+@media (prefers-reduced-motion: reduce) {
+  .judy-companion,.judy-bubble { transition: none; }
+  .judy-figure,.judy-figure g { animation: none !important; }
+}
+
+/* ---- React port additions (not in the Vue file) ---- */
+
+/* `facing="left"` mirrors the artwork only; the bubble and Zzz stay readable. */
+.judy-facing { display: block; }
+.judy-facing-left { transform: scaleX(-1); }
+
+/* Without `draggable`, Judy is decoration: she must not swallow clicks or block
+   touch-scrolling on the content underneath her. */
+.judy-static { cursor: default; touch-action: auto; pointer-events: none; }

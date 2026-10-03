@@ -1,28 +1,31 @@
 "use client"
 
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, HelpCircle } from "lucide-react"
 import { FAQ_ITEMS } from "@/lib/constants"
-
-const FOCUS_RING =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+import { GlassPanel, focusRingPop } from "./ui/pop"
 
 export function FaqPreview() {
   const preview = FAQ_ITEMS.slice(0, 3)
 
   return (
-    <div className="flex h-full flex-col rounded-3xl border border-border bg-card p-6">
-      <h3 className="text-lg font-bold text-[#0F172A]">FAQ</h3>
+    <GlassPanel className="flex h-full flex-col p-6" glow>
+      <div className="flex items-center gap-3">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--primary)]/10 text-primary">
+          <HelpCircle className="size-4" aria-hidden="true" />
+        </span>
+        <h3 className="text-lg font-bold text-foreground">FAQ</h3>
+      </div>
 
-      <ul className="mt-3 flex-1 divide-y divide-border">
+      <ul className="mt-4 flex-1 space-y-2">
         {preview.map((item) => (
           <li key={item.title}>
             <a
               href="#faq"
-              className={`group flex items-start justify-between gap-3 py-3 text-sm font-medium text-foreground/80 transition-colors hover:text-[#0F172A] ${FOCUS_RING}`}
+              className={`group flex items-start justify-between gap-3 rounded-2xl border border-transparent px-3 py-2.5 text-sm font-medium text-foreground/80 transition-all hover:border-[color:var(--primary)]/15 hover:bg-[color:var(--primary)]/6 hover:text-foreground ${focusRingPop}`}
             >
               {item.title}
               <ChevronRight
-                className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-[#0F172A]"
+                className="mt-0.5 size-4 shrink-0 text-primary transition-transform group-hover:translate-x-0.5"
                 aria-hidden="true"
               />
             </a>
@@ -32,11 +35,12 @@ export function FaqPreview() {
 
       <a
         href="#faq"
-        className={`mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#0F766E] hover:underline ${FOCUS_RING}`}
+        className={`mt-4 inline-flex items-center gap-1.5 self-start text-sm font-semibold text-primary hover:underline ${focusRingPop}`}
       >
         View all FAQs
+        <span className="inline-flex size-1.5 rounded-full bg-brand-orange" aria-hidden="true" />
         <ChevronRight className="size-4" aria-hidden="true" />
       </a>
-    </div>
+    </GlassPanel>
   )
 }

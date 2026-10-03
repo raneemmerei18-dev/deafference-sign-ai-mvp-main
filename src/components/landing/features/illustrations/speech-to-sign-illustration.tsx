@@ -3,12 +3,12 @@
 import { motion } from "framer-motion"
 
 const BARS = [
-  { height: [15, 80, 30, 95, 40, 15], color: "#EAB308", delay: 0 },
-  { height: [60, 20, 90, 35, 80, 60], color: "#FACC15", delay: 0.1 },
-  { height: [30, 95, 25, 75, 30, 30], color: "#38BDF8", delay: 0.2 },
-  { height: [85, 30, 95, 20, 70, 85], color: "#0284C7", delay: 0.3 },
-  { height: [40, 75, 20, 85, 45, 40], color: "#EAB308", delay: 0.4 },
-  { height: [90, 30, 70, 35, 90, 90], color: "#38BDF8", delay: 0.5 },
+  { height: [15, 80, 30, 95, 40, 15], color: "#60A5FA", delay: 0 },
+  { height: [60, 20, 90, 35, 80, 60], color: "#3B82F6", delay: 0.1 },
+  { height: [30, 95, 25, 75, 30, 30], color: "#93C5FD", delay: 0.2 },
+  { height: [85, 30, 95, 20, 70, 85], color: "#2563EB", delay: 0.3 },
+  { height: [40, 75, 20, 85, 45, 40], color: "#FF8A3D", delay: 0.4 },
+  { height: [90, 30, 70, 35, 90, 90], color: "#3B82F6", delay: 0.5 },
 ]
 
 export function SpeechToSignIllustration({ reducedMotion = false }: { reducedMotion?: boolean }) {
@@ -39,7 +39,7 @@ export function SpeechToSignIllustration({ reducedMotion = false }: { reducedMot
               />
               <motion.path
                 d="M 118 75 A 25 25 0 0 1 118 115"
-                stroke="#FDBA74"
+                stroke="#FF8A3D"
                 strokeWidth="3.5"
                 strokeLinecap="round"
                 fill="none"
@@ -61,7 +61,7 @@ export function SpeechToSignIllustration({ reducedMotion = false }: { reducedMot
           ) : (
             <g opacity={0.8}>
               <path d="M 115 80 A 18 18 0 0 1 115 110" stroke="#FFFFFF" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-              <path d="M 122 75 A 25 25 0 0 1 122 115" stroke="#FDBA74" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+              <path d="M 122 75 A 25 25 0 0 1 122 115" stroke="#FF8A3D" strokeWidth="3.5" strokeLinecap="round" fill="none" />
             </g>
           )}
         </svg>

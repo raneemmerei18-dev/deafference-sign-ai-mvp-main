@@ -382,3 +382,160 @@ html[data-text-size='xlarge'] {
     transform: scaleY(1);
   }
 }
+
+/* ==========================================================================
+   Landing "pop" theme — the redesigned marketing site's own bright, cool
+   blue palette. Scoped to a class (applied on the landing page's root
+   wrapper) rather than :root, so the authenticated app (profile/settings/
+   admin/translate) is completely untouched and keeps its existing palette.
+   Orange survives only as a small, deliberate accent (badges, glow, CTA
+   underline) — never as a surface color. */
+.landing-pop {
+  color-scheme: light;
+  --background: #f6faff;
+  --foreground: #16233f;
+  --card: #ffffff;
+  --card-foreground: #16233f;
+  --popover: #ffffff;
+  --popover-foreground: #16233f;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #eaf2ff;
+  --secondary-foreground: #16233f;
+  --muted: #eef4ff;
+  --muted-foreground: #57647f;
+  --accent: #e7f1ff;
+  --accent-foreground: #16233f;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: rgba(59, 130, 246, 0.14);
+  --input: rgba(59, 130, 246, 0.18);
+  --ring: #3b82f6;
+
+  /* brand-* tokens are reused by existing landing markup (text-brand-navy,
+     bg-brand-orange, etc.) so repointing them here recolors every section
+     without touching component code. */
+  --brand-navy: #16233f;
+  --brand-orange: #ff8a3d;
+  --brand-red: #6d7cf6;
+  --brand-yellow: #ffd9ad;
+  --brand-magenta: #16233f;
+  --soft-orange-glow: #ffe3c2;
+  --blue-accent: #3b82f6;
+  --indicator-indigo: #3b82f6;
+
+  --pop-sky: #7cc2ff;
+  --pop-cyan: #7fe0e0;
+  --pop-lavender: #a7b4ff;
+  --pop-ink: #16233f;
+  --pop-glow: 0 20px 60px -20px rgba(59, 130, 246, 0.35);
+}
+
+/* Soft cool-blue atmosphere behind hero-adjacent sections: replaces the old
+   warm-cream wash with icy blue / pale-cyan / lavender blooms. */
+.landing-pop .pop-atmosphere {
+  background-color: #f6faff;
+  background-image:
+    radial-gradient(ellipse 70% 55% at 15% -5%, rgba(124, 194, 255, 0.28) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 50% at 90% 5%, rgba(167, 180, 255, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 45% at 80% 60%, rgba(127, 224, 224, 0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 40% at 10% 70%, rgba(59, 130, 246, 0.12) 0%, transparent 60%);
+}
+
+/* Glassmorphic floating surface used throughout the redesigned landing page
+   (navbar pill, hero cards, feature panels, pricing cards, contact form). */
+.landing-pop .glass-pop {
+  background: color-mix(in oklch, white 78%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid color-mix(in oklch, #3b82f6 16%, transparent);
+  box-shadow:
+    0 1px 1px color-mix(in oklch, white 60%, transparent) inset,
+    0 20px 44px -24px rgba(30, 64, 175, 0.28);
+}
+
+.landing-pop .glow-border-pop {
+  position: relative;
+}
+.landing-pop .glow-border-pop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.55), rgba(167, 180, 255, 0.15) 40%, rgba(255, 138, 61, 0.35));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.landing-pop .pop-gradient-text {
+  background: linear-gradient(100deg, #1d4ed8 0%, #3b82f6 45%, #38bdf8 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Fine dot-grid used as a subtle texture layer (replaces the old dark-ink
+   dot grid with a barely-there blue one). */
+.landing-pop .pop-grid {
+  background-image: radial-gradient(rgba(59, 130, 246, 0.5) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+@keyframes pop-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(1deg);
+  }
+}
+.landing-pop .pop-float {
+  animation: pop-float 6s ease-in-out infinite;
+}
+.landing-pop .pop-float-delay {
+  animation: pop-float 6s ease-in-out infinite;
+  animation-delay: 1.4s;
+}
+
+@keyframes pop-orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.landing-pop .pop-orbit {
+  animation: pop-orbit-spin 90s linear infinite;
+}
+
+@keyframes pop-pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+}
+.landing-pop .pop-pulse {
+  animation: pop-pulse-glow 2.4s ease-out infinite;
+}
+
+/* Twinkling particle field, blue/orange instead of the old amber starfield —
+   used behind hero/CTA sections on the redesigned landing page. */
+.landing-pop .pop-particles {
+  background-image:
+    radial-gradient(1.6px 1.6px at 10% 20%, rgba(59, 130, 246, 0.75), transparent 100%),
+    radial-gradient(1.2px 1.2px at 30% 70%, rgba(255, 255, 255, 0.9), transparent 100%),
+    radial-gradient(1.6px 1.6px at 55% 15%, rgba(255, 138, 61, 0.55), transparent 100%),
+    radial-gradient(1.2px 1.2px at 75% 55%, rgba(124, 194, 255, 0.8), transparent 100%),
+    radial-gradient(1.6px 1.6px at 90% 85%, rgba(59, 130, 246, 0.6), transparent 100%),
+    radial-gradient(1.2px 1.2px at 15% 90%, rgba(167, 180, 255, 0.6), transparent 100%);
+  background-repeat: repeat;
+  background-size: 340px 340px;
+  animation: star-twinkle 5s ease-in-out infinite;
+}
