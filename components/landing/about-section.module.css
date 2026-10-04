@@ -1,0 +1,158 @@
+.section {
+  background: var(--color-surface);
+}
+
+.layout {
+  display: grid;
+  gap: clamp(48px, 8vw, 64px);
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}
+
+.narrative {
+  display: grid;
+  gap: clamp(24px, 4vw, 32px);
+}
+
+.missionTitle {
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 750;
+  color: var(--color-heading);
+  margin: 0;
+}
+
+.missionText {
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.story,
+.values {
+  padding: clamp(20px, 3vw, 28px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-muted);
+}
+
+.storyTitle,
+.valuesTitle {
+  margin: 0 0 clamp(12px, 2vw, 16px) 0;
+  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.storyText {
+  margin: 0;
+  color: var(--color-text);
+  font-size: clamp(0.9375rem, 1vw, 1rem);
+  line-height: 1.6;
+}
+
+.valuesList {
+  display: grid;
+  gap: clamp(10px, 1.5vw, 12px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.valuesList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--color-text);
+  font-size: clamp(0.9375rem, 1vw, 1rem);
+}
+
+.valuesList li:before {
+  content: "✓";
+  flex-shrink: 0;
+  color: var(--color-accent-strong);
+  font-weight: 700;
+  margin-block-start: 2px;
+}
+
+.team {
+  display: grid;
+  gap: clamp(20px, 3vw, 28px);
+  padding: clamp(28px, 4vw, 40px);
+  border: 2px solid var(--color-accent-soft);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(255, 122, 26, 0.03) 0%, rgba(194, 65, 12, 0.03) 100%);
+}
+
+.teamTitle {
+  margin: 0;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 750;
+  color: var(--color-heading);
+}
+
+.teamDescription {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: clamp(0.9375rem, 1vw, 1rem);
+}
+
+.teamGrid {
+  display: grid;
+  gap: clamp(16px, 2vw, 20px);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.teamCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(12px, 2vw, 16px);
+  padding: clamp(16px, 2vw, 20px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent-soft) 0%, rgba(194, 65, 12, 0.1) 100%);
+}
+
+.memberName {
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.memberRole {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+}
+
+.teamNote {
+  margin: 0;
+  padding: clamp(16px, 2vw, 20px);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-stronger);
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  line-height: 1.5;
+}
+
+@media (min-width: 640px) {
+  .teamGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
