@@ -427,3 +427,17 @@
 /* Without `draggable`, Judy is decoration: she must not swallow clicks or block
    touch-scrolling on the content underneath her. */
 .judy-static { cursor: default; touch-action: auto; pointer-events: none; }
+
+/* Inside a scene (e.g. the scenarios illustration) Judy is placed relative to
+   the picture instead of the viewport, sized as a share of its width, and her
+   glide between points lasts as long as the scene says (--judy-travel). */
+.judy-companion.judy-in-scene {
+  position: absolute;
+  z-index: 2;
+  width: 4.2%;
+  min-width: 26px;
+  transform: none;
+  transition: left var(--judy-travel, 1200ms) linear, bottom var(--judy-travel, 1200ms) linear;
+}
+.judy-in-scene .judy-bubble { font-size: 11px; padding: 6px 10px; }
+@media (max-width: 640px) { .judy-in-scene .judy-bubble { font-size: 9px; padding: 4px 7px; } }

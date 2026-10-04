@@ -1,12 +1,12 @@
 "use client"
 
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react"
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react"
 import "./judy-character.css"
 
-// Judy, ported from JudyCompanion.vue: the artwork and CSS animations only.
-// None of the original's automatic behaviour (route watching, section
-// detection, timers, auto-walking, chat) came across — the parent decides
-// what she does through props.
+// Judy, ported from JudyCompanion.vue: the artwork, the CSS animations and
+// (opt-in, via `autoPlay`) the original random idle routine. The page-specific
+// behaviour (route watching, section detection, data-judy-* triggers, chat)
+// did not come across — otherwise the parent decides what she does via props.
 
 export type JudyMood = "neutral" | "happy" | "listen" | "think" | "sad"
 
@@ -73,23 +73,154 @@ export interface JudyCharacterProps {
   draggable?: boolean
   /** Called with the dropped `left`/`bottom` in px after a drag. */
   onDragEnd?: (position: Point) => void
+  /**
+   * Runs Judy's idle routine: a random move for 10s, a 30s rest, then another
+   * random move, starting as soon as she mounts. While a move plays it
+   * overrides pose, mood, message and position; during the rest the props
+   * apply again.
+   */
+  autoPlay?: boolean
   className?: string
 }
+
+type AutoAction = { pose: JudyPose; mood?: JudyMood }
+
+// Move and bubble timings from JudyCompanion.vue (idleMoment / showLine /
+// roamRandomly). The rest is counted from when a move ends, not when it starts.
+const MOVE_LASTS_MS = 10_000
+const REST_BETWEEN_MS = 30_000
+const BUBBLE_LASTS_MS = 3_400
 
 const toCss = (value: number | string) => (typeof value === "number" ? `${value}px` : value)
 
 export function JudyCharacter({
-  pose = "idle",
-  mood,
-  x = 16,
-  y = 10,
+  pose: posePropValue = "idle",
+  mood: moodProp,
+  x: xProp = 16,
+  y: yProp = 10,
   facing = "right",
   size,
-  message = "",
+  message: messageProp = "",
   draggable = false,
   onDragEnd,
+  autoPlay = false,
   className,
 }: JudyCharacterProps) {
+  const [autoAction, setAutoAction] = useState<AutoAction | null>(null)
+  const [autoMessage, setAutoMessage] = useState("")
+  const [autoPos, setAutoPos] = useState<Partial<Point> | null>(null)
+  const drag = useRef({ pointerId: -1, startX: 0, startY: 0, left: 0, bottom: 0, moved: false })
+
+  useEffect(() => {
+    if (!autoPlay) return
+    const timeouts = new Set<number>()
+    const frames = new Set<number>()
+    let travel: number | undefined
+    let bubble: number | undefined
+
+    const later = (fn: () => void, ms: number) => {
+      const id = window.setTimeout(() => {
+        timeouts.delete(id)
+        fn()
+      }, ms)
+      timeouts.add(id)
+      return id
+    }
+    const nextFrame = (fn: () => void) => {
+      const id = window.requestAnimationFrame(() => {
+        frames.delete(id)
+        fn()
+      })
+      frames.add(id)
+    }
+    const say = (line: string) => {
+      setAutoMessage(line)
+      if (bubble !== undefined) {
+        window.clearTimeout(bubble)
+        timeouts.delete(bubble)
+      }
+      bubble = later(() => setAutoMessage(""), BUBBLE_LASTS_MS)
+    }
+    const play = (action: AutoAction, line?: string) => {
+      setAutoAction(action)
+      if (line) say(line)
+    }
+    const randomSpot = () => {
+      const maxLeft = Math.max(10, window.innerWidth - 152)
+      const maxBottom = Math.max(10, window.innerHeight - 250)
+      setAutoPos({
+        x: Math.round(10 + Math.random() * (maxLeft - 10)),
+        y: Math.round(10 + Math.random() * (maxBottom - 10)),
+      })
+    }
+    const roam = (run: boolean) => {
+      play({ pose: run ? "run" : "walk" })
+      randomSpot()
+      travel = window.setInterval(randomSpot, run ? 1300 : 2400)
+    }
+    const drive = () => {
+      play({ pose: "drive", mood: "happy" }, "Road trip!")
+      setAutoPos({ x: -142, y: 10 })
+      // Two frames so the off-screen start is committed before she sets off.
+      nextFrame(() => nextFrame(() => setAutoPos({ x: window.innerWidth + 12, y: 10 })))
+    }
+
+    const moves: Array<() => void> = [
+      () => play({ pose: "wave", mood: "happy" }, "Hi there!"),
+      () => play({ pose: "listen", mood: "listen" }, "I am listening."),
+      () => play({ pose: "cute-think", mood: "think" }, "Hmm... let me think."),
+      () => play({ pose: "idle", mood: "sad" }, "Sometimes I need a quiet moment."),
+      () => play({ pose: "twirl", mood: "happy" }, "Wheee!"),
+      () => play({ pose: "dance", mood: "happy" }, "Yay!"),
+      drive,
+      () => play({ pose: "hungry", mood: "happy" }, "A burger! Yum!"),
+      () => play({ pose: "eat", mood: "happy" }, "Yum!"),
+      () => play({ pose: "phone", mood: "happy" }, "Hello! How are you?"),
+      () => roam(false),
+      () => roam(true),
+      () => {
+        play({ pose: "sleep" })
+        setAutoPos((p) => ({ ...p, y: 10 }))
+      },
+    ]
+
+    const finish = (wasDriving: boolean) =>
+      later(() => {
+        if (travel !== undefined) window.clearInterval(travel)
+        travel = undefined
+        setAutoAction(null)
+        setAutoMessage("")
+        // Driving ends off-screen, so she comes home; roaming leaves her where she stopped.
+        if (wasDriving) setAutoPos(null)
+      }, MOVE_LASTS_MS)
+
+    const idleMoment = () => {
+      // Never yank her out of the visitor's hand mid-drag.
+      if (drag.current.pointerId === -1) {
+        const move = moves[Math.floor(Math.random() * moves.length)]
+        move()
+        finish(move === drive)
+      }
+      later(idleMoment, MOVE_LASTS_MS + REST_BETWEEN_MS)
+    }
+
+    idleMoment()
+
+    return () => {
+      timeouts.forEach((id) => window.clearTimeout(id))
+      frames.forEach((id) => window.cancelAnimationFrame(id))
+      if (travel !== undefined) window.clearInterval(travel)
+    }
+  }, [autoPlay])
+
+  // While a move plays it wins over the props; stale auto state is ignored when autoPlay is off.
+  const action = autoPlay ? autoAction : null
+  const pose = action ? action.pose : posePropValue
+  const mood = action ? action.mood : moodProp
+  const message = action ? autoMessage : messageProp
+  const x = autoPlay && autoPos?.x !== undefined ? autoPos.x : xProp
+  const y = autoPlay && autoPos?.y !== undefined ? autoPos.y : yProp
+
   // Keep the last text on screen while the bubble fades out.
   const [bubbleText, setBubbleText] = useState(message)
   if (message && message !== bubbleText) setBubbleText(message)
@@ -98,7 +229,6 @@ export function JudyCharacter({
   const positionKey = `${x}|${y}`
   const [dragged, setDragged] = useState<(Point & { key: string }) | null>(null)
   const [dragging, setDragging] = useState(false)
-  const drag = useRef({ pointerId: -1, startX: 0, startY: 0, left: 0, bottom: 0, moved: false })
   const current = dragged?.key === positionKey ? dragged : null
 
   const { classes, mood: poseMood } = POSES[pose]

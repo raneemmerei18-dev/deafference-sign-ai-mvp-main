@@ -5,6 +5,7 @@ import { Hero } from "./hero"
 import { AboutUs } from "./about-us"
 import { WhyChooseUs } from "./why-choose-us"
 import { HowItWorksVisual } from "./how-it-works-visual"
+import { Scenarios } from "./scenarios"
 import { DemoCenter } from "./demo-center"
 import { Features } from "./features"
 import { Performance } from "./performance"
@@ -20,13 +21,14 @@ export function LandingPage() {
   return (
     <div className="landing-pop relative min-h-dvh bg-background text-foreground">
       <div aria-hidden="true" className="pop-particles pointer-events-none fixed inset-0 z-0 opacity-60" />
-      <JudyCharacter pose="wave" message="Hi!" x={16} y={10} />
+      <JudyCharacter x={16} y={10} autoPlay />
       <Navbar />
       <main className="relative z-10">
         <Hero />
         <AboutUs />
         <WhyChooseUs />
         <HowItWorksVisual />
+        <Scenarios />
         <DemoCenter />
         <Features />
         <Performance />
