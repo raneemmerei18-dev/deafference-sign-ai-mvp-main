@@ -1,0 +1,46 @@
+"use client"
+
+import { TranslationSettings } from "@/components/translation/settings"
+import styles from "./page.module.css"
+
+export default function SignToTextPage() {
+  return (
+    <main className={styles.main}>
+      <div className={styles.container}>
+        <section className={styles.translationArea}>
+          <div className={styles.header}>
+            <h1 className={styles.title}>Sign → Text/Speech</h1>
+            <p className={styles.subtitle}>Show your signs, get text and speech</p>
+          </div>
+
+          <div className={styles.cameraPreview}>
+            <div className={styles.cameraPlaceholder}>
+              <p>Camera feed will appear here</p>
+              <p className={styles.cameraNote}>Grant camera permissions to begin</p>
+            </div>
+          </div>
+
+          <div className={styles.output}>
+            <div className={styles.outputSection}>
+              <h2 className={styles.outputLabel}>Detected Text</h2>
+              <div className={styles.outputBox}>
+                <p className={styles.outputText}>Text will appear here as signs are recognized</p>
+              </div>
+            </div>
+
+            <div className={styles.outputSection}>
+              <h2 className={styles.outputLabel}>Speech Output</h2>
+              <button className={styles.playButton}>Play Speech</button>
+            </div>
+          </div>
+        </section>
+
+        <TranslationSettings
+          onSettingsChange={(settings) => {
+            console.log("Translation settings updated:", settings)
+          }}
+        />
+      </div>
+    </main>
+  )
+}
