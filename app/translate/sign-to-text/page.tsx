@@ -1,9 +1,10 @@
-"use client"
-
 import { TranslationSettings } from "@/components/translation/settings"
+import { useTranslation } from "@/components/translation/translation-context"
 import styles from "./page.module.css"
 
 export default function SignToTextPage() {
+  const { state } = useTranslation()
+
   return (
     <main className={styles.main}>
       <div className={styles.container}>
@@ -15,8 +16,17 @@ export default function SignToTextPage() {
 
           <div className={styles.cameraPreview}>
             <div className={styles.cameraPlaceholder}>
-              <p>Camera feed will appear here</p>
-              <p className={styles.cameraNote}>Grant camera permissions to begin</p>
+              {state.cameraEnabled ? (
+                <>
+                  <p>Camera feed will appear here</p>
+                  <p className={styles.cameraNote}>Grant camera permissions to begin</p>
+                </>
+              ) : (
+                <>
+                  <p>📷 Camera disabled</p>
+                  <p className={styles.cameraNote}>Enable camera in settings to begin</p>
+                </>
+              )}
             </div>
           </div>
 
@@ -35,11 +45,7 @@ export default function SignToTextPage() {
           </div>
         </section>
 
-        <TranslationSettings
-          onSettingsChange={(settings) => {
-            console.log("Translation settings updated:", settings)
-          }}
-        />
+        <TranslationSettings />
       </div>
     </main>
   )

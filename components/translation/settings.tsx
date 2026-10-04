@@ -1,21 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useLanguage } from "@/components/i18n/language-provider"
+import { useTranslation } from "@/components/translation/translation-context"
 import { ChevronDownIcon } from "@/components/landing/icons"
 import styles from "./settings.module.css"
-
-interface TranslationSettings {
-  cameraEnabled: boolean
-  landmarkOverlay: boolean
-  signDialect: string
-}
-
-const DEFAULT_SETTINGS: TranslationSettings = {
-  cameraEnabled: true,
-  landmarkOverlay: false,
-  signDialect: "asl",
-}
 
 const SIGN_DIALECTS = [
   { id: "asl", label: "American Sign Language (ASL)" },
@@ -25,56 +14,35 @@ const SIGN_DIALECTS = [
   { id: "local", label: "Local Sign Language" },
 ]
 
-interface SettingsProps {
-  onSettingsChange?: (settings: TranslationSettings) => void
-}
-
-export function TranslationSettings({ onSettingsChange }: SettingsProps) {
+export function TranslationSettings() {
   const { dict } = useLanguage()
   const t = dict.translationSettings
-  const [settings, setSettings] = useState<TranslationSettings>(DEFAULT_SETTINGS)
+  const { state, setState } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [savedMessage, setSavedMessage] = useState(false)
 
-  useEffect(() => {
-    const savedSettings = localStorage.getItem("translationSettings")
-    if (savedSettings) {
-      try {
-        const parsed = JSON.parse(savedSettings)
-        setSettings(parsed)
-      } catch {
-        setSettings(DEFAULT_SETTINGS)
-      }
-    }
-  }, [])
-
   const handleCameraToggle = () => {
-    const updated = { ...settings, cameraEnabled: !settings.cameraEnabled }
-    setSettings(updated)
-    saveSettings(updated)
+    setState({ cameraEnabled: !state.cameraEnabled })
+    showSavedMessage()
   }
 
   const handleLandmarkToggle = () => {
-    const updated = { ...settings, landmarkOverlay: !settings.landmarkOverlay }
-    setSettings(updated)
-    saveSettings(updated)
+    setState({ landmarkOverlay: !state.landmarkOverlay })
+    showSavedMessage()
   }
 
   const handleDialectChange = (dialectId: string) => {
-    const updated = { ...settings, signDialect: dialectId }
-    setSettings(updated)
-    saveSettings(updated)
+    setState({ signDialect: dialectId })
     setIsOpen(false)
+    showSavedMessage()
   }
 
-  const saveSettings = (newSettings: TranslationSettings) => {
-    localStorage.setItem("translationSettings", JSON.stringify(newSettings))
+  const showSavedMessage = () => {
     setSavedMessage(true)
     setTimeout(() => setSavedMessage(false), 2000)
-    onSettingsChange?.(newSettings)
   }
 
-  const selectedDialect = SIGN_DIALECTS.find((d) => d.id === settings.signDialect)
+  const selectedDialect = SIGN_DIALECTS.find((d) => d.id === state.signDialect)
 
   return (
     <aside className={styles.settings} aria-label={t.title}>
@@ -174,11 +142,8 @@ export function TranslationSettings({ onSettingsChange }: SettingsProps) {
       <button
         className={styles.resetButton}
         onClick={() => {
-          setSettings(DEFAULT_SETTINGS)
-          localStorage.removeItem("translationSettings")
-          setSavedMessage(true)
-          setTimeout(() => setSavedMessage(false), 2000)
-          onSettingsChange?.(DEFAULT_SETTINGS)
+          setState({ cameraEnabled: true, landmarkOverlay: false, signDialect: "asl" })
+          showSavedMessage()
         }}
       >
         {t.resetButton}
