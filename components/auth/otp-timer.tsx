@@ -7,9 +7,10 @@ interface OTPTimerProps {
   initialSeconds?: number
   onExpire: () => void
   onResendClick: () => Promise<void>
+  isResending?: boolean
 }
 
-export function OTPTimer({ initialSeconds = 60, onExpire, onResendClick }: OTPTimerProps) {
+export function OTPTimer({ initialSeconds = 60, onExpire, onResendClick, isResending = false }: OTPTimerProps) {
   const [secondsLeft, setSecondsLeft] = useState(initialSeconds)
   const [isResending, setIsResending] = useState(false)
 
@@ -64,7 +65,13 @@ export function OTPTimer({ initialSeconds = 60, onExpire, onResendClick }: OTPTi
       </div>
 
       {isExpired ? (
-        <button type="button" className={`btn btn-secondary ${styles.resendButton}`} onClick={handleResend} disabled={isResending}>
+        <button
+          type="button"
+          className={`btn btn-secondary ${styles.resendButton}`}
+          onClick={handleResend}
+          disabled={isResending}
+          aria-busy={isResending}
+        >
           {isResending ? "Sending..." : "Send new code"}
         </button>
       ) : (

@@ -33,25 +33,60 @@
   font-size: 0.9375rem;
 }
 
+.emailHighlight {
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
 .actions {
-  margin-block-start: 24px;
+  margin-block-start: clamp(20px, 3vw, 24px);
   text-align: center;
 }
 
 .backLink {
+  display: inline-block;
+  min-height: 44px;
+  padding: clamp(8px, 1vw, 10px) clamp(12px, 2vw, 14px);
   color: var(--color-text-muted);
-  font-size: 0.9375rem;
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
   font-weight: 550;
   text-decoration: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .backLink:hover {
-  color: var(--color-accent-strong);
+  background: var(--color-surface-muted);
+  color: var(--color-heading);
+}
+
+.backLink:focus-visible {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+
+.helpText {
+  margin-block-start: clamp(20px, 3vw, 24px);
+  padding: clamp(12px, 2vw, 16px);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+}
+
+.helpText p {
+  margin: 0;
+  color: var(--color-accent-stronger);
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  font-weight: 550;
 }
 
 .demo {
-  margin-block-start: 32px;
-  padding: 16px;
+  margin-block-start: clamp(24px, 4vw, 32px);
+  padding: clamp(12px, 2vw, 16px);
   border: 1px solid #f3d5c6;
   border-radius: var(--radius-md);
   background: #fff8f3;

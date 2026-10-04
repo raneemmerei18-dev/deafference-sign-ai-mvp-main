@@ -10,11 +10,12 @@ interface OTPInputProps {
   isLoading?: boolean
   error?: string
   autoFocus?: boolean
+  disabled?: boolean
 }
 
 const OTP_LENGTH = 6
 
-export function OTPInput({ value, onChange, onComplete, isLoading = false, error, autoFocus = true }: OTPInputProps) {
+export function OTPInput({ value, onChange, onComplete, isLoading = false, error, autoFocus = true, disabled = false }: OTPInputProps) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   // Focus first input on mount
@@ -103,7 +104,7 @@ export function OTPInput({ value, onChange, onComplete, isLoading = false, error
             className={styles.box}
             data-state={value[index] ? "filled" : "empty"}
             data-error={error ? "true" : undefined}
-            disabled={isLoading}
+            disabled={isLoading || disabled}
             aria-label={`Digit ${index + 1} of 6`}
             aria-invalid={error ? "true" : undefined}
           />

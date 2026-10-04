@@ -4,6 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { OTPInput } from "@/components/auth/otp-input"
 import { OTPTimer } from "@/components/auth/otp-timer"
+import { ErrorAlert } from "@/components/auth/error-alert"
+import { ClockIcon, MailIcon } from "@/components/landing/icons"
 import styles from "./verify.module.css"
 
 export default function VerifyPage() {
@@ -13,9 +15,11 @@ export default function VerifyPage() {
 
   const [otp, setOTP] = useState("")
   const [error, setError] = useState("")
+  const [errorType, setErrorType] = useState<"invalid" | "expired" | "network" | "generic">("generic")
   const [isLoading, setIsLoading] = useState(false)
   const [isResending, setIsResending] = useState(false)
   const [codeExpired, setCodeExpired] = useState(false)
+  const [attemptCount, setAttemptCount] = useState(0)
 
   // Demo: auto-fill OTP for testing (remove in production)
   useEffect(() => {
@@ -37,12 +41,31 @@ export default function VerifyPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || "Invalid or expired code. Try again.")
+        const newAttempts = attemptCount + 1
+        setAttemptCount(newAttempts)
+
+        if (response.status === 401) {
+          setErrorType("invalid")
+          setError(newAttempts >= 3 ? "Too many incorrect attempts. Request a new code." : "The code you entered is incorrect. Please try again.")
+        } else if (response.status === 410) {
+          setErrorType("expired")
+          setError("This code has expired. A new code has been sent to your email.")
+          setCodeExpired(true)
+        } else if (response.status === 429) {
+          setErrorType("expired")
+          setError("You've made too many attempts. Please request a new code.")
+          setCodeExpired(true)
+        } else {
+          setErrorType("generic")
+          setError(data.error || "Verification failed. Please try again.")
+        }
         return
       }
 
-      // Success: redirect to dashboard or home
-      router.push("/")
+      router.push("/dashboard")
+    } catch (error) {
+      setErrorType("network")
+      setError("Network error. Please check your connection and try again.")
     } finally {
       setIsLoading(false)
     }
@@ -52,6 +75,8 @@ export default function VerifyPage() {
     setError("")
     setCodeExpired(false)
     setOTP("")
+    setAttemptCount(0)
+    setIsResending(true)
 
     try {
       const response = await fetch("/api/auth/resend-otp", {
@@ -62,10 +87,21 @@ export default function VerifyPage() {
 
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || "Failed to send code. Try again.")
+        if (response.status === 429) {
+          setErrorType("expired")
+          setError("Too many requests. Please wait before requesting a new code.")
+        } else {
+          setErrorType("generic")
+          setError(data.error || "Failed to send a new code. Please try again.")
+        }
+      } else {
+        setError("")
       }
-    } catch {
-      setError("Network error. Please try again.")
+    } catch (error) {
+      setErrorType("network")
+      setError("Network error. Please check your connection and try again.")
+    } finally {
+      setIsResending(false)
     }
   }
 
@@ -81,24 +117,61 @@ export default function VerifyPage() {
       <div className={styles.card}>
         <div className={styles.header}>
           <h1 className={styles.title}>Verify your email</h1>
-          <p className={styles.description}>We sent a 6-digit code to {email}. Enter it below to continue.</p>
+          <p className={styles.description}>
+            We sent a 6-digit code to <span className={styles.emailHighlight}>{email}</span>. Enter it below to continue.
+          </p>
         </div>
+
+        {error && (
+          <ErrorAlert
+            message={error}
+            type={errorType === "expired" || errorType === "network" ? "warning" : "error"}
+            icon={
+              errorType === "expired" ? (
+                <ClockIcon size={18} />
+              ) : undefined
+            }
+            action={errorType === "expired" || attemptCount >= 3 ? {
+              label: "Request new code",
+              onClick: handleResend,
+            } : undefined}
+          />
+        )}
 
         <OTPInput
           value={otp}
-          onChange={setOTP}
+          onChange={(val) => {
+            setOTP(val)
+            if (error) setError("")
+          }}
           onComplete={handleSubmit}
           isLoading={isLoading || isResending}
-          error={error || (codeExpired ? "Code expired. Send a new one." : "")}
+          error={codeExpired ? "Code expired" : ""}
           autoFocus={true}
+          disabled={codeExpired && !isResending}
         />
 
-        <OTPTimer initialSeconds={60} onExpire={() => setCodeExpired(true)} onResendClick={handleResend} />
+        <OTPTimer
+          initialSeconds={60}
+          onExpire={() => setCodeExpired(true)}
+          onResendClick={handleResend}
+          isResending={isResending}
+        />
 
         <div className={styles.actions}>
-          <a href="#" onClick={() => router.back()} className={styles.backLink}>
+          <button
+            type="button"
+            className={styles.backLink}
+            onClick={() => router.back()}
+          >
             ← Change email
-          </a>
+          </button>
+        </div>
+
+        <div className={styles.helpText}>
+          <p>
+            <strong>Check your spam folder</strong> if you don't see the code in a few minutes.
+          </p>
         </div>
       </div>
 
