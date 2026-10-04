@@ -9,6 +9,7 @@ import styles from "./navbar.module.css"
 
 const NAV_LINKS = [
   { href: "#demo", key: "demo" },
+  { href: "/translate/sign-to-text", key: "translate", external: true },
   { href: "#pricing", key: "pricing" },
   { href: "#contact", key: "contact" },
 ] as const
@@ -72,7 +73,7 @@ export function Navbar() {
           <ul className={styles.navList}>
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className={styles.navLink}>
+                <a href={link.href} className={styles.navLink} {...("external" in link && link.external ? { target: "_self" } : {})}>
                   {dict.nav[link.key]}
                 </a>
               </li>
@@ -105,7 +106,7 @@ export function Navbar() {
             <ul className={styles.mobileList}>
               {NAV_LINKS.map((link) => (
                 <li key={link.href}>
-                  <a href={link.href} className={styles.mobileLink} onClick={closeMenu}>
+                  <a href={link.href} className={styles.mobileLink} onClick={closeMenu} {...("external" in link && link.external ? { target: "_self" } : {})}>
                     {dict.nav[link.key]}
                   </a>
                 </li>

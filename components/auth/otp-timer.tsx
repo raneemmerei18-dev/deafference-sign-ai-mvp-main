@@ -7,10 +7,9 @@ interface OTPTimerProps {
   initialSeconds?: number
   onExpire: () => void
   onResendClick: () => Promise<void>
-  isResending?: boolean
 }
 
-export function OTPTimer({ initialSeconds = 60, onExpire, onResendClick, isResending = false }: OTPTimerProps) {
+export function OTPTimer({ initialSeconds = 60, onExpire, onResendClick }: OTPTimerProps) {
   const [secondsLeft, setSecondsLeft] = useState(initialSeconds)
   const [isResending, setIsResending] = useState(false)
 
