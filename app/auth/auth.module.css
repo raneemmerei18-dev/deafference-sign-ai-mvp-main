@@ -43,6 +43,20 @@
   gap: clamp(4px, 1vw, 6px);
 }
 
+.fieldset {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .label {
   color: var(--color-heading);
   font-size: 0.9375rem;
@@ -68,6 +82,43 @@
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
+}
+
+.inputWrapper .input {
+  padding-inline-start: clamp(40px, 8vw, 44px);
+  padding-inline-end: clamp(44px, 8vw, 48px);
+}
+
+.fieldIcon {
+  position: absolute;
+  inset-inline-start: clamp(12px, 2vw, 14px);
+  color: var(--color-text-muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.visibilityToggle {
+  position: absolute;
+  inset-inline-end: clamp(12px, 2vw, 14px);
+  min-width: auto;
+  min-height: 44px;
+  padding: clamp(8px, 1vw, 10px) clamp(8px, 2vw, 10px);
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: clamp(0.75rem, 1vw, 0.8125rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.visibilityToggle:hover {
+  color: var(--color-heading);
+}
+
+.visibilityToggle:focus-visible {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
 }
 
 .input:hover {
@@ -230,4 +281,19 @@
 .successNote {
   color: #666;
   font-size: 0.875rem;
+}
+
+.success {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-block-start: 4px;
+  color: var(--color-success);
+  font-size: 0.875rem;
+  font-weight: 550;
+  line-height: 1.4;
+}
+
+.success svg {
+  flex-shrink: 0;
 }
