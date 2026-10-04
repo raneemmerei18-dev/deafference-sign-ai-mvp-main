@@ -5,7 +5,7 @@
 }
 
 .formCard {
-  padding: clamp(20px, 4vw, 36px);
+  padding: clamp(16px, 4vw, 36px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
@@ -14,17 +14,17 @@
 
 .form {
   display: grid;
-  gap: 20px;
+  gap: clamp(16px, 2vw, 20px);
 }
 
 .row {
   display: grid;
-  gap: 20px;
+  gap: clamp(16px, 3vw, 20px);
 }
 
 .field {
   display: grid;
-  gap: 6px;
+  gap: clamp(4px, 1vw, 6px);
   align-content: start;
 }
 
@@ -41,13 +41,13 @@
 
 .input {
   width: 100%;
-  min-height: 48px;
-  padding: 10px 14px;
+  min-height: clamp(44px, 10vw, 48px);
+  padding: clamp(8px, 1vw, 10px) clamp(12px, 2vw, 14px);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-text);
-  font-size: 1rem;
+  font-size: clamp(0.9375rem, 1vw, 1rem);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
@@ -71,8 +71,10 @@
 }
 
 .textarea {
-  min-height: 140px;
+  min-height: clamp(120px, 30vw, 140px);
   resize: vertical;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Right-to-left pages keep email text left-to-right but aligned with the form. */
@@ -102,13 +104,13 @@
 .radioOption {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 48px;
-  padding: 10px 14px;
+  gap: clamp(8px, 2vw, 10px);
+  min-height: clamp(44px, 10vw, 48px);
+  padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 14px);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   background: var(--color-surface);
-  font-size: 0.9375rem;
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
   cursor: pointer;
   transition:
     background-color 0.15s ease,
@@ -133,8 +135,10 @@
 
 .radioOption input {
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: clamp(18px, 4vw, 20px);
+  height: clamp(18px, 4vw, 20px);
+  min-width: clamp(18px, 4vw, 20px);
+  min-height: clamp(18px, 4vw, 20px);
   margin: 0;
   accent-color: var(--color-accent-strong);
 }
@@ -241,8 +245,8 @@
 
 .channel {
   display: flex;
-  gap: 14px;
-  padding: 18px;
+  gap: clamp(12px, 2vw, 14px);
+  padding: clamp(14px, 2vw, 18px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
@@ -252,8 +256,9 @@
   display: grid;
   flex-shrink: 0;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: clamp(40px, 8vw, 44px);
+  height: clamp(40px, 8vw, 44px);
+  min-width: clamp(40px, 8vw, 44px);
   border-radius: var(--radius-md);
   background: var(--color-accent-soft);
   color: var(--color-accent-strong);
@@ -261,20 +266,21 @@
 
 .channelTitle {
   color: var(--color-heading);
-  font-size: 0.9375rem;
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
   font-weight: 700;
 }
 
 .channelDescription {
-  margin-block: 2px 6px;
+  margin-block: clamp(1px, 0.5vw, 2px) clamp(4px, 1vw, 6px);
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: clamp(0.8125rem, 0.9vw, 0.875rem);
 }
 
 .channelLink {
-  font-size: 0.9375rem;
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
   font-weight: 650;
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 @media (min-width: 640px) {

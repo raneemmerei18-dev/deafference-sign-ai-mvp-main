@@ -16,24 +16,24 @@
 }
 
 .title {
-  margin-block-start: 18px;
-  font-size: clamp(2.125rem, 1.35rem + 3.2vw, 3.5rem);
+  margin-block-start: clamp(12px, 2vw, 18px);
+  font-size: clamp(1.75rem, 1.2rem + 2.5vw, 3.5rem);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.08;
 }
 
 .lead {
-  margin-block-start: 20px;
+  margin-block-start: clamp(16px, 3vw, 20px);
   color: var(--color-text-muted);
-  font-size: 1.1875rem;
+  font-size: clamp(0.9375rem, 1.5vw, 1.1875rem);
 }
 
 .badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 28px 0 0;
+  gap: clamp(6px, 1.5vw, 8px);
+  margin: clamp(20px, 4vw, 28px) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -41,13 +41,13 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: clamp(4px, 1vw, 6px);
+  padding: clamp(4px, 1vw, 6px) clamp(10px, 1.5vw, 12px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
   color: var(--color-text);
-  font-size: 0.875rem;
+  font-size: clamp(0.8125rem, 1vw, 0.875rem);
   font-weight: 550;
 }
 
@@ -58,12 +58,12 @@
 .ctas {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-block-start: 32px;
+  gap: clamp(8px, 2vw, 12px);
+  margin-block-start: clamp(24px, 4vw, 32px);
 }
 
 .card {
-  padding: clamp(20px, 3vw, 28px);
+  padding: clamp(16px, 3vw, 28px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
@@ -82,9 +82,10 @@
 .mode {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  min-height: 40px;
-  padding: 0 16px;
+  min-height: var(--touch-target);
+  padding: 0 clamp(12px, 2vw, 16px);
   border: 0;
   border-radius: var(--radius-pill);
   background: transparent;
@@ -108,30 +109,30 @@
 }
 
 .phrases {
-  margin-block-start: 20px;
+  margin-block-start: clamp(16px, 3vw, 20px);
 }
 
 .groupLabel {
   color: var(--color-text-muted);
-  font-size: 0.8125rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.8125rem);
   font-weight: 650;
 }
 
 .phraseList {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-block-start: 8px;
+  gap: clamp(6px, 1.5vw, 8px);
+  margin-block-start: clamp(6px, 1vw, 8px);
 }
 
 .phraseButton {
-  min-height: 40px;
-  padding: 6px 14px;
+  min-height: clamp(40px, 8vw, 44px);
+  padding: clamp(6px, 1vw, 8px) clamp(12px, 2vw, 14px);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
   color: var(--color-text);
-  font-size: 0.875rem;
+  font-size: clamp(0.8125rem, 1.5vw, 0.875rem);
   font-weight: 550;
   cursor: pointer;
   transition:
@@ -151,18 +152,21 @@
 
 .stage {
   display: grid;
-  gap: 12px;
-  margin-block-start: 20px;
+  gap: clamp(8px, 2vw, 12px);
+  margin-block-start: clamp(16px, 3vw, 20px);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .pane {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-height: 132px;
-  padding: 16px;
+  gap: clamp(8px, 1vw, 10px);
+  min-height: clamp(120px, 30vw, 132px);
+  padding: clamp(12px, 2vw, 16px);
   border-radius: var(--radius-md);
   background: var(--color-surface-muted);
+  overflow-wrap: break-word;
 }
 
 .outputPane {
@@ -172,7 +176,7 @@
 
 .paneLabel {
   color: var(--color-text-muted);
-  font-size: 0.75rem;
+  font-size: clamp(0.6875rem, 1vw, 0.75rem);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -180,8 +184,9 @@
 
 .phrase {
   color: var(--color-heading);
-  font-size: 1.125rem;
+  font-size: clamp(0.9375rem, 2vw, 1.125rem);
   font-weight: 650;
+  word-break: break-word;
 }
 
 .pending {
@@ -202,19 +207,19 @@
 .glossList {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: clamp(6px, 1.5vw, 8px);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .gloss {
-  padding: 6px 12px;
+  padding: clamp(4px, 1vw, 6px) clamp(8px, 1.5vw, 12px);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
   background: var(--color-surface);
   color: var(--color-heading);
-  font-size: 0.875rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
   font-weight: 750;
   letter-spacing: 0.04em;
   transition:
@@ -222,6 +227,7 @@
     transform 0.25s ease,
     border-color 0.25s ease,
     background-color 0.25s ease;
+  word-break: break-word;
 }
 
 .gloss[data-state="pending"] {
@@ -237,11 +243,11 @@
 
 .notes {
   display: grid;
-  gap: 6px;
-  margin: 16px 0 0;
+  gap: clamp(4px, 1vw, 6px);
+  margin: clamp(12px, 2vw, 16px) 0 0;
   padding: 0;
   color: var(--color-text-muted);
-  font-size: 0.8125rem;
+  font-size: clamp(0.75rem, 1vw, 0.8125rem);
   list-style: none;
 }
 
