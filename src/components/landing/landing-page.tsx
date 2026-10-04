@@ -20,7 +20,7 @@ export function LandingPage() {
   return (
     <div className="landing-pop relative min-h-dvh bg-background text-foreground">
       <div aria-hidden="true" className="pop-particles pointer-events-none fixed inset-0 z-0 opacity-60" />
-      <JudyCharacter pose="idle" x={16} y={10} />
+      <JudyCharacter pose="wave" message="Hi!" x={16} y={10} />
       <Navbar />
       <main className="relative z-10">
         <Hero />
