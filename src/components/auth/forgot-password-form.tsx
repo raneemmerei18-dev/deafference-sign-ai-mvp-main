@@ -4,7 +4,7 @@ import { useId, useState, type FormEvent } from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { AuthCard } from "./auth-shell"
 import { Input } from "@/components/ui/input"
 import { FieldError } from "@/components/shared/field-error"
 import { EMAIL_PATTERN } from "@/lib/validation"
@@ -47,10 +47,10 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <Card className="mx-auto w-full max-w-md border-border/60 p-7 shadow-xl shadow-black/[0.03] sm:p-8">
+    <AuthCard>
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-lg font-semibold text-foreground">Reset your password</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-brand-navy">Reset your password</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Enter the email on your account and we'll send you a link to reset your password.
           </p>
@@ -121,6 +121,6 @@ export function ForgotPasswordForm() {
           </form>
         )}
       </div>
-    </Card>
+    </AuthCard>
   )
 }

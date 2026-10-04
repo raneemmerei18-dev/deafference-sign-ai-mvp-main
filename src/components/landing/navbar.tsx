@@ -46,22 +46,6 @@ function NavLink({
   )
 }
 
-// Waveform + open-hand fusion mark, in the new soft-blue-with-orange-spark treatment.
-function BrandMark() {
-  return (
-    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true">
-      <rect width="34" height="34" rx="10" fill="#3B82F6" />
-      <rect x="7" y="16" width="2.2" height="7" rx="1.1" fill="white" fillOpacity="0.6" />
-      <rect x="10.5" y="12" width="2.2" height="14" rx="1.1" fill="white" fillOpacity="0.78" />
-      <rect x="14" y="9" width="2.2" height="20" rx="1.1" fill="white" fillOpacity="0.92" />
-      <path
-        d="M18.5 21.5c0-4.6.9-8.3 1.9-8.3.9 0 1.5 2.6 1.5 5.5 0-3.7 1.3-6.8 2.3-6.6.9.2 1.1 3 1 5.9.9-2.7 2-4.5 2.8-4.1.8.4.3 3.6-.6 5.8-.9 2.3-2.6 4.3-5 4.3-2.7 0-3.9-1.3-3.9-2.5Z"
-        fill="#FF8A3D"
-      />
-    </svg>
-  )
-}
-
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -115,9 +99,10 @@ export function Navbar() {
         )}
       >
         <Container className="flex h-16 items-center justify-between gap-4 sm:h-[4.25rem]">
-          <a href="#top" className={cn("flex items-center gap-2.5 rounded-lg", focusRingPop)} aria-label="Deafference home">
-            <BrandMark />
-            <span className="text-xl font-bold tracking-tight text-brand-navy">Deafference</span>
+          <a href="#top" className={cn("flex items-center gap-2.5 rounded-lg", focusRingPop)}>
+            {/* Transparent wordmark; the grey-ink variant keeps it readable in dark mode. */}
+            <img src="/deafference-wordmark.png" alt="Deafference" className="h-11 w-auto dark:hidden sm:h-12" />
+            <img src="/deafference-wordmark-dark.png" alt="Deafference" className="hidden h-11 w-auto dark:block sm:h-12" />
           </a>
 
           <nav aria-label="Main Navigation" className="hidden lg:block">

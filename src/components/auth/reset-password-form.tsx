@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { AuthCard } from "./auth-shell"
 import { FieldError } from "@/components/shared/field-error"
 import { PasswordField } from "@/components/shared/password-field"
 import { MIN_PASSWORD_LENGTH, getPasswordStrength } from "@/lib/validation"
@@ -53,31 +53,31 @@ export function ResetPasswordForm({ token }: { token: string | undefined }) {
 
   if (!token) {
     return (
-      <Card className="mx-auto w-full max-w-md border-border/60 p-7 shadow-xl shadow-black/[0.03] sm:p-8">
+      <AuthCard>
         <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           This reset link is missing its token. Request a new one from the sign-in page.
         </p>
         <Link href={APP_ROUTES.login} className="mt-4 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline">
           Back to sign in
         </Link>
-      </Card>
+      </AuthCard>
     )
   }
 
   if (status === "success") {
     return (
-      <Card className="mx-auto w-full max-w-md border-border/60 p-7 text-center shadow-xl shadow-black/[0.03] sm:p-8">
+      <AuthCard className="text-center">
         <CheckCircle2 className="mx-auto size-8 text-primary" aria-hidden="true" />
         <p className="mt-3 text-sm font-medium text-foreground">Password updated. Redirecting to sign in…</p>
-      </Card>
+      </AuthCard>
     )
   }
 
   return (
-    <Card className="mx-auto w-full max-w-md border-border/60 p-7 shadow-xl shadow-black/[0.03] sm:p-8">
+    <AuthCard>
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-lg font-semibold text-foreground">Choose a new password</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-brand-navy">Choose a new password</h1>
           <p className="mt-1 text-sm text-muted-foreground">Make it something you haven't used before.</p>
         </div>
 
@@ -134,6 +134,6 @@ export function ResetPasswordForm({ token }: { token: string | undefined }) {
           </fieldset>
         </form>
       </div>
-    </Card>
+    </AuthCard>
   )
 }
