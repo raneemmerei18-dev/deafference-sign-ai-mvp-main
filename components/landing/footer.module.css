@@ -1,25 +1,27 @@
 .footer {
-  padding-block: clamp(48px, 7vw, 72px) 28px;
+  padding-block: clamp(40px, 7vw, 72px) clamp(20px, 3vw, 28px);
+  padding-inline: var(--gutter);
   border-block-start: 1px solid var(--color-border);
   background: var(--color-surface-muted);
 }
 
 .top {
   display: grid;
-  gap: 40px;
+  gap: clamp(28px, 5vw, 40px);
 }
 
 .brandColumn {
   max-width: 380px;
+  min-width: 0;
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: clamp(8px, 1.5vw, 10px);
   border-radius: var(--radius-sm);
   color: var(--color-heading);
-  font-size: 1.125rem;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
   font-weight: 750;
   text-decoration: none;
 }
@@ -29,15 +31,15 @@
 }
 
 .tagline {
-  margin-block: 14px 28px;
+  margin-block: clamp(10px, 2vw, 14px) clamp(20px, 3vw, 28px);
   color: var(--color-text-muted);
-  font-size: 0.9375rem;
+  font-size: clamp(0.8125rem, 1vw, 0.9375rem);
 }
 
 .groupTitle {
-  margin-block-end: 12px;
+  margin-block-end: clamp(8px, 1.5vw, 12px);
   color: var(--color-heading);
-  font-size: 0.8125rem;
+  font-size: clamp(0.75rem, 1vw, 0.8125rem);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -51,7 +53,7 @@
 .socialList {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: clamp(6px, 1.5vw, 8px);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -62,9 +64,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-width: 44px;
-  min-height: 44px;
+  gap: clamp(6px, 2vw, 8px);
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+  padding: clamp(8px, 2vw, 10px);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
@@ -104,7 +107,8 @@
 .link {
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
+  min-height: clamp(36px, 8vw, 44px);
+  padding-block: clamp(4px, 1vw, 8px);
   color: var(--color-text-muted);
   font-size: 0.9375rem;
   text-decoration: none;
@@ -117,14 +121,14 @@
 
 .statement {
   display: grid;
-  gap: 10px;
-  margin-block-start: 40px;
-  padding: clamp(20px, 3vw, 28px);
+  gap: clamp(8px, 1.5vw, 10px);
+  margin-block-start: clamp(28px, 5vw, 40px);
+  padding: clamp(16px, 3vw, 28px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
   color: var(--color-text);
-  font-size: 0.9375rem;
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
   scroll-margin-top: calc(var(--nav-height) + 16px);
 }
 
@@ -138,19 +142,20 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-block-start: 32px;
-  padding-block-start: 20px;
+  gap: clamp(8px, 2vw, 12px);
+  margin-block-start: clamp(24px, 4vw, 32px);
+  padding-block-start: clamp(16px, 2vw, 20px);
   border-block-start: 1px solid var(--color-border);
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: clamp(0.8125rem, 1vw, 0.875rem);
 }
 
 .backToTop {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 36px;
+  min-height: clamp(36px, 8vw, 44px);
+  padding-block: clamp(4px, 1vw, 8px);
   color: var(--color-heading);
   font-weight: 600;
   text-decoration: none;

@@ -57,8 +57,9 @@
 .navLink {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  padding: 0 14px;
+  justify-content: center;
+  min-height: var(--touch-target);
+  padding: 0 clamp(10px, 2vw, 14px);
   border-radius: var(--radius-pill);
   color: var(--color-text-muted);
   font-size: 0.9375rem;
@@ -83,9 +84,11 @@
 .languageToggle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  min-height: 44px;
-  padding: 0 14px;
+  min-height: var(--touch-target);
+  min-width: var(--touch-target);
+  padding: 0 clamp(8px, 2vw, 14px);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
@@ -111,13 +114,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  min-width: var(--touch-target);
   border: 1px solid transparent;
   border-radius: var(--radius-md);
   background: transparent;
   color: var(--color-heading);
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .menuButton:hover {
@@ -127,12 +132,13 @@
 .mobilePanel {
   border-block-start: 1px solid var(--color-border);
   background: var(--color-surface);
-  padding-block: 12px 20px;
+  padding-block: clamp(12px, 3vw, 20px);
+  padding-inline: var(--gutter);
 }
 
 .mobileList {
   display: grid;
-  gap: 2px;
+  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -141,12 +147,14 @@
 .mobileLink {
   display: flex;
   align-items: center;
-  min-height: 48px;
-  padding-inline: 12px;
+  min-height: var(--touch-target);
+  padding-inline: clamp(12px, 3vw, 16px);
+  padding-block: clamp(8px, 2vw, 10px);
   border-radius: var(--radius-md);
   color: var(--color-heading);
   font-weight: 600;
   text-decoration: none;
+  transition: background-color 0.15s ease;
 }
 
 .mobileLink:hover {
@@ -155,7 +163,8 @@
 }
 
 .mobileDemoButton {
-  margin-block-start: 12px;
+  margin-block-start: clamp(8px, 2vw, 12px);
+  width: 100%;
 }
 
 @media (min-width: 600px) {

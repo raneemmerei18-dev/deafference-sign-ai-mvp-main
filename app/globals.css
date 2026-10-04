@@ -43,7 +43,8 @@
 
   --nav-height: 72px;
   --container-width: 1160px;
-  --gutter: 20px;
+  --gutter: clamp(16px, 4vw, 20px);
+  --touch-target: 44px;
 }
 
 *,
@@ -125,41 +126,42 @@ textarea {
 }
 
 .section {
-  padding-block: clamp(64px, 9vw, 112px);
+  padding-block: clamp(48px, 9vw, 112px);
+  padding-inline: var(--gutter);
   scroll-margin-top: var(--nav-height);
 }
 
 .section-header {
   max-width: 720px;
   margin-inline: auto;
-  margin-block-end: clamp(36px, 5vw, 56px);
+  margin-block-end: clamp(32px, 5vw, 56px);
   text-align: center;
 }
 
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  padding: 4px 12px;
+  padding: clamp(3px, 0.5vw, 4px) clamp(10px, 2vw, 12px);
   border-radius: var(--radius-pill);
   background: var(--color-accent-soft);
   color: var(--color-accent-stronger);
-  font-size: 0.8125rem;
+  font-size: clamp(0.75rem, 0.9vw, 0.8125rem);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .section-title {
-  margin-block-start: 16px;
-  font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+  margin-block-start: clamp(12px, 2vw, 16px);
+  font-size: clamp(1.5rem, 1rem + 2.2vw, 2.75rem);
   font-weight: 750;
   letter-spacing: -0.02em;
 }
 
 .section-lead {
-  margin-block-start: 16px;
+  margin-block-start: clamp(12px, 2vw, 16px);
   color: var(--color-text-muted);
-  font-size: 1.125rem;
+  font-size: clamp(0.9375rem, 1.5vw, 1.125rem);
 }
 
 /* Arabic script has no case and is harmed by tracking. */
@@ -176,8 +178,8 @@ textarea {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 0 20px;
+  min-height: var(--touch-target);
+  padding: 0 clamp(16px, 3vw, 20px);
   border: 1px solid transparent;
   border-radius: var(--radius-pill);
   font-size: 0.9375rem;
@@ -222,9 +224,9 @@ textarea {
 }
 
 .btn-lg {
-  min-height: 52px;
-  padding: 0 28px;
-  font-size: 1rem;
+  min-height: clamp(44px, 12vw, 52px);
+  padding: 0 clamp(20px, 4vw, 28px);
+  font-size: clamp(0.9375rem, 2vw, 1rem);
 }
 
 .btn-block {

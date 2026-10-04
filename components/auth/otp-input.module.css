@@ -5,19 +5,21 @@
 
 .inputGroup {
   display: flex;
-  gap: 8px;
+  gap: clamp(6px, 1vw, 8px);
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .box {
-  width: 56px;
-  height: 56px;
+  width: clamp(48px, 12vw, 64px);
+  height: clamp(48px, 12vw, 64px);
+  min-width: clamp(48px, 12vw, 64px);
   padding: 0;
   border: 2px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-heading);
-  font-size: 1.75rem;
+  font-size: clamp(1.5rem, 3vw, 1.75rem);
   font-weight: 700;
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -73,13 +75,6 @@
   text-align: center;
 }
 
-@media (min-width: 640px) {
-  .box {
-    width: 64px;
-    height: 64px;
-    font-size: 2rem;
-  }
-}
 
 :global([dir="rtl"]) .inputGroup {
   direction: ltr;
