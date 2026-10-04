@@ -1,0 +1,234 @@
+.main {
+  min-height: 100vh;
+  background: var(--color-surface);
+  padding: clamp(20px, 3vw, 32px);
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  gap: clamp(24px, 4vw, 40px);
+  grid-template-columns: 1fr 360px;
+  align-items: start;
+}
+
+.translationArea {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 4vw, 32px);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.5vw, 12px);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.875rem, 4vw, 2.5rem);
+  font-weight: 800;
+  color: var(--color-heading);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.audioRecorder {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2vw, 20px);
+  padding: clamp(20px, 3vw, 28px);
+  border: 2px solid var(--color-accent-soft);
+  border-radius: var(--radius-lg);
+  background: var(--color-accent-soft);
+}
+
+.recorderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statusLabel {
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  font-weight: 600;
+  color: var(--color-accent-stronger);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 12px);
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  font-weight: 500;
+  color: var(--color-accent-stronger);
+}
+
+.statusDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent-stronger);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.recorderControls {
+  display: flex;
+  gap: clamp(12px, 2vw, 16px);
+  flex-wrap: wrap;
+}
+
+.recordButton,
+.stopButton {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.5vw, 12px);
+  padding: clamp(12px, 2vw, 16px);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-accent-strong);
+  font-size: clamp(0.9375rem, 1vw, 1rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.stopButton {
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.stopButton:disabled {
+  opacity: 0.5;
+}
+
+.recordButton:hover:not(:disabled) {
+  background: var(--color-surface-muted);
+  transform: translateY(-2px);
+}
+
+.recordButton:focus-visible {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+
+.recordIcon,
+.stopIcon {
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+}
+
+.permissionNote {
+  margin: 0;
+  padding: clamp(12px, 2vw, 16px);
+  background: var(--color-surface);
+  border-left: 4px solid var(--color-accent-strong);
+  border-radius: var(--radius-md);
+  font-size: clamp(0.875rem, 0.95vw, 0.9375rem);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.output {
+  display: grid;
+  gap: clamp(20px, 3vw, 28px);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.outputSection {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vw, 16px);
+}
+
+.outputLabel {
+  margin: 0;
+  font-size: clamp(0.9375rem, 1vw, 1rem);
+  font-weight: 700;
+  color: var(--color-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.speechBox {
+  min-height: clamp(100px, 20vh, 140px);
+  padding: clamp(16px, 2vw, 20px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.speechText {
+  margin: 0;
+  font-size: clamp(0.9375rem, 1vw, 1rem);
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.videoPreview {
+  min-height: clamp(200px, 30vh, 280px);
+  padding: clamp(16px, 2vw, 20px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-surface-muted) 0%, var(--color-accent-soft) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.previewText {
+  margin: 0;
+  font-size: clamp(0.9375rem, 1vw, 1rem);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: clamp(16px, 2vw, 24px);
+  }
+
+  .recorderControls {
+    flex-direction: column;
+  }
+
+  .recordButton,
+  .stopButton {
+    width: 100%;
+  }
+}
