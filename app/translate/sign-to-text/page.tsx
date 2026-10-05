@@ -3,11 +3,9 @@
 import { useState } from "react"
 import { TranslationSettings } from "@/components/translation/settings"
 import { HistoryDrawer } from "@/components/translation/history-drawer"
-import { useTranslation } from "@/components/translation/translation-context"
 import styles from "./page.module.css"
 
 export default function SignToTextPage() {
-  const { state } = useTranslation()
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
 
   return (
@@ -34,17 +32,8 @@ export default function SignToTextPage() {
 
           <div className={styles.cameraPreview}>
             <div className={styles.cameraPlaceholder}>
-              {state.cameraEnabled ? (
-                <>
-                  <p>Camera feed will appear here</p>
-                  <p className={styles.cameraNote}>Grant camera permissions to begin</p>
-                </>
-              ) : (
-                <>
-                  <p>📷 Camera disabled</p>
-                  <p className={styles.cameraNote}>Enable camera in settings to begin</p>
-                </>
-              )}
+              <p>Camera feed will appear here</p>
+              <p className={styles.cameraNote}>Grant camera permissions to begin</p>
             </div>
           </div>
 
