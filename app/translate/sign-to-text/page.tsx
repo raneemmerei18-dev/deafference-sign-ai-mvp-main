@@ -1,17 +1,33 @@
+import { useState } from "react"
 import { TranslationSettings } from "@/components/translation/settings"
+import { HistoryDrawer } from "@/components/translation/history-drawer"
 import { useTranslation } from "@/components/translation/translation-context"
 import styles from "./page.module.css"
 
 export default function SignToTextPage() {
   const { state } = useTranslation()
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false)
 
   return (
     <main className={styles.main}>
+      <HistoryDrawer
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+      />
+
       <div className={styles.container}>
         <section className={styles.translationArea}>
           <div className={styles.header}>
             <h1 className={styles.title}>Sign → Text/Speech</h1>
             <p className={styles.subtitle}>Show your signs, get text and speech</p>
+            <button
+              className={styles.historyButton}
+              onClick={() => setIsHistoryOpen(true)}
+              title="Open translation history"
+              type="button"
+            >
+              📋 History
+            </button>
           </div>
 
           <div className={styles.cameraPreview}>

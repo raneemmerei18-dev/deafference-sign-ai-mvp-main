@@ -40,6 +40,35 @@
   font-weight: 400;
 }
 
+.historyButton {
+  align-self: flex-start;
+  padding: clamp(10px, 1.5vw, 12px) clamp(16px, 2.5vw, 20px);
+  border: 1px solid var(--color-accent-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-accent-strong);
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.historyButton:hover {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent-stronger);
+  color: var(--color-accent-stronger);
+}
+
+.historyButton:focus-visible {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+
+.historyButton:active {
+  transform: scale(0.98);
+}
+
 .cameraPreview {
   aspect-ratio: 16 / 9;
   background: linear-gradient(135deg, var(--color-surface-muted) 0%, var(--color-accent-soft) 100%);
