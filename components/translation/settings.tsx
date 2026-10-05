@@ -17,7 +17,18 @@ const SIGN_DIALECTS = [
 export function TranslationSettings() {
   const { dict } = useLanguage()
   const t = dict.translationSettings
-  const { state, setState } = useTranslation()
+
+  let state = { cameraEnabled: true, landmarkOverlay: false, signDialect: "asl" }
+  let setState = () => {}
+
+  try {
+    const context = useTranslation()
+    state = context.state
+    setState = context.setState
+  } catch {
+    // Fallback to defaults if context not available
+  }
+
   const [isOpen, setIsOpen] = useState(false)
   const [savedMessage, setSavedMessage] = useState(false)
 
