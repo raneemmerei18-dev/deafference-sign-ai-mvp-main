@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react"
 import { TranslationSettings } from "@/components/translation/settings"
 import { HistoryDrawer } from "@/components/translation/history-drawer"
