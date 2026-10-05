@@ -17,7 +17,18 @@ const SIGN_DIALECTS = [
 export function TranslationSettings() {
   const { dict } = useLanguage()
   const t = dict.translationSettings
-  const { state, setState } = useTranslation()
+
+  let state = { cameraEnabled: true, landmarkOverlay: false, signDialect: "asl" }
+  let setState = () => {}
+
+  try {
+    const context = useTranslation()
+    state = context.state
+    setState = context.setState
+  } catch {
+    // Fallback to defaults if context not available
+  }
+
   const [isOpen, setIsOpen] = useState(false)
   const [savedMessage, setSavedMessage] = useState(false)
 
@@ -61,11 +72,11 @@ export function TranslationSettings() {
           </div>
           <button
             id="camera-toggle"
-            className={`${styles.toggle} ${settings.cameraEnabled ? styles.toggleOn : styles.toggleOff}`}
+            className={`${styles.toggle} ${state.cameraEnabled ? styles.toggleOn : styles.toggleOff}`}
             onClick={handleCameraToggle}
             role="switch"
-            aria-checked={settings.cameraEnabled}
-            aria-label={`${t.cameraLabel}: ${settings.cameraEnabled ? t.on : t.off}`}
+            aria-checked={state.cameraEnabled}
+            aria-label={`${t.cameraLabel}: ${state.cameraEnabled ? t.on : t.off}`}
           >
             <span className={styles.toggleThumb} />
           </button>
@@ -81,11 +92,11 @@ export function TranslationSettings() {
           </div>
           <button
             id="landmark-toggle"
-            className={`${styles.toggle} ${settings.landmarkOverlay ? styles.toggleOn : styles.toggleOff}`}
+            className={`${styles.toggle} ${state.landmarkOverlay ? styles.toggleOn : styles.toggleOff}`}
             onClick={handleLandmarkToggle}
             role="switch"
-            aria-checked={settings.landmarkOverlay}
-            aria-label={`${t.landmarkLabel}: ${settings.landmarkOverlay ? t.on : t.off}`}
+            aria-checked={state.landmarkOverlay}
+            aria-label={`${t.landmarkLabel}: ${state.landmarkOverlay ? t.on : t.off}`}
           >
             <span className={styles.toggleThumb} />
           </button>
@@ -120,11 +131,11 @@ export function TranslationSettings() {
                   <button
                     key={dialect.id}
                     className={`${styles.dropdownItem} ${
-                      settings.signDialect === dialect.id ? styles.dropdownItemActive : ""
+                      state.signDialect === dialect.id ? styles.dropdownItemActive : ""
                     }`}
                     onClick={() => handleDialectChange(dialect.id)}
                     role="option"
-                    aria-selected={settings.signDialect === dialect.id}
+                    aria-selected={state.signDialect === dialect.id}
                   >
                     {dialect.label}
                   </button>

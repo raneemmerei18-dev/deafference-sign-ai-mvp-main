@@ -1,3 +1,5 @@
+"use client"
+
 import { TranslationSettings } from "@/components/translation/settings"
 import { useTranslation } from "@/components/translation/translation-context"
 import styles from "./page.module.css"
