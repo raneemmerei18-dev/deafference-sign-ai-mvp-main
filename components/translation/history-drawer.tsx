@@ -22,7 +22,20 @@ const CATEGORIES = [
 
 export function HistoryDrawer({ isOpen, onClose, onReplay }: HistoryDrawerProps) {
   const { dict } = useLanguage()
-  const { items, deleteItem, clearAll } = useHistory()
+
+  let items: any[] = []
+  let deleteItem = () => {}
+  let clearAll = () => {}
+
+  try {
+    const context = useHistory()
+    items = context.items
+    deleteItem = context.deleteItem
+    clearAll = context.clearAll
+  } catch {
+    // Fallback if context not available
+  }
+
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [showClearConfirm, setShowClearConfirm] = useState(false)
