@@ -1,0 +1,416 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 99;
+  animation: fadeIn 0.3s ease;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: clamp(300px, 80vw, 480px);
+  height: 100vh;
+  background: var(--color-surface);
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.drawerOpen {
+  right: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 2vw, 16px);
+  padding: clamp(16px, 2vw, 20px);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.125rem, 2vw, 1.375rem);
+  font-weight: 750;
+  color: var(--color-heading);
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: var(--radius-md);
+}
+
+.closeButton:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-heading);
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: -2px;
+}
+
+.searchSection {
+  padding: clamp(12px, 2vw, 16px);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.searchInput {
+  width: 100%;
+  padding: clamp(10px, 1.5vw, 12px) clamp(12px, 2vw, 16px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-heading);
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus-visible {
+  outline: none;
+  border-color: var(--color-accent-strong);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-muted);
+}
+
+.filterSection {
+  padding: clamp(12px, 2vw, 16px);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.filterLabel {
+  display: block;
+  margin: 0 0 clamp(8px, 1.5vw, 12px) 0;
+  font-size: clamp(0.75rem, 0.9vw, 0.875rem);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.filterButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(6px, 1vw, 8px);
+}
+
+.filterButton {
+  padding: clamp(6px, 1vw, 8px) clamp(10px, 1.5vw, 12px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: clamp(0.75rem, 0.85vw, 0.875rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 32px;
+  white-space: nowrap;
+}
+
+.filterButton:hover {
+  border-color: var(--color-accent-strong);
+  color: var(--color-accent-strong);
+}
+
+.filterButtonActive {
+  background: var(--color-accent-strong);
+  color: var(--color-surface);
+  border-color: var(--color-accent-strong);
+  font-weight: 600;
+}
+
+.listContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: clamp(12px, 2vw, 16px);
+  -webkit-overflow-scrolling: touch;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vw, 16px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.historyItem {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.5vw, 12px);
+  padding: clamp(12px, 2vw, 16px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  transition: all 0.2s ease;
+}
+
+.historyItem:hover {
+  border-color: var(--color-accent-soft);
+  background: var(--color-accent-soft);
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.5vw, 12px);
+}
+
+.itemMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 12px);
+}
+
+.timestamp {
+  font-size: clamp(0.75rem, 0.85vw, 0.875rem);
+  color: var(--color-text-muted);
+}
+
+.categoryBadge {
+  display: inline-block;
+  padding: clamp(4px, 0.75vw, 6px) clamp(8px, 1.5vw, 10px);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-stronger);
+  font-size: clamp(0.7rem, 0.8vw, 0.8125rem);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.itemText {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.75vw, 6px);
+}
+
+.itemLabel {
+  margin: 0;
+  font-size: clamp(0.75rem, 0.85vw, 0.875rem);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.itemValue {
+  margin: 0;
+  font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
+  color: var(--color-heading);
+  line-height: 1.5;
+  word-break: break-word;
+  padding: clamp(6px, 1vw, 8px);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+}
+
+.itemActions {
+  display: flex;
+  gap: clamp(6px, 1vw, 8px);
+  padding-top: clamp(4px, 0.75vw, 6px);
+  border-top: 1px solid var(--color-border);
+}
+
+.actionButton {
+  flex: 1;
+  padding: clamp(8px, 1.5vw, 10px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-heading);
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 36px;
+  font-weight: 500;
+}
+
+.actionButton:hover {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent-strong);
+  color: var(--color-accent-stronger);
+}
+
+.actionButton:focus-visible {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: -1px;
+}
+
+.actionButtonDanger:hover {
+  background: #fee;
+  border-color: #c33;
+  color: #c33;
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: clamp(20px, 3vw, 28px);
+  text-align: center;
+}
+
+.emptyText {
+  margin: 0;
+  font-size: clamp(0.9375rem, 1vw, 1rem);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.footer {
+  padding: clamp(12px, 2vw, 16px);
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.clearButton {
+  width: 100%;
+  padding: clamp(10px, 1.5vw, 12px);
+  border: 1px solid #dc2626;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: #dc2626;
+  font-size: clamp(0.9375rem, 1vw, 1rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.clearButton:hover {
+  background: #fee;
+  border-color: #991b1b;
+  color: #991b1b;
+}
+
+.clearButton:focus-visible {
+  outline: 2px solid #dc2626;
+  outline-offset: -1px;
+}
+
+.confirmDialog {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 2vw, 20px);
+  z-index: 101;
+  animation: fadeIn 0.2s ease;
+}
+
+.confirmContent {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: clamp(20px, 3vw, 28px);
+  max-width: 320px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.confirmTitle {
+  margin: 0 0 clamp(8px, 1.5vw, 12px) 0;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.confirmText {
+  margin: 0 0 clamp(16px, 2vw, 20px) 0;
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.confirmButtons {
+  display: flex;
+  gap: clamp(8px, 1.5vw, 12px);
+}
+
+.confirmCancel,
+.confirmConfirm {
+  flex: 1;
+  padding: clamp(10px, 1.5vw, 12px);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 40px;
+}
+
+.confirmCancel {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.confirmCancel:hover {
+  background: var(--color-border);
+}
+
+.confirmConfirm {
+  background: #dc2626;
+  color: white;
+}
+
+.confirmConfirm:hover {
+  background: #991b1b;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .drawer {
+    max-width: 100%;
+  }
+
+  .filterButtons {
+    flex-direction: column;
+  }
+
+  .filterButton {
+    width: 100%;
+  }
+}
