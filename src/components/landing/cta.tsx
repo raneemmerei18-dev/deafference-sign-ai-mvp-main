@@ -1,14 +1,30 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Link from "next/link"
 import { ArrowRight, Mail, Sparkles } from "lucide-react"
 import { Container } from "@/components/shared/container"
-import { ConnectorPath, GlassPanel, GlowOrb, Magnetic } from "./ui/pop"
+import { APP_ROUTES } from "@/lib/constants"
+import { cn } from "@/lib/utils"
+import { useI18n } from "@/i18n/use-i18n"
+import {
+  ConnectorPath,
+  GlassPanel,
+  GlowOrb,
+  Magnetic,
+  popArrowIcon,
+  popButtonSizes,
+  popPrimaryButton,
+  popSecondaryButton,
+} from "./ui/pop"
 
 export function CTA() {
+  const { t } = useI18n()
+  const copy = t.landing.cta
   return (
     <section
       id="cta"
+      aria-labelledby="cta-heading"
       className="pop-atmosphere relative overflow-hidden py-28 sm:py-32"
     >
       {/* Large soft-blue gradient environment + drifting depth */}
@@ -39,51 +55,40 @@ export function CTA() {
           <GlassPanel glow className="relative overflow-hidden p-8 sm:p-10 lg:p-14">
             {/* Floating decorative chips around the headline */}
             <span
-              className="pop-float absolute -top-4 right-10 hidden items-center gap-1.5 rounded-full border border-[color:var(--primary)]/25 bg-white/70 px-3 py-1.5 text-xs font-semibold text-[color:var(--primary)] shadow-sm backdrop-blur sm:inline-flex"
+              className="pop-float absolute -top-4 end-10 hidden items-center gap-1.5 rounded-full border border-[color:var(--primary)]/25 bg-white/70 px-3 py-1.5 text-xs font-semibold text-[#1D4ED8] shadow-sm backdrop-blur sm:inline-flex"
               aria-hidden="true"
             >
-              <Sparkles className="size-3.5 text-brand-orange" />
-              Live in minutes
+              <Sparkles className="size-3.5 text-[#C2410C]" />
+              {copy.chip}
             </span>
             <span
-              className="pop-float-delay absolute top-1/2 -right-3 hidden size-14 rounded-2xl border border-dashed border-[color:var(--primary)]/30 sm:block"
+              className="pop-float-delay absolute top-1/2 -end-3 hidden size-14 rounded-2xl border border-dashed border-[color:var(--primary)]/30 sm:block"
               aria-hidden="true"
             />
             <span
-              className="pop-orbit absolute -bottom-6 left-10 hidden size-20 rounded-full border border-[color:var(--primary)]/15 lg:block"
+              className="pop-orbit absolute -bottom-6 start-10 hidden size-20 rounded-full border border-[color:var(--primary)]/15 lg:block"
               aria-hidden="true"
             />
 
             <div className="relative grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div>
-                <p className="pop-gradient-text text-sm font-semibold tracking-[0.24em] uppercase">
-                  Start here
-                </p>
-                <h2 className="mt-4 text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl">
-                  Ship the landing page now and keep the product surface ready for what comes next.
+                <p className="text-sm font-semibold tracking-[0.24em] text-[#1D4ED8] uppercase">{copy.eyebrow}</p>
+                <h2 id="cta-heading" className="mt-4 text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl">
+                  {copy.title}
                 </h2>
-                <p className="mt-4 max-w-2xl text-base leading-8 text-muted-foreground">
-                  Deafference can grow into dashboard, pricing, auth, and documentation pages without
-                  a redesign. The structure is already in place.
-                </p>
+                <p className="mt-4 max-w-2xl text-base leading-8 text-muted-foreground">{copy.body}</p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-                <Magnetic>
-                  <a
-                    href="mailto:hello@deafference.ai"
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[color:var(--primary)] px-6 text-base font-semibold text-primary-foreground shadow-[0_20px_50px_-14px_rgba(59,130,246,0.6)] transition-colors hover:bg-[color:var(--primary)]/90"
-                  >
-                    <Mail className="size-4" />
-                    Contact us
-                  </a>
+                <Magnetic className="w-full sm:w-auto">
+                  <Link href={APP_ROUTES.translate} className={cn(popPrimaryButton, popButtonSizes.lg, "w-full sm:w-auto")}>
+                    {copy.primary}
+                    <ArrowRight className={popArrowIcon} aria-hidden="true" />
+                  </Link>
                 </Magnetic>
-                <a
-                  href="#top"
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-[color:var(--primary)]/25 bg-white/60 px-6 text-base font-semibold text-foreground backdrop-blur transition-colors hover:bg-white/90"
-                >
-                  Back to top
-                  <ArrowRight className="ml-2 size-4" />
+                <a href="#contact" className={cn(popSecondaryButton, popButtonSizes.lg)}>
+                  <Mail className="size-4" aria-hidden="true" />
+                  {copy.secondary}
                 </a>
               </div>
             </div>

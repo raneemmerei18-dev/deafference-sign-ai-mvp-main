@@ -3,13 +3,17 @@
 import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { ArrowRight, Menu, X } from "lucide-react"
 import { Container } from "@/components/shared/container"
-import { LANDING_NAV, APP_ROUTES } from "@/lib/constants"
+import { LanguageToggle } from "@/components/shared/language-toggle"
+import { LANDING_NAV } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/i18n/use-i18n"
 import { AuthNavActions } from "@/components/auth/auth-nav-actions"
 import { CalmModeToggle } from "./calm-mode-toggle"
-import { Magnetic, focusRingPop } from "./ui/pop"
+import { navLabel, resolveLandingHref } from "./nav-links"
+import { Magnetic, focusRingPop, popArrowIcon, popButtonSizes, popPrimaryButton } from "./ui/pop"
 
 function NavLink({
   href,
@@ -25,7 +29,7 @@ function NavLink({
   isActive?: boolean
 }) {
   const className = cn(
-    "relative z-10 rounded-full px-4 py-2 text-sm font-medium transition-colors",
+    "relative z-10 block rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors xl:px-4",
     isActive ? "text-brand-navy" : "text-foreground/65 hover:text-brand-navy",
     focusRingPop,
   )
@@ -52,6 +56,15 @@ export function Navbar() {
   const [hovered, setHovered] = useState<string | null>(null)
   const menuPanelRef = useRef<HTMLDivElement>(null)
   const menuToggleRef = useRef<HTMLButtonElement>(null)
+  const pathname = usePathname()
+  const { t } = useI18n()
+  const nav = t.landing.nav
+  const navItems = LANDING_NAV.map((item) => ({
+    key: item.href,
+    href: resolveLandingHref(item.href, pathname),
+    label: navLabel(nav.links, item.href, item.label),
+  }))
+  const demoHref = resolveLandingHref("#demo", pathname)
 
   useEffect(() => {
     function handleScroll() {
@@ -72,7 +85,10 @@ export function Navbar() {
     }
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setIsMenuOpen(false)
+      if (event.key === "Escape") {
+        setIsMenuOpen(false)
+        menuToggleRef.current?.focus()
+      }
     }
 
     document.addEventListener("pointerdown", handlePointerDown)
@@ -99,16 +115,19 @@ export function Navbar() {
         )}
       >
         <Container className="flex h-16 items-center justify-between gap-4 sm:h-[4.25rem]">
-          <a href="#top" className={cn("flex items-center gap-2.5 rounded-lg", focusRingPop)}>
-            {/* Transparent wordmark; the grey-ink variant keeps it readable in dark mode. */}
-            <img src="/deafference-wordmark.png" alt="Deafference" className="h-11 w-auto dark:hidden sm:h-12" />
-            <img src="/deafference-wordmark-dark.png" alt="Deafference" className="hidden h-11 w-auto dark:block sm:h-12" />
+          <a
+            href={pathname === "/" ? "#top" : "/"}
+            aria-label={nav.home}
+            className={cn("flex shrink-0 items-center gap-2.5 rounded-lg", focusRingPop)}
+          >
+            {/* The landing surface is always light, so always use the light-surface wordmark. */}
+            <img src="/deafference-wordmark.png" alt="" className="h-10 w-auto sm:h-12" />
           </a>
 
-          <nav aria-label="Main Navigation" className="hidden lg:block">
+          <nav aria-label={nav.desktopLabel} className="hidden lg:block">
             <ul className="relative flex items-center gap-0.5 rounded-full border border-[color:var(--primary)]/12 bg-white/50 p-1">
-              {LANDING_NAV.map((item) => (
-                <li key={item.href} className="relative">
+              {navItems.map((item) => (
+                <li key={item.key} className="relative">
                   {hovered === item.href && (
                     <motion.span
                       layoutId="nav-hover-indicator"
@@ -133,22 +152,19 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden lg:block">
-              <CalmModeToggle />
+            <div className="hidden items-center gap-2 lg:flex">
+              <CalmModeToggle labelClassName="hidden xl:inline" />
+              <LanguageToggle />
             </div>
 
             <Magnetic className="hidden lg:inline-block">
-              <Link
-                href={APP_ROUTES.translate}
-                className={cn(
-                  "group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_-10px_rgba(59,130,246,0.65)] transition-all hover:shadow-[0_18px_36px_-10px_rgba(59,130,246,0.75)]",
-                  focusRingPop,
-                )}
-              >
-                Request a demo
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
+              <a href={demoHref} className={cn(popPrimaryButton, popButtonSizes.sm, "whitespace-nowrap")}>
+                {nav.requestDemo}
+                <ArrowRight className={popArrowIcon} aria-hidden="true" />
+              </a>
             </Magnetic>
+
+            <LanguageToggle className="lg:hidden" />
 
             <AuthNavActions className="hidden lg:flex" />
 
@@ -158,13 +174,13 @@ export function Navbar() {
               onClick={() => setIsMenuOpen((open) => !open)}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-nav"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-label={isMenuOpen ? nav.closeMenu : nav.openMenu}
               className={cn(
                 "inline-flex size-11 items-center justify-center rounded-full text-brand-navy transition-colors hover:bg-[color:var(--primary)]/10 lg:hidden",
                 focusRingPop,
               )}
             >
-              {isMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+              {isMenuOpen ? <X className="size-5" aria-hidden="true" /> : <Menu className="size-5" aria-hidden="true" />}
             </button>
           </div>
         </Container>
@@ -181,11 +197,11 @@ export function Navbar() {
             className="glass-pop pointer-events-auto absolute inset-x-3 top-[4.75rem] rounded-3xl p-2 shadow-[0_24px_60px_-24px_rgba(30,64,175,0.5)] lg:hidden"
           >
             <Container className="py-2">
-              <nav id="mobile-nav" aria-label="Main Navigation">
+              <nav id="mobile-nav" aria-label={nav.mobileLabel}>
                 <ul className="flex flex-col gap-1">
-                  {LANDING_NAV.map((item, i) => (
+                  {navItems.map((item, i) => (
                     <motion.li
-                      key={item.href}
+                      key={item.key}
                       initial={{ opacity: 0, x: -12 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.25, delay: i * 0.05 }}
@@ -203,17 +219,14 @@ export function Navbar() {
               <div className="mt-3 flex flex-col gap-3 border-t border-[color:var(--primary)]/12 pt-3">
                 <CalmModeToggle className="self-start" />
                 <AuthNavActions className="self-start" />
-                <Link
-                  href={APP_ROUTES.translate}
+                <a
+                  href={demoHref}
                   onClick={() => setIsMenuOpen(false)}
-                  className={cn(
-                    "inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] px-4 py-3 text-sm font-semibold text-white",
-                    focusRingPop,
-                  )}
+                  className={cn(popPrimaryButton, popButtonSizes.md, "w-full")}
                 >
-                  Request a demo
-                  <ArrowRight className="size-4" />
-                </Link>
+                  {nav.requestDemo}
+                  <ArrowRight className={popArrowIcon} aria-hidden="true" />
+                </a>
               </div>
             </Container>
           </motion.div>

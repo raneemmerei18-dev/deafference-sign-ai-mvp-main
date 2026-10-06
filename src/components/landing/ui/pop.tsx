@@ -54,11 +54,11 @@ export function PopEyebrow({ children, className }: { children: ReactNode; class
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border border-[color:var(--primary)]/20 bg-[color:var(--primary)]/8 px-3.5 py-1.5 text-xs font-semibold tracking-[0.14em] text-[color:var(--primary)] uppercase",
+        "inline-flex items-center gap-2 rounded-full border border-[color:var(--primary)]/20 bg-[color:var(--primary)]/8 px-3.5 py-1.5 text-xs font-semibold tracking-[0.14em] text-[#1D4ED8] uppercase",
         className,
       )}
     >
-      <span className="size-1.5 rounded-full bg-brand-orange" />
+      <span className="size-1.5 rounded-full bg-brand-orange" aria-hidden="true" />
       {children}
     </span>
   )
@@ -233,6 +233,29 @@ export function GlowOrb({ className, color = "rgba(59,130,246,0.25)" }: { classN
 
 export const focusRingPop =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+
+/**
+ * The landing page's two button styles. Primary: darker blue gradient so white
+ * text stays above 4.5:1 contrast. Secondary: light glass with navy text.
+ * Pair with a size, e.g. `popButtonSizes.md`.
+ */
+export const popPrimaryButton = cn(
+  "group inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] font-semibold text-white shadow-[0_14px_32px_-12px_rgba(37,99,235,0.55)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-12px_rgba(37,99,235,0.65)]",
+  focusRingPop,
+)
+export const popSecondaryButton = cn(
+  "glass-pop group inline-flex items-center justify-center gap-2 rounded-full font-semibold text-brand-navy transition-all hover:-translate-y-0.5 hover:bg-white/90",
+  focusRingPop,
+)
+export const popButtonSizes = {
+  sm: "h-10 px-4 text-sm",
+  md: "h-11 px-5 text-sm",
+  lg: "h-12 px-6 text-base",
+} as const
+
+/** Forward-pointing arrow icon classes: mirrored in RTL, with a direction-aware hover nudge. */
+export const popArrowIcon =
+  "size-4 shrink-0 transition-transform rtl:-scale-x-100 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5"
 
 export function popMotionProps(delay = 0): MotionProps {
   return {

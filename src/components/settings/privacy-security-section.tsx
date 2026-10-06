@@ -6,18 +6,24 @@ import { Card } from "@/components/ui/card"
 import { Dialog } from "@/components/ui/dialog"
 import { Switch } from "@/components/ui/switch"
 import { SETTINGS_COOKIE_NAME, useSettings } from "@/components/deafference/settings-provider"
+import { clearTranslationHistory } from "@/components/deafference/history-store"
+import { useI18n } from "@/i18n/use-i18n"
 
 type PendingAction = "clear-history" | "clear-local-data" | null
+type StatusKey = "exportStarted" | "historyCleared" | "localCleared"
 
 export function PrivacySecuritySection() {
   const { settings, update, reset } = useSettings()
+  const { t } = useI18n()
+  const m = t.settings.privacy
   const idPrefix = useId()
   const [pendingAction, setPendingAction] = useState<PendingAction>(null)
-  const [statusMessage, setStatusMessage] = useState<string | null>(null)
+  // Store a key so the message stays in the active language.
+  const [statusKey, setStatusKey] = useState<StatusKey | null>(null)
 
-  function announce(message: string) {
-    setStatusMessage(message)
-    window.setTimeout(() => setStatusMessage((current) => (current === message ? null : current)), 4000)
+  function announce(key: StatusKey) {
+    setStatusKey(key)
+    window.setTimeout(() => setStatusKey((current) => (current === key ? null : current)), 4000)
   }
 
   function handleExportData() {
@@ -34,18 +40,19 @@ export function PrivacySecuritySection() {
     link.click()
     link.remove()
     URL.revokeObjectURL(url)
-    announce("Your data export has started downloading.")
+    announce("exportStarted")
   }
 
   function handleConfirmPendingAction() {
     if (pendingAction === "clear-history") {
-      window.localStorage.removeItem("deafference.translation-history")
-      announce("Saved translation logs have been cleared.")
+      clearTranslationHistory()
+      announce("historyCleared")
     } else if (pendingAction === "clear-local-data") {
       window.localStorage.clear()
+      clearTranslationHistory()
       document.cookie = `${SETTINGS_COOKIE_NAME}=; path=/; max-age=0`
       reset()
-      announce("Local data cleared and settings reset to defaults.")
+      announce("localCleared")
     }
     setPendingAction(null)
   }
@@ -54,19 +61,19 @@ export function PrivacySecuritySection() {
     <Card>
       <section aria-labelledby={`${idPrefix}-heading`} className="flex flex-col gap-5">
         <h2 id={`${idPrefix}-heading`} className="text-lg font-semibold text-foreground">
-          Privacy &amp; Security
+          {m.heading}
         </h2>
 
         <fieldset className="flex flex-col divide-y divide-border">
-          <legend className="text-sm font-medium text-foreground">Data sharing preferences</legend>
+          <legend className="text-sm font-medium text-foreground">{m.sharing}</legend>
 
-          <div className="flex items-center justify-between gap-4 py-3.5">
+          <div className="flex min-h-11 items-center justify-between gap-4 py-3.5">
             <label
               id={`${idPrefix}-analytics-label`}
               htmlFor={`${idPrefix}-analytics`}
               className="text-sm text-foreground"
             >
-              Usage analytics sharing
+              {m.analytics}
             </label>
             <Switch
               id={`${idPrefix}-analytics`}
@@ -76,13 +83,9 @@ export function PrivacySecuritySection() {
             />
           </div>
 
-          <div className="flex items-center justify-between gap-4 py-3.5">
-            <label
-              id={`${idPrefix}-model-label`}
-              htmlFor={`${idPrefix}-model`}
-              className="text-sm text-foreground"
-            >
-              Model improvement data feedback
+          <div className="flex min-h-11 items-center justify-between gap-4 py-3.5">
+            <label id={`${idPrefix}-model-label`} htmlFor={`${idPrefix}-model`} className="text-sm text-foreground">
+              {m.modelData}
             </label>
             <Switch
               id={`${idPrefix}-model`}
@@ -94,15 +97,15 @@ export function PrivacySecuritySection() {
         </fieldset>
 
         <fieldset className="flex flex-col gap-3 border-t border-border pt-4">
-          <legend className="text-sm font-medium text-foreground">Search &amp; history visibility</legend>
+          <legend className="text-sm font-medium text-foreground">{m.history}</legend>
 
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex min-h-11 items-center justify-between gap-4">
             <label
               id={`${idPrefix}-history-label`}
               htmlFor={`${idPrefix}-history`}
               className="text-sm text-foreground"
             >
-              Store session &amp; translation history
+              {m.storeHistory}
             </label>
             <Switch
               id={`${idPrefix}-history`}
@@ -112,44 +115,50 @@ export function PrivacySecuritySection() {
             />
           </div>
 
-          <Button type="button" variant="outline" size="sm" className="w-fit" onClick={() => setPendingAction("clear-history")}>
-            Clear saved translation logs
+          <Button
+            type="button"
+            variant="outline"
+            className="h-10 w-fit px-4"
+            onClick={() => setPendingAction("clear-history")}
+          >
+            {m.clearHistory}
           </Button>
         </fieldset>
 
         <div className="flex flex-col gap-3 border-t border-border pt-4">
-          <p className="text-sm font-medium text-foreground">Data export &amp; deletion</p>
+          <p className="text-sm font-medium text-foreground">{m.exportDeletion}</p>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" onClick={handleExportData}>
-              Export My Data (JSON)
+            <Button type="button" variant="outline" className="h-10 px-4" onClick={handleExportData}>
+              {m.export}
             </Button>
-            <Button type="button" variant="destructive" onClick={() => setPendingAction("clear-local-data")}>
-              Clear Local Data
+            <Button
+              type="button"
+              variant="destructive"
+              className="h-10 px-4"
+              onClick={() => setPendingAction("clear-local-data")}
+            >
+              {m.clearLocal}
             </Button>
           </div>
         </div>
 
-        <p role="status" aria-live="polite" className="text-sm text-muted-foreground">
-          {statusMessage}
+        <p role="status" aria-live="polite" className="text-sm text-muted-foreground empty:hidden">
+          {statusKey ? m[statusKey] : null}
         </p>
       </section>
 
       <Dialog
         open={pendingAction !== null}
         onOpenChange={(open) => !open && setPendingAction(null)}
-        title={pendingAction === "clear-history" ? "Clear saved translation logs?" : "Clear all local data?"}
-        description={
-          pendingAction === "clear-history"
-            ? "This removes your stored translation history from this device. This cannot be undone."
-            : "This clears locally stored data on this device and resets all settings to their defaults. This cannot be undone."
-        }
+        title={pendingAction === "clear-history" ? m.clearHistoryTitle : m.clearLocalTitle}
+        description={pendingAction === "clear-history" ? m.clearHistoryBody : m.clearLocalBody}
       >
-        <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={() => setPendingAction(null)}>
-            Cancel
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button type="button" variant="outline" className="h-11 px-4" onClick={() => setPendingAction(null)}>
+            {t.common.actions.cancel}
           </Button>
-          <Button type="button" variant="destructive" onClick={handleConfirmPendingAction}>
-            Confirm
+          <Button type="button" variant="destructive" className="h-11 px-4" onClick={handleConfirmPendingAction}>
+            {m.confirm}
           </Button>
         </div>
       </Dialog>

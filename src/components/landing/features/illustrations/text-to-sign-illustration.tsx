@@ -1,12 +1,14 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { useI18n } from "@/i18n/use-i18n"
 
 const LINE_1_WIDTH = [0, 95, 95, 95, 0]
 const LINE_2_WIDTH = [0, 0, 75, 75, 0]
 const LINE_3_WIDTH = [0, 0, 0, 85, 0]
 
 export function TextToSignIllustration({ reducedMotion = false }: { reducedMotion?: boolean }) {
+  const { t } = useI18n()
   const duration = 2.4
 
   return (
@@ -14,7 +16,7 @@ export function TextToSignIllustration({ reducedMotion = false }: { reducedMotio
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/card3-text-to-sign-illustration.png"
-        alt="Text to Sign original illustration"
+        alt=""
         className="h-full max-h-[175px] w-full rounded-xl object-contain"
       />
 
@@ -27,11 +29,11 @@ export function TextToSignIllustration({ reducedMotion = false }: { reducedMotio
           />
         )}
 
-        <div className="absolute top-[22%] right-[22%] flex h-[42%] w-[28%] flex-col justify-start space-y-1.5 rounded-md border border-slate-200 bg-white/90 p-1.5 shadow-sm backdrop-blur-[1px]">
-          <div className="flex items-center space-x-1 border-b border-slate-200 pb-0.5">
+        <div className="absolute top-[22%] right-[22%] flex h-[42%] w-[28%] flex-col justify-start gap-1.5 rounded-md border border-slate-200 bg-white/90 p-1.5 shadow-sm backdrop-blur-[1px]">
+          <div className="flex items-center gap-1 border-b border-slate-200 pb-0.5">
             <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
             <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
-            <span className="text-[8px] font-bold tracking-tighter text-slate-500 uppercase">Text Editor</span>
+            <span className="text-[8px] font-bold tracking-tighter text-slate-600 uppercase">{t.landing.features.illustration.editor}</span>
           </div>
 
           <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
@@ -52,7 +54,7 @@ export function TextToSignIllustration({ reducedMotion = false }: { reducedMotio
 
           <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
             <motion.div
-              className="h-full rounded-full bg-slate-700"
+              className="h-full rounded-full bg-blue-300"
               animate={reducedMotion ? { width: "75%" } : { width: LINE_3_WIDTH.map((w) => `${w}%`) }}
               transition={{ repeat: Infinity, duration, ease: "easeOut" }}
             />

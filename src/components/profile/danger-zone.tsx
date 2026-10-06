@@ -1,38 +1,51 @@
 'use client'
 
 import { useId, useState } from 'react'
+import { Loader2, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Dialog } from '@/components/ui/dialog'
+import { LogoutConfirmDialog } from '@/components/auth/logout-confirm-dialog'
+import { useI18n } from '@/i18n/use-i18n'
+import { ApiError } from './api-error'
 
 export interface DangerZoneProps {
-  onSignOut?: () => void | Promise<void>
-  onDeleteAccount?: () => void | Promise<void>
+  /** Runs after the user confirmed and was signed out (e.g. navigate home). */
+  onSignedOut?: () => void
+  onDeleteAccount?: () => Promise<void>
 }
 
 type DeleteStatus = 'idle' | 'submitting' | 'error'
 
-export function DangerZone({ onSignOut, onDeleteAccount }: DangerZoneProps) {
+export function DangerZone({ onSignedOut, onDeleteAccount }: DangerZoneProps) {
+  const { t } = useI18n()
+  const m = t.profile.danger
   const idPrefix = useId()
+  const [logoutOpen, setLogoutOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
   const [status, setStatus] = useState<DeleteStatus>('idle')
+  const [errorMessage, setErrorMessage] = useState<string>()
 
   function handleDialogOpenChange(open: boolean) {
     setDialogOpen(open)
     if (!open) {
       setConfirmed(false)
       setStatus('idle')
+      setErrorMessage(undefined)
     }
   }
 
   async function handleConfirmDelete() {
     setStatus('submitting')
+    setErrorMessage(undefined)
     try {
       await onDeleteAccount?.()
+      setStatus('idle')
       handleDialogOpenChange(false)
-    } catch {
+    } catch (error) {
       setStatus('error')
+      setErrorMessage(error instanceof ApiError && error.status === 0 ? t.common.errors.network : m.deleteFailed)
     }
   }
 
@@ -40,69 +53,76 @@ export function DangerZone({ onSignOut, onDeleteAccount }: DangerZoneProps) {
     <Card>
       <section aria-labelledby={`${idPrefix}-heading`} className="flex flex-col gap-4">
         <h2 id={`${idPrefix}-heading`} className="text-lg font-semibold text-foreground">
-          Account Actions
+          {m.heading}
         </h2>
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
           <div>
-            <p className="text-sm font-medium text-foreground">Sign out</p>
-            <p className="text-sm text-muted-foreground">End your current session on this device.</p>
+            <p className="text-sm font-medium text-foreground">{m.signOutTitle}</p>
+            <p className="text-sm text-muted-foreground">{m.signOutBody}</p>
           </div>
-          <Button type="button" variant="outline" onClick={() => onSignOut?.()}>
-            Sign Out
+          <Button type="button" variant="outline" className="h-10 px-4" onClick={() => setLogoutOpen(true)}>
+            <LogOut className="size-4 rtl:-scale-x-100" aria-hidden="true" />
+            {m.signOut}
           </Button>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-medium text-destructive">Delete account</p>
-            <p className="text-sm text-muted-foreground">
-              Permanently remove your account and all associated data.
-            </p>
+            <p className="text-sm font-medium text-destructive">{m.deleteTitle}</p>
+            <p className="text-sm text-muted-foreground">{m.deleteBody}</p>
           </div>
-          <Button type="button" variant="destructive" onClick={() => setDialogOpen(true)}>
-            Delete Account
+          <Button type="button" variant="destructive" className="h-10 px-4" onClick={() => setDialogOpen(true)}>
+            {m.delete}
           </Button>
         </div>
       </section>
 
-      <Dialog
-        open={dialogOpen}
-        onOpenChange={handleDialogOpenChange}
-        title="Delete your account?"
-        description="This action is permanent and cannot be undone. All of your profile data will be removed."
-      >
+      <LogoutConfirmDialog open={logoutOpen} onOpenChange={setLogoutOpen} onSignedOut={onSignedOut} />
+
+      <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange} title={m.dialogTitle} description={m.dialogBody}>
         <div className="flex flex-col gap-4">
-          <div className="flex items-start gap-2.5">
+          <label
+            htmlFor={`${idPrefix}-confirm-delete`}
+            className="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-border px-3 py-2.5 text-sm hover:bg-muted/50"
+          >
             <input
               id={`${idPrefix}-confirm-delete`}
               type="checkbox"
               checked={confirmed}
+              disabled={status === 'submitting'}
               onChange={(event) => setConfirmed(event.target.checked)}
-              className="mt-0.5 h-4 w-4 shrink-0 rounded border-input focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="mt-0.5 size-5 shrink-0 cursor-pointer rounded border-input accent-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             />
-            <label htmlFor={`${idPrefix}-confirm-delete`} className="text-sm">
-              I understand this action is permanent and cannot be undone.
-            </label>
-          </div>
+            <span>{m.confirmLabel}</span>
+          </label>
 
-          {status === 'error' && (
-            <p role="alert" className="text-sm font-medium text-destructive">
-              Could not delete your account. Please try again.
+          {status === 'error' && errorMessage ? (
+            <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {errorMessage}
             </p>
-          )}
+          ) : null}
 
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => handleDialogOpenChange(false)}>
-              Cancel
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 px-4"
+              disabled={status === 'submitting'}
+              onClick={() => handleDialogOpenChange(false)}
+            >
+              {t.common.actions.cancel}
             </Button>
             <Button
               type="button"
               variant="destructive"
+              className="h-11 px-4"
               disabled={!confirmed || status === 'submitting'}
+              aria-busy={status === 'submitting'}
               onClick={handleConfirmDelete}
             >
-              {status === 'submitting' ? 'Deleting…' : 'Delete Account'}
+              {status === 'submitting' ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : null}
+              {status === 'submitting' ? m.deleting : m.delete}
             </Button>
           </div>
         </div>

@@ -5,8 +5,8 @@ import { AnimatePresence, motion } from "framer-motion"
 import { ChevronDown } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { SectionTitle } from "@/components/shared/section-title"
-import { FAQ_ITEMS } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/i18n/use-i18n"
 import { GlassPanel, GlowOrb, focusRingPop, staggerContainer, staggerItem } from "./ui/pop"
 
 function FaqItem({ title, content }: { title: string; content: React.ReactNode }) {
@@ -28,17 +28,17 @@ function FaqItem({ title, content }: { title: string; content: React.ReactNode }
             aria-controls={panelId}
             onClick={() => setOpen((value) => !value)}
             className={cn(
-              "flex w-full items-center justify-between gap-4 px-5 py-4 text-left sm:px-6 sm:py-5",
+              "flex w-full items-center justify-between gap-4 px-5 py-4 text-start sm:px-6 sm:py-5",
               focusRingPop,
             )}
           >
-            <span className={cn("text-sm font-medium text-foreground sm:text-base", open && "text-primary")}>
+            <span className={cn("text-sm font-medium text-foreground sm:text-base", open && "font-semibold text-[#1D4ED8]")}>
               {title}
             </span>
             <span
               aria-hidden="true"
               className={cn(
-                "flex size-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--primary)]/8 text-primary transition-all duration-300",
+                "flex size-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--primary)]/8 text-[#1D4ED8] transition-all duration-300",
                 open && "rotate-180 bg-[color:var(--primary)]/16",
               )}
             >
@@ -52,6 +52,7 @@ function FaqItem({ title, content }: { title: string; content: React.ReactNode }
               key="content"
               id={panelId}
               role="region"
+              aria-label={title}
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -68,9 +69,12 @@ function FaqItem({ title, content }: { title: string; content: React.ReactNode }
 }
 
 export function FAQ() {
+  const { t } = useI18n()
+  const copy = t.landing.faq
   return (
     <section
       id="faq"
+      aria-labelledby="faq-heading"
       className="relative overflow-hidden py-24 sm:py-28"
     >
       <GlowOrb className="pop-float left-[-10%] top-4 size-72" color="rgba(59,130,246,0.16)" />
@@ -78,9 +82,10 @@ export function FAQ() {
 
       <Container className="relative">
         <SectionTitle
-          eyebrow="FAQ"
-          title="Common questions, answered simply"
-          description="The goal is to make the product story easy to understand before the rest of the platform is built out."
+          headingId="faq-heading"
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          description={copy.description}
         />
 
         <motion.div
@@ -90,8 +95,8 @@ export function FAQ() {
           viewport={{ once: true, amount: 0.2 }}
           className="mt-12 space-y-4"
         >
-          {FAQ_ITEMS.map((item) => (
-            <FaqItem key={item.title} title={item.title} content={item.content} />
+          {copy.items.map((item) => (
+            <FaqItem key={item.question} title={item.question} content={item.answer} />
           ))}
         </motion.div>
       </Container>

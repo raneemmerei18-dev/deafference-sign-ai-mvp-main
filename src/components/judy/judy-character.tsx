@@ -29,6 +29,7 @@ export type JudyPose =
   | "hungry"
   | "phone"
   | "sleep"
+  | "coy"
 
 // Each pose turns on the same state classes the Vue file combined for it, and
 // the mood (face) the original paired it with. `mood` overrides the face.
@@ -51,6 +52,8 @@ const POSES: Record<JudyPose, { classes: string[]; mood: JudyMood }> = {
   hungry: { classes: ["judy-hungry"], mood: "happy" },
   phone: { classes: ["judy-phone-talking"], mood: "happy" },
   sleep: { classes: ["judy-sleeping"], mood: "neutral" },
+  // Playful: one finger at the corner of her smile, glancing up to the right.
+  coy: { classes: ["judy-coy"], mood: "happy" },
 }
 
 const DRAG_THRESHOLD = 4
@@ -80,16 +83,47 @@ export interface JudyCharacterProps {
    * apply again.
    */
   autoPlay?: boolean
+  /** Translated bubble lines for `autoPlay` (defaults to English). */
+  autoPlayLines?: JudyAutoPlayLines
+  /** Renders Judy in normal document flow (e.g. inside a card) instead of fixed to the viewport; `x`/`y` are ignored. */
+  inline?: boolean
+  /** Announce speech-bubble text to screen readers. Turn off where the bubble repeats a visible status. */
+  announce?: boolean
+  /** Accessible name for the illustration. */
+  label?: string
   className?: string
 }
 
 type AutoAction = { pose: JudyPose; mood?: JudyMood }
+
+/** Speech-bubble lines used by `autoPlay`; pass translated copies via `autoPlayLines`. */
+export const JUDY_AUTOPLAY_LINES = {
+  roadTrip: "Road trip!",
+  hi: "Hi there!",
+  listening: "I am listening.",
+  think: "Hmm... let me think.",
+  quiet: "Sometimes I need a quiet moment.",
+  wheee: "Wheee!",
+  yay: "Yay!",
+  burger: "A burger! Yum!",
+  yum: "Yum!",
+  phone: "Hello! How are you?",
+  tickle: "Hehe, that tickles!",
+  tapHint1: "Psst… tap me!",
+  tapHint2: "I'm ticklish. Try tapping me!",
+  tapHint3: "Tap me, or drag me anywhere!",
+}
+export type JudyAutoPlayLines = typeof JUDY_AUTOPLAY_LINES
 
 // Move and bubble timings from JudyCompanion.vue (idleMoment / showLine /
 // roamRandomly). The rest is counted from when a move ends, not when it starts.
 const MOVE_LASTS_MS = 10_000
 const REST_BETWEEN_MS = 30_000
 const BUBBLE_LASTS_MS = 3_400
+// How long she laughs after being tapped (draggable Judy only).
+const TAP_LAUGH_MS = 2_500
+// Chance that a rest period includes a "tap me" hint (draggable Judy only).
+const TAP_HINT_CHANCE = 0.7
 
 const toCss = (value: number | string) => (typeof value === "number" ? `${value}px` : value)
 
@@ -104,11 +138,27 @@ export function JudyCharacter({
   draggable = false,
   onDragEnd,
   autoPlay = false,
+  autoPlayLines = JUDY_AUTOPLAY_LINES,
+  inline = false,
+  announce = true,
+  label = "Judy, the Deafference companion",
   className,
 }: JudyCharacterProps) {
   const [autoAction, setAutoAction] = useState<AutoAction | null>(null)
   const [autoMessage, setAutoMessage] = useState("")
   const [autoPos, setAutoPos] = useState<Partial<Point> | null>(null)
+  // Read through a ref so a language switch updates the lines without restarting the routine.
+  const linesRef = useRef(autoPlayLines)
+  useEffect(() => {
+    linesRef.current = autoPlayLines
+  }, [autoPlayLines])
+  const [tapLaugh, setTapLaugh] = useState(false)
+  const tapLaughRef = useRef(false)
+  useEffect(() => {
+    tapLaughRef.current = tapLaugh
+  }, [tapLaugh])
+  const tapTimer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(tapTimer.current), [])
   const drag = useRef({ pointerId: -1, startX: 0, startY: 0, left: 0, bottom: 0, moved: false })
 
   useEffect(() => {
@@ -146,6 +196,8 @@ export function JudyCharacter({
       if (line) say(line)
     }
     const randomSpot = () => {
+      // Don't walk her out from under the visitor's pointer while she's being dragged.
+      if (drag.current.pointerId !== -1) return
       const maxLeft = Math.max(10, window.innerWidth - 152)
       const maxBottom = Math.max(10, window.innerHeight - 250)
       setAutoPos({
@@ -159,23 +211,23 @@ export function JudyCharacter({
       travel = window.setInterval(randomSpot, run ? 1300 : 2400)
     }
     const drive = () => {
-      play({ pose: "drive", mood: "happy" }, "Road trip!")
+      play({ pose: "drive", mood: "happy" }, linesRef.current.roadTrip)
       setAutoPos({ x: -142, y: 10 })
       // Two frames so the off-screen start is committed before she sets off.
       nextFrame(() => nextFrame(() => setAutoPos({ x: window.innerWidth + 12, y: 10 })))
     }
 
     const moves: Array<() => void> = [
-      () => play({ pose: "wave", mood: "happy" }, "Hi there!"),
-      () => play({ pose: "listen", mood: "listen" }, "I am listening."),
-      () => play({ pose: "cute-think", mood: "think" }, "Hmm... let me think."),
-      () => play({ pose: "idle", mood: "sad" }, "Sometimes I need a quiet moment."),
-      () => play({ pose: "twirl", mood: "happy" }, "Wheee!"),
-      () => play({ pose: "dance", mood: "happy" }, "Yay!"),
+      () => play({ pose: "wave", mood: "happy" }, linesRef.current.hi),
+      () => play({ pose: "listen", mood: "listen" }, linesRef.current.listening),
+      () => play({ pose: "cute-think", mood: "think" }, linesRef.current.think),
+      () => play({ pose: "idle", mood: "sad" }, linesRef.current.quiet),
+      () => play({ pose: "twirl", mood: "happy" }, linesRef.current.wheee),
+      () => play({ pose: "dance", mood: "happy" }, linesRef.current.yay),
       drive,
-      () => play({ pose: "hungry", mood: "happy" }, "A burger! Yum!"),
-      () => play({ pose: "eat", mood: "happy" }, "Yum!"),
-      () => play({ pose: "phone", mood: "happy" }, "Hello! How are you?"),
+      () => play({ pose: "hungry", mood: "happy" }, linesRef.current.burger),
+      () => play({ pose: "eat", mood: "happy" }, linesRef.current.yum),
+      () => play({ pose: "phone", mood: "happy" }, linesRef.current.phone),
       () => roam(false),
       () => roam(true),
       () => {
@@ -194,6 +246,22 @@ export function JudyCharacter({
         if (wasDriving) setAutoPos(null)
       }, MOVE_LASTS_MS)
 
+    // During the rest after a move, sometimes invite the visitor to tap her. The hint is
+    // placed randomly inside the rest window so it never overlaps the next move.
+    const tapHint = () => {
+      if (drag.current.pointerId !== -1 || tapLaughRef.current) return
+      const { tapHint1, tapHint2, tapHint3 } = linesRef.current
+      const hints = [tapHint1, tapHint2, tapHint3]
+      play({ pose: "coy", mood: "happy" }, hints[Math.floor(Math.random() * hints.length)])
+      later(() => setAutoAction(null), BUBBLE_LASTS_MS)
+    }
+    const scheduleTapHint = () => {
+      if (!draggable || Math.random() > TAP_HINT_CHANCE) return
+      const earliest = MOVE_LASTS_MS + 3_000
+      const latest = MOVE_LASTS_MS + REST_BETWEEN_MS - BUBBLE_LASTS_MS - 1_000
+      later(tapHint, earliest + Math.random() * (latest - earliest))
+    }
+
     const idleMoment = () => {
       // Never yank her out of the visitor's hand mid-drag.
       if (drag.current.pointerId === -1) {
@@ -201,6 +269,7 @@ export function JudyCharacter({
         move()
         finish(move === drive)
       }
+      scheduleTapHint()
       later(idleMoment, MOVE_LASTS_MS + REST_BETWEEN_MS)
     }
 
@@ -211,13 +280,14 @@ export function JudyCharacter({
       frames.forEach((id) => window.cancelAnimationFrame(id))
       if (travel !== undefined) window.clearInterval(travel)
     }
-  }, [autoPlay])
+  }, [autoPlay, draggable])
 
   // While a move plays it wins over the props; stale auto state is ignored when autoPlay is off.
-  const action = autoPlay ? autoAction : null
+  // A tap-laugh wins over both the auto-play move and the props while it lasts.
+  const action: AutoAction | null = tapLaugh ? { pose: "laugh", mood: "happy" } : autoPlay ? autoAction : null
   const pose = action ? action.pose : posePropValue
   const mood = action ? action.mood : moodProp
-  const message = action ? autoMessage : messageProp
+  const message = tapLaugh ? autoPlayLines.tickle : action ? autoMessage : messageProp
   const x = autoPlay && autoPos?.x !== undefined ? autoPos.x : xProp
   const y = autoPlay && autoPos?.y !== undefined ? autoPos.y : yProp
 
@@ -277,6 +347,12 @@ export function JudyCharacter({
     setDragging(false)
     drag.current.pointerId = -1
     if (drag.current.moved && current) onDragEnd?.({ x: current.x, y: current.y })
+    // A press that never turned into a drag is a tap: she laughs.
+    if (!drag.current.moved && event.type === "pointerup") {
+      setTapLaugh(true)
+      window.clearTimeout(tapTimer.current)
+      tapTimer.current = window.setTimeout(() => setTapLaugh(false), TAP_LAUGH_MS)
+    }
   }
 
   const rootClass = [
@@ -286,6 +362,7 @@ export function JudyCharacter({
     visible && "judy-visible",
     dragging && "judy-dragging",
     !draggable && "judy-static",
+    inline && "judy-inline",
     className,
   ]
     .filter(Boolean)
@@ -294,12 +371,16 @@ export function JudyCharacter({
   return (
     <div
       className={rootClass}
-      style={{
-        left: toCss(current ? current.x : x),
-        bottom: toCss(current ? current.y : y),
-        width: size,
-      }}
-      aria-live="polite"
+      style={
+        inline
+          ? { width: size }
+          : {
+              left: toCss(current ? current.x : x),
+              bottom: toCss(current ? current.y : y),
+              width: size,
+            }
+      }
+      aria-live={announce ? "polite" : undefined}
       {...(draggable && {
         onPointerDown,
         onPointerMove,
@@ -320,7 +401,7 @@ export function JudyCharacter({
         <span>Z</span>
       </div>
       <div className={facing === "left" ? "judy-facing judy-facing-left" : "judy-facing"}>
-        <svg className="judy-figure" viewBox="0 0 220 380" aria-label="Judy, the Deafference companion" role="img">
+        <svg className="judy-figure" viewBox="0 0 220 380" aria-label={label} role="img">
           <ellipse cx="110" cy="372" rx="46" ry="6" className="judy-shadow" />
 
           <g className="judy-hair-wrap" transform="translate(0 -8)">
@@ -608,6 +689,13 @@ export function JudyCharacter({
             <circle cx="162" cy="263" r="4" className="judy-car-light" />
             <circle cx="110" cy="218" r="15" className="judy-steering-wheel" />
             <path d="M110 203v30M96 218h28" className="judy-steering-spokes" />
+          </g>
+          <g className="judy-coy-arm" aria-hidden="true">
+            <path d="M138 108 C154 124 157 146 149 162" className="judy-eating-sleeve" />
+            <path d="M149 162 C140 144 130 127 124 114" className="judy-eating-forearm" />
+            <circle cx="123" cy="111" r="8" className="judy-hand" />
+            <path d="M119.6 105.5 L116.6 95.5" className="judy-coy-finger" />
+            <path d="M126 113l3 3M124 116l2 4" className="judy-fingers" />
           </g>
         </svg>
       </div>

@@ -1,22 +1,25 @@
 import type { Metadata } from 'next'
 import { AuthFlow } from '@/components/auth/auth-flow'
+import { SkipToAuthLink } from '@/components/auth/skip-to-auth-link'
 
 export const metadata: Metadata = {
   title: 'Deafference — Create Account',
   description: 'Sign in or create a Deafference account.',
 }
 
-export default function SignupPage() {
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirectTo?: string }>
+}) {
+  const params = await searchParams
+
   return (
     <>
-      <a
-        href="#auth"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground"
-      >
-        Skip to sign up form
-      </a>
+      <SkipToAuthLink mode="signup" />
       <main id="auth" className="min-h-dvh bg-background">
-        <AuthFlow defaultMode="signup" />
+        {/* redirectTo is sanitized (same-origin paths only) inside AuthFlow. */}
+        <AuthFlow defaultMode="signup" redirectTo={params.redirectTo} />
       </main>
     </>
   )

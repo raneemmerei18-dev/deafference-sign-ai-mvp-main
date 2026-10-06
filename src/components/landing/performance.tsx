@@ -1,35 +1,26 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Gauge, GitBranch, Percent, ShieldCheck, Timer, Zap } from "lucide-react"
+import { Gauge, Languages, MonitorSmartphone, ShieldCheck, Timer, Zap } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { SectionTitle } from "@/components/shared/section-title"
 import { IconBadge } from "@/components/shared/icon-badge"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/i18n/use-i18n"
 import { AnimatedNumber, GlassPanel, GlowOrb, staggerContainer, staggerItem } from "./ui/pop"
 
-const metrics = [
-  { value: "< 300ms", label: "to animate core UI transitions" },
-  { value: "100%", label: "responsive layouts across breakpoints" },
-  { value: "Zero coupling", label: "between landing and translation features" },
-]
-
-/** Per-metric visual accents, kept separate from `metrics` so the copy/data above stays verbatim. */
+/** Per-metric visual accents, zipped by index with `t.landing.performance.metrics`.
+ * The bars are decoration only (aria-hidden), not measurements. */
 const metricMeta = [
   { icon: Timer, progress: 92 },
-  { icon: Percent, progress: 100 },
-  { icon: GitBranch, progress: 78 },
+  { icon: MonitorSmartphone, progress: 100 },
+  { icon: Languages, progress: 78 },
 ]
 
-const features = [
-  { icon: Gauge, title: "Lightweight", text: "Minimal overhead and deliberate surface area." },
-  { icon: Zap, title: "Responsive", text: "Layouts adapt cleanly from mobile to desktop." },
-  { icon: ShieldCheck, title: "Predictable", text: "Reusable primitives reduce visual drift." },
-]
+const QUALITY_ICONS = [Gauge, Zap, ShieldCheck]
 
-/** Splits a metric string like "< 300ms" or "100%" into an animatable number plus its
- * surrounding text, so figures can count up without altering the source copy. Returns
- * null for non-numeric metrics (e.g. "Zero coupling"), which render as plain text. */
+/** Splits a metric string like "2 languages" into an animatable number plus its surrounding
+ * text, so figures can count up. Returns null for non-numeric metrics, which render as plain text. */
 function parseMetric(value: string) {
   const match = value.match(/-?\d+(?:\.\d+)?/)
   if (!match || match.index === undefined) return null
@@ -41,9 +32,13 @@ function parseMetric(value: string) {
 }
 
 export function Performance() {
+  const { t, dir } = useI18n()
+  const copy = t.landing.performance
+  const isRtl = dir === "rtl"
   return (
     <section
       id="performance"
+      aria-labelledby="performance-heading"
       className="relative py-24 sm:py-28"
     >
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
@@ -55,9 +50,10 @@ export function Performance() {
 
       <Container>
         <SectionTitle
-          eyebrow="Performance"
-          title="Fast to scan, fast to extend"
-          description="The visual system aims for clarity first, while the architecture keeps runtime concerns simple and separated."
+          headingId="performance-heading"
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          description={copy.description}
         />
 
         <div className="mt-12 grid gap-4 lg:grid-cols-[1fr_1.1fr]">
@@ -68,8 +64,8 @@ export function Performance() {
             viewport={{ once: true, amount: 0.2 }}
             className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1"
           >
-            {metrics.map((metric, index) => {
-              const meta = metricMeta[index]
+            {copy.metrics.map((metric, index) => {
+              const meta = metricMeta[index] ?? metricMeta[0]
               const Icon = meta.icon
               const parsed = parseMetric(metric.value)
 
@@ -100,7 +96,7 @@ export function Performance() {
 
                     <p className="mt-2 text-sm leading-7 text-muted-foreground">{metric.label}</p>
 
-                    <div className="relative mt-5 h-1.5 overflow-hidden rounded-full bg-[color:var(--primary)]/10">
+                    <div aria-hidden="true" className="relative mt-5 h-1.5 overflow-hidden rounded-full bg-[color:var(--primary)]/10">
                       <motion.div
                         className="h-full rounded-full bg-gradient-to-r from-blue-accent to-brand-orange"
                         initial={{ width: 0 }}
@@ -112,7 +108,11 @@ export function Performance() {
                         aria-hidden="true"
                         className="absolute top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-orange shadow-[0_0_8px_rgba(255,138,61,0.65)]"
                         style={{ left: "0%" }}
-                        animate={{ left: ["4%", `${meta.progress}%`, "4%"] }}
+                        animate={{
+                          left: isRtl
+                            ? ["96%", `${100 - meta.progress}%`, "96%"]
+                            : ["4%", `${meta.progress}%`, "4%"],
+                        }}
                         transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut", delay: index * 0.3 }}
                       />
                     </div>
@@ -130,8 +130,8 @@ export function Performance() {
           >
             <GlassPanel className="h-full p-6">
               <div className="grid gap-4 sm:grid-cols-3">
-                {features.map((item) => {
-                  const Icon = item.icon
+                {copy.qualities.map((item, i) => {
+                  const Icon = QUALITY_ICONS[i] ?? Gauge
                   return (
                     <div
                       key={item.title}

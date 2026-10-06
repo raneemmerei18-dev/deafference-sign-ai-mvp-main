@@ -11,6 +11,7 @@ import {
 } from "react"
 import { usePathname } from "next/navigation"
 import { DEFAULT_SETTINGS, SETTINGS_COOKIE_NAME, type Settings } from "@/lib/settings"
+import { dirFor, isLocaleExemptPath, localeFromLanguage } from "@/i18n/locale"
 
 export type { TextSize, Theme, Density, Settings } from "@/lib/settings"
 export { DEFAULT_SETTINGS, SETTINGS_COOKIE_NAME, parseSettingsCookie } from "@/lib/settings"
@@ -25,6 +26,8 @@ type SettingsContextValue = {
   settings: Settings
   update: <K extends keyof Settings>(key: K, value: Settings[K]) => void
   toggleTheme: () => void
+  /** Switches the interface language immediately and persists only that choice (other unsaved edits stay unsaved). */
+  setLanguage: (language: string) => void
   /** Persists the current (possibly unsaved) settings so they survive a reload. */
   save: () => void
   /** Resets to defaults in-memory *and* persists that reset. */
@@ -49,7 +52,8 @@ export function SettingsProvider({
   // these accessibility flags are meant for — it runs its own decorative
   // motion/theme system, so an account's saved "Reduce Motion" preference
   // shouldn't silently kill the marketing site's animations.
-  const isLandingPage = usePathname() === "/"
+  const pathname = usePathname()
+  const isLandingPage = pathname === "/"
 
   const update = useCallback<SettingsContextValue["update"]>((key, value) => {
     setSettings((prev) => ({ ...prev, [key]: value }))
@@ -58,6 +62,18 @@ export function SettingsProvider({
   const toggleTheme = useCallback(() => {
     setSettings((prev) => ({ ...prev, theme: prev.theme === "dark" ? "light" : "dark" }))
   }, [])
+
+  const setLanguage = useCallback<SettingsContextValue["setLanguage"]>(
+    (language) => {
+      setSettings((prev) => ({ ...prev, language }))
+      setSavedSettings((prev) => {
+        const next = { ...prev, language }
+        writeSettingsCookie(next)
+        return next
+      })
+    },
+    [],
+  )
 
   const save = useCallback(() => {
     setSavedSettings(settings)
@@ -105,9 +121,17 @@ export function SettingsProvider({
     root.dataset.density = settings.density
   }, [settings.highContrast, settings.reduceMotion, settings.textSize, settings.density, isLandingPage])
 
+  // Interface language drives <html lang/dir> so Arabic renders right-to-left.
+  useEffect(() => {
+    const root = document.documentElement
+    const locale = isLocaleExemptPath(pathname) ? "en" : localeFromLanguage(settings.language)
+    root.lang = locale
+    root.dir = dirFor(locale)
+  }, [settings.language, pathname])
+
   const value = useMemo(
-    () => ({ settings, update, toggleTheme, save, reset, isDirty }),
-    [settings, update, toggleTheme, save, reset, isDirty],
+    () => ({ settings, update, toggleTheme, setLanguage, save, reset, isDirty }),
+    [settings, update, toggleTheme, setLanguage, save, reset, isDirty],
   )
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>

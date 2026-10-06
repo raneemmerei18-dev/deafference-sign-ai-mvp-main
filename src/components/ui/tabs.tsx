@@ -37,14 +37,16 @@ export function Tabs({
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {
+    // Arrow keys follow visual order, which is reversed in right-to-left layouts.
+    const step = getComputedStyle(event.currentTarget).direction === "rtl" ? -1 : 1
     switch (event.key) {
       case "ArrowRight":
         event.preventDefault()
-        focusTabAt(index + 1)
+        focusTabAt(index + step)
         break
       case "ArrowLeft":
         event.preventDefault()
-        focusTabAt(index - 1)
+        focusTabAt(index - step)
         break
       case "Home":
         event.preventDefault()

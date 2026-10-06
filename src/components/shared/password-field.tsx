@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { useI18n } from '@/i18n/use-i18n'
 
 export function PasswordField({
   id,
@@ -23,6 +24,7 @@ export function PasswordField({
   required?: boolean
   minLength?: number
 }) {
+  const { t } = useI18n()
   const [visible, setVisible] = useState(false)
 
   return (
@@ -38,15 +40,15 @@ export function PasswordField({
         onChange={(event) => onChange(event.target.value)}
         aria-invalid={invalid || undefined}
         aria-describedby={describedBy}
-        className="pr-10"
+        className="pe-12"
       />
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
         aria-pressed={visible}
-        aria-label={visible ? 'Hide password' : 'Show password'}
+        aria-label={visible ? t.auth.password.hide : t.auth.password.show}
         aria-controls={id}
-        className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="absolute inset-y-0 end-0 flex w-11 items-center justify-center rounded-e-xl text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {visible ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
       </button>

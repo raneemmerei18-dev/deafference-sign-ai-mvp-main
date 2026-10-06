@@ -6,7 +6,7 @@
 
 @theme inline {
   --font-heading: var(--font-sans);
-  --font-sans: var(--font-geist-sans), 'Geist Fallback';
+  --font-sans: var(--font-geist-sans), 'Geist Fallback', var(--font-arabic);
   --font-mono: var(--font-geist-mono), 'Geist Mono Fallback';
   --color-brand-yellow: var(--brand-yellow);
   --color-brand-orange: var(--brand-orange);
@@ -538,4 +538,9 @@ html[data-text-size='xlarge'] {
   background-repeat: repeat;
   background-size: 340px 340px;
   animation: star-twinkle 5s ease-in-out infinite;
+}
+
+/* Letter-spacing breaks joined Arabic script, so drop tracking utilities in RTL. */
+[dir="rtl"] [class*="tracking-"] {
+  letter-spacing: 0;
 }

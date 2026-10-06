@@ -2,8 +2,10 @@
 
 import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
+import { useI18n } from "@/i18n/use-i18n"
 
 export function RecentTranslations() {
+  const { t } = useI18n()
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
@@ -12,10 +14,10 @@ export function RecentTranslations() {
     >
       <Card className="p-5 sm:p-6">
         <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-          Recent Translations
+          {t.app.recent.eyebrow}
         </p>
         <div className="mt-4 rounded-2xl border border-dashed border-border bg-background/60 px-4 py-8 text-sm text-muted-foreground">
-          No translations yet.
+          {t.app.recent.empty}
         </div>
       </Card>
     </motion.div>

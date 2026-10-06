@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { AlertTriangle, ArrowLeft, Volume2, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/i18n/use-i18n"
 import { getServerSnapshot, getSnapshot, speak, stop, subscribe } from "@/lib/speech"
 import {
   EMERGENCY_CATEGORY_MAP,
@@ -24,6 +25,11 @@ const FOCUSABLE_SELECTOR =
  * (see app/layout.tsx) so the trigger is available from every screen.
  */
 export function EmergencyQuickActions() {
+  const { t, fmt } = useI18n()
+  const copy = t.app.emergency
+  // Phrase data stays English in emergency-data.ts; localized copy is looked up by id.
+  const labelOf = (phrase: EmergencyPhrase) => copy.phrases[phrase.id]?.label ?? phrase.label
+  const textOf = (phrase: EmergencyPhrase) => copy.phrases[phrase.id]?.text ?? phrase.text
   const [isSelectOpen, setIsSelectOpen] = useState(false)
   const [activeFilter, setActiveFilter] = useState<EmergencyFilterId>("all")
   const [activePhrase, setActivePhrase] = useState<EmergencyPhrase | null>(null)
@@ -157,13 +163,13 @@ export function EmergencyQuickActions() {
         aria-controls="emergency-select-dialog"
         tabIndex={isSelectOpen || isFullscreen ? -1 : 0}
         className={cn(
-          "fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-gradient-to-r from-[#EE6C2B] to-[#F59E0B] px-5 py-4 font-extrabold text-white shadow-[0_10px_40px_-10px_rgba(238,108,43,0.7)] transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#F59E0B]/60 active:scale-95",
+          "fixed bottom-5 end-5 z-50 flex min-h-12 items-center gap-2 rounded-full bg-gradient-to-r from-[#EE6C2B] to-[#F59E0B] px-4 py-3 sm:bottom-6 sm:end-6 sm:px-5 sm:py-4 font-extrabold text-white shadow-[0_10px_40px_-10px_rgba(238,108,43,0.7)] transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#F59E0B]/60 active:scale-95",
           "emergency-fab-pulse",
           (isSelectOpen || isFullscreen) && "pointer-events-none opacity-0",
         )}
       >
         <AlertTriangle className="size-5 shrink-0" aria-hidden="true" />
-        <span className="text-sm tracking-wide uppercase sm:text-base">Emergency Phrases</span>
+        <span className="text-sm tracking-wide uppercase sm:text-base">{copy.trigger}</span>
       </button>
 
       {/* Select panel backdrop */}
@@ -182,13 +188,13 @@ export function EmergencyQuickActions() {
         id="emergency-select-dialog"
         role="dialog"
         aria-modal="true"
-        aria-label="Emergency Quick-Select"
+        aria-label={copy.title}
         aria-hidden={!(isSelectOpen && !isFullscreen)}
         inert={!(isSelectOpen && !isFullscreen)}
         className={cn(
           "fixed inset-x-0 bottom-0 z-[60] flex max-h-[92vh] flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out",
           "sm:inset-x-6 sm:bottom-6 sm:rounded-3xl",
-          "lg:inset-x-auto lg:left-1/2 lg:w-full lg:max-w-5xl lg:-translate-x-1/2",
+          "lg:inset-x-0 lg:mx-auto lg:w-full lg:max-w-5xl",
           isSelectOpen && !isFullscreen
             ? "translate-y-0"
             : "pointer-events-none translate-y-[calc(100%+2rem)]",
@@ -196,27 +202,25 @@ export function EmergencyQuickActions() {
       >
         <div className="flex items-start justify-between gap-4 border-b border-black/10 px-5 py-4 sm:px-6">
           <div>
-            <h2 className="text-lg font-extrabold tracking-tight text-[#1A1A1A] sm:text-xl">
-              EMERGENCY QUICK-SELECT
+            <h2 className="text-lg font-extrabold tracking-tight text-[#1A1A1A] uppercase sm:text-xl">
+              {copy.title}
             </h2>
-            <p className="mt-0.5 text-xs text-black/60 sm:text-sm">
-              Tap any phrase to display full-screen immediately
-            </p>
+            <p className="mt-0.5 text-xs text-black/60 sm:text-sm">{copy.subtitle}</p>
           </div>
           <button
             ref={closeButtonRef}
             type="button"
             onClick={closeEverything}
-            aria-label="Close emergency panel"
-            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-black/5 text-[#1A1A1A] transition-colors hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C2B]"
+            aria-label={copy.close}
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-black/5 text-[#1A1A1A] transition-colors hover:bg-black/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EE6C2B]"
           >
-            <X className="size-5" />
+            <X className="size-5" aria-hidden="true" />
           </button>
         </div>
 
         <div
           role="tablist"
-          aria-label="Emergency phrase category"
+          aria-label={copy.categoryLabel}
           className="flex flex-wrap gap-2 border-b border-black/10 px-5 py-3 sm:px-6"
         >
           {EMERGENCY_FILTERS.map((f) => {
@@ -235,7 +239,7 @@ export function EmergencyQuickActions() {
                     : "bg-black/5 text-[#1A1A1A]/70 hover:bg-black/10 hover:text-[#1A1A1A]",
                 )}
               >
-                {f.label}
+                {copy.filters[f.id]}
               </button>
             )
           })}
@@ -270,7 +274,7 @@ export function EmergencyQuickActions() {
                       phrase.xl ? "text-3xl" : "text-base md:text-lg",
                     )}
                   >
-                    {phrase.label}
+                    {labelOf(phrase)}
                   </span>
                 </button>
               )
@@ -285,7 +289,7 @@ export function EmergencyQuickActions() {
           id="emergency-flashcard"
           role="dialog"
           aria-modal="true"
-          aria-label={`Broadcasting: ${activePhrase.text}`}
+          aria-label={fmt(copy.broadcasting, { text: textOf(activePhrase) })}
           className="fixed inset-0 z-[70] flex flex-col bg-slate-950 text-white"
         >
           <div
@@ -300,13 +304,13 @@ export function EmergencyQuickActions() {
               onClick={closePhrase}
               className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
-              <ArrowLeft className="size-4" />
-              Back to phrases
+              <ArrowLeft className="size-4 rtl:-scale-x-100" aria-hidden="true" />
+              {copy.back}
             </button>
             <button
               type="button"
               onClick={closeEverything}
-              aria-label="Close emergency panel"
+              aria-label={copy.close}
               className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               <X className="size-5" />
@@ -322,25 +326,22 @@ export function EmergencyQuickActions() {
             />
 
             <p className="text-balance text-4xl font-extrabold leading-tight md:text-6xl">
-              {activePhrase.text}
+              {textOf(activePhrase)}
             </p>
 
             <button
               ref={readAloudButtonRef}
               type="button"
-              onClick={() => speak(activePhrase.text)}
+              onClick={() => speak(textOf(activePhrase))}
               disabled={!speech.supported}
               className="flex items-center gap-3 rounded-full bg-gradient-to-r from-[#EE6C2B] to-[#F59E0B] px-8 py-4 text-lg font-extrabold text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/60 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <Volume2 className="size-6" />
-              {speech.speaking ? "Speaking…" : "Read Aloud (Audio Alert)"}
+              <Volume2 className="size-6" aria-hidden="true" />
+              {speech.speaking ? copy.speaking : copy.readAloud}
             </button>
 
             {!speech.supported && (
-              <p className="max-w-sm text-sm text-white/60">
-                Audio playback isn&apos;t supported in this browser — the phrase above is still
-                fully readable for bystanders.
-              </p>
+              <p className="max-w-sm text-sm text-white/70">{copy.unsupported}</p>
             )}
           </div>
         </div>

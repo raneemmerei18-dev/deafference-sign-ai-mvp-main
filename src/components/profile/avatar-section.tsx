@@ -1,84 +1,132 @@
 'use client'
 
 import { useEffect, useId, useRef, useState, type ChangeEvent } from 'react'
-import { UserCircle2 } from 'lucide-react'
+import { Loader2, Trash2, Upload, UserCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { FieldError } from '@/components/shared/field-error'
+import { useI18n } from '@/i18n/use-i18n'
+import { ApiError } from './api-error'
 
 const ACCEPTED_TYPES = ['image/png', 'image/jpeg']
+/** Mirrors the server limit in /api/account/avatar (data URL ≤ 700,000 chars ≈ 500 KB image). */
+const MAX_DATA_URL_LENGTH = 700_000
 
-export interface AvatarSectionProps {
-  initialAvatarUrl?: string | null
-  onUpload?: (file: File) => void | Promise<void>
-  onRemove?: () => void | Promise<void>
+function estimatedDataUrlLength(file: File) {
+  return Math.ceil(file.size / 3) * 4 + `data:${file.type};base64,`.length
 }
 
-export function AvatarSection({ initialAvatarUrl, onUpload, onRemove }: AvatarSectionProps) {
+export interface AvatarSectionProps {
+  displayName?: string
+  initialAvatarUrl?: string | null
+  /** Uploads the file; may resolve to the persisted image URL. Throws on failure. */
+  onUpload?: (file: File) => Promise<string | void>
+  /** Removes the saved picture. Throws on failure. */
+  onRemove?: () => Promise<void>
+}
+
+type Busy = 'uploading' | 'removing' | null
+
+export function AvatarSection({ displayName, initialAvatarUrl, onUpload, onRemove }: AvatarSectionProps) {
+  const { t, fmt } = useI18n()
+  const m = t.profile.avatar
   const idPrefix = useId()
   const inputRef = useRef<HTMLInputElement>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(initialAvatarUrl ?? null)
-  const [isObjectUrl, setIsObjectUrl] = useState(false)
+  const [savedUrl, setSavedUrl] = useState<string | null>(initialAvatarUrl ?? null)
+  const [pendingUrl, setPendingUrl] = useState<string | null>(null)
+  const [busy, setBusy] = useState<Busy>(null)
   const [error, setError] = useState<string>()
+  const [success, setSuccess] = useState<string>()
 
-  // Revoke the previous object URL whenever it's replaced or the section unmounts
-  // — but only ones we created via createObjectURL, never the persisted data URL.
+  // Revoke the temporary preview object URL when it's replaced or the section unmounts.
   useEffect(() => {
     return () => {
-      if (previewUrl && isObjectUrl) URL.revokeObjectURL(previewUrl)
+      if (pendingUrl) URL.revokeObjectURL(pendingUrl)
     }
-  }, [previewUrl, isObjectUrl])
+  }, [pendingUrl])
+
+  const displayUrl = pendingUrl ?? savedUrl
+
+  function uploadErrorMessage(err: unknown) {
+    if (err instanceof ApiError) {
+      if (err.status === 0) return t.common.errors.network
+      if (err.status === 400) return /too large/i.test(err.message) ? m.tooLarge : m.invalidType
+    }
+    return m.uploadFailed
+  }
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
+    event.target.value = ''
     if (!file) return
 
+    setSuccess(undefined)
     if (!ACCEPTED_TYPES.includes(file.type)) {
-      setError('Please choose a PNG or JPEG image.')
-      event.target.value = ''
+      setError(m.invalidType)
+      return
+    }
+    if (estimatedDataUrlLength(file) > MAX_DATA_URL_LENGTH) {
+      setError(m.tooLarge)
       return
     }
 
     setError(undefined)
-    setPreviewUrl((current) => {
-      if (current && isObjectUrl) URL.revokeObjectURL(current)
-      return URL.createObjectURL(file)
-    })
-    setIsObjectUrl(true)
-    await onUpload?.(file)
+    setPendingUrl(URL.createObjectURL(file))
+    setBusy('uploading')
+    try {
+      const persistedUrl = await onUpload?.(file)
+      if (persistedUrl) setSavedUrl(persistedUrl)
+      setSuccess(m.uploaded)
+    } catch (err) {
+      // Roll back to the previous picture — the preview was never saved.
+      setError(uploadErrorMessage(err))
+    } finally {
+      setPendingUrl(null)
+      setBusy(null)
+    }
   }
 
   async function handleRemove() {
-    setPreviewUrl((current) => {
-      if (current && isObjectUrl) URL.revokeObjectURL(current)
-      return null
-    })
-    setIsObjectUrl(false)
     setError(undefined)
-    if (inputRef.current) inputRef.current.value = ''
-    await onRemove?.()
+    setSuccess(undefined)
+    setBusy('removing')
+    try {
+      await onRemove?.()
+      setSavedUrl(null)
+      setSuccess(m.removed)
+    } catch (err) {
+      setError(err instanceof ApiError && err.status === 0 ? t.common.errors.network : m.removeFailed)
+    } finally {
+      setBusy(null)
+    }
   }
+
+  const alt = pendingUrl ? '' : displayName ? fmt(m.altSaved, { name: displayName }) : m.altFallback
 
   return (
     <Card>
       <section aria-labelledby={`${idPrefix}-heading`} className="flex flex-col gap-4">
         <h2 id={`${idPrefix}-heading`} className="text-lg font-semibold text-foreground">
-          Profile Picture
+          {m.heading}
         </h2>
 
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-          <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted text-muted-foreground">
-            {previewUrl ? (
-              <img src={previewUrl} alt="Profile picture preview" className="size-full object-cover" />
+          <div
+            className="relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted text-muted-foreground"
+            aria-busy={busy !== null}
+          >
+            {displayUrl ? (
+              <img src={displayUrl} alt={alt} className="size-full object-cover" />
             ) : (
-              <UserCircle2 className="size-10" aria-hidden="true" />
+              <UserCircle2 className="size-10" role="img" aria-label={m.noPhoto} />
             )}
+            {busy ? (
+              <span className="absolute inset-0 flex items-center justify-center bg-background/60" aria-hidden="true">
+                <Loader2 className="size-6 animate-spin text-foreground" />
+              </span>
+            ) : null}
           </div>
 
-          <div className="flex flex-1 flex-col gap-1.5">
-            <label htmlFor={`${idPrefix}-file`} className="text-sm font-medium">
-              Upload New Picture
-            </label>
+          <div className="flex flex-1 flex-col gap-2">
             <input
               ref={inputRef}
               id={`${idPrefix}-file`}
@@ -86,25 +134,52 @@ export function AvatarSection({ initialAvatarUrl, onUpload, onRemove }: AvatarSe
               type="file"
               accept={ACCEPTED_TYPES.join(',')}
               onChange={handleFileChange}
-              aria-describedby={[`${idPrefix}-hint`, error && `${idPrefix}-error`].filter(Boolean).join(' ')}
-              aria-invalid={Boolean(error) || undefined}
-              className="block text-sm text-muted-foreground file:mr-3 file:rounded-md file:border file:border-input file:bg-secondary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-secondary-foreground file:transition-colors hover:file:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="sr-only"
+              tabIndex={-1}
+              aria-hidden="true"
             />
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-10 px-4"
+                disabled={busy !== null}
+                aria-describedby={[`${idPrefix}-hint`, error && `${idPrefix}-error`].filter(Boolean).join(' ')}
+                onClick={() => inputRef.current?.click()}
+              >
+                {busy === 'uploading' ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Upload className="size-4" aria-hidden="true" />
+                )}
+                {busy === 'uploading' ? m.uploading : savedUrl ? m.change : m.choose}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-10 px-4 text-destructive hover:text-destructive"
+                disabled={!savedUrl || busy !== null}
+                onClick={handleRemove}
+              >
+                {busy === 'removing' ? (
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                ) : (
+                  <Trash2 className="size-4" aria-hidden="true" />
+                )}
+                {busy === 'removing' ? m.removing : m.remove}
+              </Button>
+            </div>
             <p id={`${idPrefix}-hint`} className="text-xs text-muted-foreground">
-              PNG or JPEG.
+              {m.hint}
             </p>
-            <FieldError id={`${idPrefix}-error`} message={error} />
-
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="mt-1 w-fit"
-              disabled={!previewUrl}
-              onClick={handleRemove}
-            >
-              Remove Picture
-            </Button>
+            {error ? (
+              <p id={`${idPrefix}-error`} role="alert" className="text-sm font-medium text-destructive">
+                {error}
+              </p>
+            ) : null}
+            <p role="status" aria-live="polite" className="text-sm font-medium text-emerald-700 empty:hidden dark:text-emerald-400">
+              {success}
+            </p>
           </div>
         </div>
       </section>

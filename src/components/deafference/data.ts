@@ -12,6 +12,7 @@ export type Status =
   | "preparing"
   | "signing"
   | "complete"
+  | "error"
 
 export const PIPELINE_STEPS = [
   "Listening",
@@ -29,6 +30,7 @@ export const STATUS_LABEL: Record<Status, string> = {
   preparing: "Preparing sign",
   signing: "Signing",
   complete: "Complete",
+  error: "Needs attention",
 }
 
 /** Index into PIPELINE_STEPS for a given status (-1 when idle). */
@@ -39,15 +41,22 @@ export const STATUS_STEP: Record<Status, number> = {
   preparing: 2,
   signing: 3,
   complete: 4,
+  error: -1,
 }
 
+/**
+ * Result of looking a phrase up in the demo sign library. There is no sign
+ * translation engine yet: a result only exists when the phrase matches (or
+ * closely matches) one of the library phrases below.
+ */
 export type TranslationResult = {
   original: string
-  simplified: string
+  /** Canonical (English) library phrase — also the key into `studio.phrases`. */
   matchedSign: string
-  confidence: number
   category: CategoryId
-  animationStatus: string
+  matchType: "exact" | "close"
+  /** String similarity between the input and the library phrase, 0–100. */
+  score: number
 }
 
 export type PhraseGroup = {
@@ -157,125 +166,99 @@ export const QUICK_PHRASES: PhraseGroup[] = [
   },
 ]
 
-/** Known high-confidence phrase matches, keyed by a normalized string. */
-const KNOWN: Record<
-  string,
-  { simplified: string; matchedSign: string; confidence: number; category: CategoryId }
-> = {
-  "i need water": {
-    simplified: "I need water",
-    matchedSign: "I need water",
-    confidence: 96,
-    category: "Restaurant",
-  },
-  "i need a doctor": {
-    simplified: "I need doctor",
-    matchedSign: "I need a doctor",
-    confidence: 94,
-    category: "Healthcare",
-  },
-  "please repeat": {
-    simplified: "Please repeat",
-    matchedSign: "Please repeat",
-    confidence: 98,
-    category: "General",
-  },
-  hello: {
-    simplified: "Hello",
-    matchedSign: "Hello",
-    confidence: 99,
-    category: "General",
-  },
-  "thank you": {
-    simplified: "Thank you",
-    matchedSign: "Thank you",
-    confidence: 99,
-    category: "General",
-  },
-  yes: { simplified: "Yes", matchedSign: "Yes", confidence: 99, category: "General" },
-  no: { simplified: "No", matchedSign: "No", confidence: 99, category: "General" },
-  "i need help": {
-    simplified: "I need help",
-    matchedSign: "I need help",
-    confidence: 97,
-    category: "General",
-  },
-  "where is the bathroom?": {
-    simplified: "Where bathroom?",
-    matchedSign: "Where is the bathroom",
-    confidence: 95,
-    category: "General",
-  },
-  "how much does this cost?": {
-    simplified: "How much cost?",
-    matchedSign: "How much does this cost",
-    confidence: 93,
-    category: "Restaurant",
-  },
-  "i am allergic": {
-    simplified: "I allergic",
-    matchedSign: "I am allergic",
-    confidence: 95,
-    category: "Healthcare",
-  },
-  "please call someone": {
-    simplified: "Please call someone",
-    matchedSign: "Please call someone",
-    confidence: 96,
-    category: "General",
-  },
+/** Preferred category for phrases that appear in several groups. */
+const PHRASE_CATEGORY: Record<string, CategoryId> = {
+  "I need water": "Restaurant",
+  "I need a doctor": "Healthcare",
+  "How much does this cost?": "Restaurant",
+  "I am allergic": "Healthcare",
 }
 
-const FILLER_WORDS = new Set(["a", "an", "the", "to", "of", "please", "just", "really"])
+/** Every distinct phrase in the demo sign library. */
+export const SIGN_LIBRARY: string[] = Array.from(new Set(QUICK_PHRASES.flatMap((group) => group.phrases)))
 
-function normalize(text: string): string {
-  return text.trim().toLowerCase().replace(/\s+/g, " ")
+/** Lower-cases, strips punctuation/diacritics and unifies common Arabic letter variants. */
+export function normalizePhrase(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFKC")
+    .replace(/[ً-ٰٟـ]/g, "") // Arabic tashkeel + tatweel
+    .replace(/[أإآٱ]/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/ى/g, "ي")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
 }
 
-function simplify(text: string): string {
-  const cleaned = text.trim().replace(/\s+/g, " ")
-  if (!cleaned) return ""
-  const words = cleaned.split(" ")
-  const kept = words.filter((w, i) => {
-    // keep leading "please" for politeness, drop other filler mid-sentence
-    if (i === 0) return true
-    return !FILLER_WORDS.has(w.toLowerCase().replace(/[.,!?]/g, ""))
-  })
-  const result = kept.join(" ")
-  return result.charAt(0).toUpperCase() + result.slice(1)
+function levenshtein(a: string, b: string): number {
+  if (a === b) return 0
+  if (!a.length) return b.length
+  if (!b.length) return a.length
+  let prev = Array.from({ length: b.length + 1 }, (_, i) => i)
+  for (let i = 1; i <= a.length; i++) {
+    const curr = [i]
+    for (let j = 1; j <= b.length; j++) {
+      curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
+    }
+    prev = curr
+  }
+  return prev[b.length]
 }
+
+function similarity(input: string, phrase: string): number {
+  const longest = Math.max(input.length, phrase.length)
+  let score = longest === 0 ? 0 : 1 - levenshtein(input, phrase) / longest
+  // "hi, i need water please" still contains the whole library phrase.
+  const padded = ` ${input} `
+  if (phrase.length >= 2 && padded.includes(` ${phrase} `)) {
+    score = Math.max(score, Math.min(0.97, 0.8 + 0.2 * (phrase.length / input.length)))
+  }
+  return score
+}
+
+const CLOSE_MATCH_THRESHOLD = 0.75
 
 /**
- * Fake/mocked translation. Returns a plausible result with no real ML.
+ * Looks a phrase up in the demo sign library (exact first, then a close
+ * string match). `aliases` maps library phrases to translated display text
+ * (e.g. Arabic) so input in the UI language can match too. Returns `null`
+ * when nothing in the library is close enough — callers must say so rather
+ * than invent a sign.
  */
-export function translate(input: string, activeCategory: CategoryId): TranslationResult {
-  const trimmed = input.trim()
-  const key = normalize(trimmed)
-  const known = KNOWN[key]
+export function matchSign(
+  input: string,
+  activeCategory: CategoryId,
+  aliases: Record<string, string> = {},
+): TranslationResult | null {
+  const original = input.trim()
+  const key = normalizePhrase(original)
+  if (!key) return null
 
-  if (known) {
-    return {
-      original: trimmed,
-      simplified: known.simplified,
-      matchedSign: known.matchedSign,
-      confidence: known.confidence,
-      category: activeCategory === "General" ? known.category : activeCategory,
-      animationStatus: "Ready to replay",
+  let best: { phrase: string; score: number } | null = null
+  for (const phrase of SIGN_LIBRARY) {
+    const keys = [normalizePhrase(phrase)]
+    if (aliases[phrase]) keys.push(normalizePhrase(aliases[phrase]))
+    for (const candidate of keys) {
+      const score = candidate === key ? 1 : similarity(key, candidate)
+      if (!best || score > best.score) best = { phrase, score }
     }
+    if (best?.score === 1) break
   }
+  if (!best || best.score < CLOSE_MATCH_THRESHOLD) return null
 
-  const simplified = simplify(trimmed)
-  // Deterministic pseudo-confidence based on length so it feels stable per phrase.
-  const base = 88
-  const variance = (trimmed.length * 7) % 9
-  const confidence = Math.min(97, base + variance)
+  const phrase = best.phrase
+  const inGroup = (id: CategoryId) => QUICK_PHRASES.find((group) => group.id === id)?.phrases.includes(phrase)
+  const category: CategoryId = inGroup(activeCategory)
+    ? activeCategory
+    : PHRASE_CATEGORY[phrase] ??
+      (inGroup("General") ? "General" : QUICK_PHRASES.find((group) => group.phrases.includes(phrase))?.id ?? "General")
 
   return {
-    original: trimmed,
-    simplified,
-    matchedSign: simplified,
-    confidence,
-    category: activeCategory,
-    animationStatus: "Ready to replay",
+    original,
+    matchedSign: best.phrase,
+    category,
+    matchType: best.score === 1 ? "exact" : "close",
+    score: Math.round(best.score * 100),
   }
 }

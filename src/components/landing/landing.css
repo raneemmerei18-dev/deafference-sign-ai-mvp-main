@@ -1,0 +1,49 @@
+/* Landing-only overrides that Tailwind utilities can't express cleanly.
+   Imported once by landing-page.tsx. */
+
+/* Letter-spacing breaks the joined Arabic script, so drop it in RTL. */
+[dir="rtl"] .landing-pop [class*="tracking-"] {
+  letter-spacing: 0;
+}
+
+/* The floating companion covers content on phones: desktop/tablet only. */
+@media (max-width: 639.98px) {
+  .landing-pop .landing-judy {
+    display: none;
+  }
+}
+
+/* Keep Judy's speech bubble in the scenarios scene legible on small screens
+   (the component's own CSS shrinks it to 9px there). */
+.landing-pop .judy-in-scene .judy-bubble {
+  font-size: 12px;
+  padding: 6px 10px;
+}
+@media (max-width: 640px) {
+  .landing-pop .judy-in-scene .judy-bubble {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+/* Paper-texture page background (public/back.avif). It sits on a fixed layer
+   behind every section so the content scrolls over a still sheet of paper;
+   `isolation` keeps the -1 layer above the wrapper's own background colour. */
+.landing-pop {
+  isolation: isolate;
+}
+.landing-pop::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url("/back.avif") center / cover no-repeat;
+}
+
+/* Sections (and section backdrops) that paint their own colour wash: make the
+   base colour see-through (their soft blue glows stay) so the paper shows
+   behind them too. Doubled class beats globals.css regardless of load order. */
+.landing-pop .pop-atmosphere.pop-atmosphere {
+  background-color: rgba(246, 250, 255, 0.35);
+}

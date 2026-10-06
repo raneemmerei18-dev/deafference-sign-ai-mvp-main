@@ -1,8 +1,11 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { useI18n } from "@/i18n/use-i18n"
 
 export function SignToTextIllustration({ reducedMotion = false }: { reducedMotion?: boolean }) {
+  const { t } = useI18n()
+  const labels = t.landing.features.illustration
   const duration = 2.4
 
   return (
@@ -10,12 +13,12 @@ export function SignToTextIllustration({ reducedMotion = false }: { reducedMotio
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/card4-sign-to-text-illustration.png"
-        alt="Sign to Text original illustration"
+        alt=""
         className="h-full max-h-[175px] w-full rounded-xl object-contain"
       />
 
       <div className="absolute inset-0 h-full w-full">
-        <div className="absolute top-[22%] left-[46%] flex flex-col space-y-1">
+        <div className="absolute top-[22%] left-[46%] flex flex-col gap-1">
           <motion.div
             className="flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[9px] font-black tracking-wider text-slate-900 uppercase shadow-md"
             animate={
@@ -34,7 +37,7 @@ export function SignToTextIllustration({ reducedMotion = false }: { reducedMotio
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
           >
             <span className="h-1.5 w-1.5 animate-ping rounded-full bg-brand-orange" />
-            <span>SIGN IN</span>
+            <span>{labels.signIn}</span>
           </motion.div>
 
           <motion.div
@@ -54,13 +57,13 @@ export function SignToTextIllustration({ reducedMotion = false }: { reducedMotio
             }
             transition={{ repeat: Infinity, duration: 2.4, delay: 0.5, ease: "easeInOut" }}
           >
-            <span>SIGN IN</span>
+            <span>{labels.signIn}</span>
           </motion.div>
         </div>
 
-        <div className="absolute top-[18%] right-[10%] flex h-[48%] w-[32%] flex-col justify-start space-y-1.5 rounded-md border border-slate-200 bg-white/90 p-1.5 shadow-sm backdrop-blur-[1px]">
+        <div className="absolute top-[18%] right-[10%] flex h-[48%] w-[32%] flex-col justify-start gap-1.5 rounded-md border border-slate-200 bg-white/90 p-1.5 shadow-sm backdrop-blur-[1px]">
           <div className="flex items-center justify-between border-b border-slate-200 pb-0.5">
-            <span className="text-[8px] font-black tracking-tighter text-[#0284C7]">LIVE CAPTIONS</span>
+            <span className="text-[8px] font-black tracking-tighter text-[#0369A1]">{labels.captions}</span>
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
           </div>
 
@@ -102,7 +105,7 @@ export function SignToTextIllustration({ reducedMotion = false }: { reducedMotio
 
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
             <motion.div
-              className="h-full rounded-full bg-slate-700"
+              className="h-full rounded-full bg-blue-300"
               animate={
                 reducedMotion
                   ? { width: "65%" }

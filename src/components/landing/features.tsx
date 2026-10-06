@@ -6,23 +6,12 @@ import { Container } from "@/components/shared/container"
 import { SectionTitle } from "@/components/shared/section-title"
 import { IconBadge } from "@/components/shared/icon-badge"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/i18n/use-i18n"
 import { FeatureCardGrid } from "@/components/landing/features/feature-card-grid"
 import { GlassPanel } from "./ui/pop"
 
-const TRUST_CAPABILITIES = [
-  {
-    icon: ShieldCheck,
-    title: "Private & Secure",
-    description:
-      "HIPAA- and GDPR-aligned by design, with on-device processing options so sensitive conversations never have to leave the room.",
-  },
-  {
-    icon: BrainCircuit,
-    title: "High AI Accuracy",
-    description:
-      "Deep learning models fine-tuned on regional sign dialects and medical terminology, built for the moments accuracy matters most.",
-  },
-] as const
+/** Icons zipped by index with `t.landing.features.trust`. */
+const TRUST_ICONS: LucideIcon[] = [ShieldCheck, BrainCircuit]
 
 function FeatureCard({
   icon: Icon,
@@ -43,7 +32,7 @@ function FeatureCard({
         emphasized && "bg-gradient-to-br from-[color:var(--primary)]/6 via-transparent to-brand-orange/[0.05]",
       )}
     >
-      <div className="pointer-events-none absolute top-0 right-0 -mt-10 -mr-10 h-32 w-32 rounded-full bg-[color:var(--primary)]/12 blur-2xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute top-0 end-0 -me-10 -mt-10 h-32 w-32 rounded-full bg-[color:var(--primary)]/12 blur-2xl" />
       <IconBadge icon={Icon} variant={emphasized ? "solid" : "tint"} className="relative z-10" />
       <h4 className="relative z-10 mt-5 text-lg font-semibold text-foreground">{title}</h4>
       <p className="relative z-10 mt-3 text-sm leading-7 text-muted-foreground">{description}</p>
@@ -52,21 +41,25 @@ function FeatureCard({
 }
 
 export function Features() {
+  const { t } = useI18n()
+  const copy = t.landing.features
   return (
     <section
       id="features"
+      aria-labelledby="features-heading"
       className="py-24 sm:py-28"
     >
       <Container>
         <SectionTitle
-          eyebrow="Features"
-          title="Every direction of translation, covered"
-          description="Deafference moves fluently between spoken, written, and signed language — with the speed and trust guarantees that high-stakes conversations need."
+          headingId="features-heading"
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          description={copy.description}
         />
 
         <div className="mt-12">
           <h3 className="text-sm font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-            Core translation directions
+            {copy.coreHeading}
           </h3>
           <motion.div
             initial={{ opacity: 0, y: 22 }}
@@ -93,16 +86,13 @@ export function Features() {
               <div className="flex items-start gap-4">
                 <IconBadge icon={Radio} variant="solid" />
                 <div>
-                  <h3 className="text-lg font-semibold text-foreground sm:text-xl">Live Translation</h3>
-                  <p className="mt-2 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
-                    A low-latency, continuous, bi-directional stream — so a conversation flows both
-                    ways at once instead of taking turns waiting on a translation.
-                  </p>
+                  <h3 className="text-lg font-semibold text-foreground sm:text-xl">{copy.live.title}</h3>
+                  <p className="mt-2 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">{copy.live.body}</p>
                 </div>
               </div>
-              <span className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-[color:var(--primary)]/10 px-3 py-1.5 text-xs font-semibold text-[color:var(--primary)]">
-                <span className="pop-pulse size-1.5 rounded-full bg-brand-orange" />
-                &lt; 300ms round-trip
+              <span className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-[color:var(--primary)]/10 px-3 py-1.5 text-xs font-semibold text-[#1D4ED8]">
+                <span className="pop-pulse size-1.5 rounded-full bg-brand-orange" aria-hidden="true" />
+                {copy.live.chip}
               </span>
             </div>
           </GlassPanel>
@@ -110,7 +100,7 @@ export function Features() {
 
         <div className="mt-12">
           <h3 className="text-sm font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-            Built on trust
+            {copy.trustHeading}
           </h3>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -119,8 +109,8 @@ export function Features() {
             transition={{ duration: 0.55, ease: "easeOut" }}
             className="mt-5 grid gap-4 md:grid-cols-2"
           >
-            {TRUST_CAPABILITIES.map((feature) => (
-              <FeatureCard key={feature.title} {...feature} emphasized />
+            {copy.trust.map((feature, i) => (
+              <FeatureCard key={feature.title} icon={TRUST_ICONS[i] ?? ShieldCheck} {...feature} emphasized />
             ))}
           </motion.div>
         </div>

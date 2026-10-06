@@ -5,14 +5,10 @@ import Link from "next/link"
 import { ArrowRight, Check, Play } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { APP_ROUTES } from "@/lib/constants"
+import { useI18n } from "@/i18n/use-i18n"
+import { cn } from "@/lib/utils"
 import { HeroIllustration } from "./hero-illustration"
-import { GlowOrb, Magnetic, focusRingPop } from "./ui/pop"
-
-const FOCUS_RING = focusRingPop
-
-const HEADLINE_WORDS = ["BREAKING", "COMMUNICATION", "BARRIERS"]
-
-const TRUST_BADGES = ["Privacy-first AI", "Runs on-device", "Real-time Translation", "Built for Accessibility", "AI Powered"] as const
+import { GlowOrb, Magnetic, popArrowIcon, popButtonSizes, popPrimaryButton, popSecondaryButton } from "./ui/pop"
 
 const headlineContainer = {
   hidden: {},
@@ -24,6 +20,10 @@ const headlineWord = {
 }
 
 export function Hero() {
+  const { t } = useI18n()
+  const hero = t.landing.hero
+  const words = hero.headline
+
   return (
     <section
       id="top"
@@ -43,27 +43,27 @@ export function Hero() {
               transition={{ duration: 0.5, ease: "easeOut" }}
               className="glass-pop inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-brand-navy"
             >
-              <span className="relative flex size-2">
+              <span className="relative flex size-2" aria-hidden="true">
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-orange opacity-75" />
                 <span className="relative inline-flex size-2 rounded-full bg-brand-orange" />
               </span>
-              Live, on-device, 0.3s
+              {hero.status}
             </motion.span>
 
             <motion.h1
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="mt-6 max-w-2xl text-4xl leading-[1.05] font-extrabold tracking-tight text-balance text-brand-navy sm:text-6xl lg:text-[4.75rem]"
+              className="mt-6 max-w-2xl text-[clamp(1.75rem,9vw,2.25rem)] leading-[1.1] font-extrabold tracking-tight text-balance break-words text-brand-navy sm:text-[min(3.75rem,8.5vw)] sm:leading-[1.05] lg:text-[min(4.75rem,4.1vw)]"
             >
-              {HEADLINE_WORDS.map((word, i) => (
-                <span key={word} className="inline-block overflow-hidden align-bottom">
+              {words.map((word, i) => (
+                <span key={`${i}-${word}`} className="inline-block max-w-full overflow-hidden pb-1 align-bottom">
                   <motion.span
                     variants={headlineWord}
-                    className={i === HEADLINE_WORDS.length - 1 ? "pop-gradient-text inline-block" : "inline-block"}
+                    className={cn("inline-block max-w-full break-words", i === words.length - 1 && "pop-gradient-text")}
                   >
                     {word}
-                    {i < HEADLINE_WORDS.length - 1 ? " " : ""}
+                    {i < words.length - 1 ? " " : ""}
                   </motion.span>
                 </span>
               ))}
@@ -75,39 +75,28 @@ export function Hero() {
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.5 }}
               className="mt-6 max-w-lg text-lg leading-8 text-pretty text-muted-foreground"
             >
-              Deafference transforms sign language into natural speech—and speech back into sign—in real time,
-              helping Deaf and hearing people communicate naturally across workplaces, education, healthcare, and
-              everyday life. Intelligent, private, and designed for everyone.
+              {hero.intro}
             </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.65 }}
-              className="mt-9 flex flex-col gap-3 sm:flex-row"
+              className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
             >
-              <Magnetic>
-                <Link
-                  href={APP_ROUTES.translate}
-                  className={`group inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#3B82F6] px-6 text-base font-bold text-white shadow-[0_18px_36px_-14px_rgba(37,99,235,0.55)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_44px_-14px_rgba(37,99,235,0.65)] ${FOCUS_RING}`}
-                >
-                  Request a demo
-                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+              <Magnetic className="w-full sm:w-auto">
+                <Link href={APP_ROUTES.translate} className={cn(popPrimaryButton, popButtonSizes.lg, "w-full sm:w-auto")}>
+                  {hero.primaryCta}
+                  <ArrowRight className={popArrowIcon} aria-hidden="true" />
                 </Link>
               </Magnetic>
-              <a
-                href="#demo"
-                className={`glass-pop group inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-base font-medium text-brand-navy transition-all hover:-translate-y-0.5 ${FOCUS_RING}`}
-              >
-                <Play className="size-4 fill-current text-brand-orange" />
-                Watch it in action
+              <a href="#demo" className={cn(popSecondaryButton, popButtonSizes.lg)}>
+                <Play className="size-4 fill-current text-[#C2410C] rtl:-scale-x-100" aria-hidden="true" />
+                {hero.secondaryCta}
               </a>
-              <Link
-                href={APP_ROUTES.scenarios}
-                className={`inline-flex h-12 items-center justify-center rounded-full border border-[#14B8A6]/50 bg-background px-6 text-base font-medium text-[#0F766E] transition-colors hover:border-[#14B8A6] hover:bg-[#14B8A6]/10 ${FOCUS_RING}`}
-              >
-                Explore Scenarios
-              </Link>
+              <a href="#scenarios" className={cn(popSecondaryButton, popButtonSizes.lg)}>
+                {hero.scenariosCta}
+              </a>
             </motion.div>
 
             <motion.div
@@ -116,12 +105,12 @@ export function Hero() {
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.85 }}
               className="mt-10 flex flex-wrap items-center gap-2.5"
             >
-              {TRUST_BADGES.map((label) => (
+              {hero.badges.map((label) => (
                 <span
                   key={label}
                   className="glass-pop inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium text-muted-foreground"
                 >
-                  <Check className="size-3.5 text-brand-orange" />
+                  <Check className="size-3.5 text-[#C2410C]" aria-hidden="true" />
                   {label}
                 </span>
               ))}
@@ -134,26 +123,31 @@ export function Hero() {
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
             className="relative"
           >
+            {/* Chips sit centred above/below the illustration so they never cover its corner cards (in either text direction). */}
+            <div className="pointer-events-none absolute inset-x-0 -top-6 z-40 hidden justify-center sm:flex">
             <motion.div
               initial={{ opacity: 0, scale: 0.85, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 1.1 }}
-              className="glass-pop pop-float absolute -top-4 left-2 z-40 hidden rounded-2xl px-3.5 py-2 sm:block"
+              className="glass-pop pop-float pointer-events-auto rounded-2xl px-3.5 py-2"
             >
-              <p className="text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">Latency</p>
+              <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">{hero.modeLabel}</p>
               <p className="text-sm font-bold text-brand-navy">
-                0.3s <span className="text-brand-orange">live</span>
+                {hero.modeValue} <span className="text-[#C2410C]">{hero.modeAccent}</span>
               </p>
             </motion.div>
+            </div>
+            <div className="pointer-events-none absolute inset-x-0 -bottom-6 z-40 hidden justify-center sm:flex">
             <motion.div
               initial={{ opacity: 0, scale: 0.85, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 1.3 }}
-              className="glass-pop pop-float-delay absolute -bottom-3 right-0 z-40 hidden rounded-2xl px-3.5 py-2 sm:block"
+              className="glass-pop pop-float-delay pointer-events-auto rounded-2xl px-3.5 py-2"
             >
-              <p className="text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">On-device</p>
-              <p className="text-sm font-bold text-brand-navy">100% private</p>
+              <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">{hero.privacyLabel}</p>
+              <p className="text-sm font-bold text-brand-navy">{hero.privacyValue}</p>
             </motion.div>
+            </div>
             <HeroIllustration />
           </motion.div>
         </div>

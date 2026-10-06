@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { AlertTriangle } from "lucide-react"
 import { APP_ROUTES } from "@/lib/constants"
+import { useI18n } from "@/i18n/use-i18n"
 import { AuthShell } from "./auth-shell"
 import { AuthForm, type SignInValues, type SignUpValues } from "./auth-form"
 import { useAuth } from "./auth-provider"
@@ -24,6 +25,7 @@ export function AuthFlow({
 }) {
   const { signIn, signUp } = useAuth()
   const router = useRouter()
+  const { t, fmt } = useI18n()
 
   async function handleSignIn(values: SignInValues) {
     await signIn(values)
@@ -35,6 +37,8 @@ export function AuthFlow({
     router.push(sanitizeRedirect(redirectTo))
   }
 
+  const safeRedirect = redirectTo ? sanitizeRedirect(redirectTo) : null
+
   return (
     <AuthShell>
       {reason === "auth-required" ? (
@@ -44,8 +48,9 @@ export function AuthFlow({
         >
           <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
           <p>
-            Please sign in to continue
-            {redirectTo ? ` — you'll be returned to ${redirectTo} afterward.` : "."}
+            {safeRedirect
+              ? fmt(t.auth.authRequired.messageWithRedirect, { path: safeRedirect })
+              : t.auth.authRequired.message}
           </p>
         </div>
       ) : null}
