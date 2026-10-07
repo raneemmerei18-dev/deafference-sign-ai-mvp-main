@@ -1,0 +1,280 @@
+/*
+ * Deafference light theme. Light-only by design: color-scheme is pinned to
+ * light and there is no dark palette.
+ *
+ * Contrast: --color-accent (#ff7a1a) is the brand orange but fails WCAG AA
+ * against white, so it is decorative only. Text, links and filled buttons use
+ * --color-accent-strong (5.2:1 on white).
+ */
+:root {
+  color-scheme: light;
+
+  --color-bg: #faf8f4;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4f0e9;
+  --color-text: #172133;
+  --color-heading: #0e2344;
+  --color-text-muted: #556070;
+  --color-border: #e7e1d7;
+  --color-border-strong: #cfc7ba;
+
+  --color-accent: #ff7a1a;
+  --color-accent-soft: #fff1e5;
+  --color-accent-strong: #c2410c;
+  --color-accent-stronger: #9a3412;
+
+  --color-success: #15803d;
+  --color-success-soft: #ecfdf3;
+  --color-danger: #b42318;
+  --color-danger-soft: #fef3f2;
+  --color-danger-border: #fecdca;
+
+  /* System fonts only: nothing to download, so the page renders offline. */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Arabic",
+    "Noto Sans", Tahoma, sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgb(23 33 51 / 0.06), 0 1px 3px rgb(23 33 51 / 0.04);
+  --shadow-md: 0 12px 32px -14px rgb(23 33 51 / 0.2), 0 2px 6px -2px rgb(23 33 51 / 0.06);
+
+  --nav-height: 72px;
+  --container-width: 1160px;
+  --gutter: clamp(16px, 4vw, 20px);
+  --touch-target: 44px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  color: var(--color-heading);
+  line-height: 1.2;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-accent-strong);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--color-accent-stronger);
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--color-accent-soft);
+  color: var(--color-heading);
+}
+
+/* Layout */
+
+.container {
+  width: min(100% - 2 * var(--gutter), var(--container-width));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: clamp(48px, 9vw, 112px);
+  padding-inline: var(--gutter);
+  scroll-margin-top: var(--nav-height);
+}
+
+.section-header {
+  max-width: 720px;
+  margin-inline: auto;
+  margin-block-end: clamp(32px, 5vw, 56px);
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: clamp(3px, 0.5vw, 4px) clamp(10px, 2vw, 12px);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-stronger);
+  font-size: clamp(0.75rem, 0.9vw, 0.8125rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  margin-block-start: clamp(12px, 2vw, 16px);
+  font-size: clamp(1.5rem, 1rem + 2.2vw, 2.75rem);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.section-lead {
+  margin-block-start: clamp(12px, 2vw, 16px);
+  color: var(--color-text-muted);
+  font-size: clamp(0.9375rem, 1.5vw, 1.125rem);
+}
+
+/* Arabic script has no case and is harmed by tracking. */
+[dir="rtl"] .eyebrow,
+[dir="rtl"] .section-title {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--touch-target);
+  padding: 0 clamp(16px, 3vw, 20px);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: 0.9375rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.btn-primary {
+  background: var(--color-accent-strong);
+  color: #ffffff;
+  box-shadow: 0 8px 20px -10px rgb(194 65 12 / 0.55);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-accent-stronger);
+  color: #ffffff;
+}
+
+.btn-secondary {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-heading);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--color-heading);
+  background: var(--color-surface-muted);
+  color: var(--color-heading);
+}
+
+.btn-lg {
+  min-height: clamp(44px, 12vw, 52px);
+  padding: 0 clamp(20px, 4vw, 28px);
+  font-size: clamp(0.9375rem, 2vw, 1rem);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Utilities */
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: 16px;
+  top: -100px;
+  z-index: 100;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  color: var(--color-heading);
+  font-weight: 650;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+/* Directional icons (arrows) point the other way in right-to-left layouts. */
+[dir="rtl"] .icon-flip-rtl {
+  transform: scaleX(-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

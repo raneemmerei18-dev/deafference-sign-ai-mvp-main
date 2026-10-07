@@ -1,0 +1,300 @@
+.layout {
+  display: grid;
+  gap: 24px;
+  align-items: start;
+}
+
+.formCard {
+  padding: clamp(16px, 4vw, 36px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.form {
+  display: grid;
+  gap: clamp(16px, 2vw, 20px);
+}
+
+.row {
+  display: grid;
+  gap: clamp(16px, 3vw, 20px);
+}
+
+.field {
+  display: grid;
+  gap: clamp(4px, 1vw, 6px);
+  align-content: start;
+}
+
+.label {
+  color: var(--color-heading);
+  font-size: 0.9375rem;
+  font-weight: 650;
+}
+
+.optional {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.input {
+  width: 100%;
+  min-height: clamp(44px, 10vw, 48px);
+  padding: clamp(8px, 1vw, 10px) clamp(12px, 2vw, 14px);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: clamp(0.9375rem, 1vw, 1rem);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.input:hover {
+  border-color: var(--color-text-muted);
+}
+
+.input:focus-visible {
+  border-color: var(--color-accent-strong);
+  outline-offset: 1px;
+}
+
+.input::placeholder {
+  color: #7a8494;
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--color-danger);
+}
+
+.textarea {
+  min-height: clamp(120px, 30vw, 140px);
+  resize: vertical;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Right-to-left pages keep email text left-to-right but aligned with the form. */
+:global([dir="rtl"]) .input[type="email"] {
+  text-align: right;
+}
+
+.fieldset {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.fieldset legend {
+  margin-block-end: 8px;
+  padding: 0;
+}
+
+.radioGroup {
+  display: grid;
+  gap: 8px;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2vw, 10px);
+  min-height: clamp(44px, 10vw, 48px);
+  padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 14px);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.radioOption:hover {
+  border-color: var(--color-text-muted);
+}
+
+.radioOption:has(input:checked) {
+  border-color: var(--color-accent-strong);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-stronger);
+  font-weight: 600;
+}
+
+.radioOption:has(input:focus-visible) {
+  outline: 3px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+
+.radioOption input {
+  flex-shrink: 0;
+  width: clamp(18px, 4vw, 20px);
+  height: clamp(18px, 4vw, 20px);
+  min-width: clamp(18px, 4vw, 20px);
+  min-height: clamp(18px, 4vw, 20px);
+  margin: 0;
+  accent-color: var(--color-accent-strong);
+}
+
+.radioOption input:focus-visible {
+  outline: none;
+}
+
+.fieldError {
+  color: var(--color-danger);
+  font-size: 0.875rem;
+  font-weight: 550;
+}
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-danger-border);
+  border-radius: var(--radius-md);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  font-size: 0.9375rem;
+}
+
+.alert svg {
+  flex-shrink: 0;
+  margin-block-start: 2px;
+}
+
+.alert a {
+  color: var(--color-danger);
+  font-weight: 650;
+}
+
+/* Clipped in place rather than pushed off-screen: an off-screen offset
+   overflows the page horizontally once the layout flips to RTL. */
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.submitRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.success {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding-block: 32px;
+  text-align: center;
+}
+
+.successIcon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.successTitle {
+  font-size: 1.375rem;
+  font-weight: 750;
+}
+
+.successTitle:focus {
+  outline: none;
+}
+
+.successBody {
+  margin-block-end: 8px;
+  color: var(--color-text-muted);
+}
+
+.channels {
+  display: grid;
+  gap: 12px;
+}
+
+.channelsTitle {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.channelList {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.channel {
+  display: flex;
+  gap: clamp(12px, 2vw, 14px);
+  padding: clamp(14px, 2vw, 18px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.channelIcon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: clamp(40px, 8vw, 44px);
+  height: clamp(40px, 8vw, 44px);
+  min-width: clamp(40px, 8vw, 44px);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+.channelTitle {
+  color: var(--color-heading);
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  font-weight: 700;
+}
+
+.channelDescription {
+  margin-block: clamp(1px, 0.5vw, 2px) clamp(4px, 1vw, 6px);
+  color: var(--color-text-muted);
+  font-size: clamp(0.8125rem, 0.9vw, 0.875rem);
+}
+
+.channelLink {
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  font-weight: 650;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+@media (min-width: 640px) {
+  .row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .radioGroup {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .layout {
+    grid-template-columns: 1.4fr 0.8fr;
+  }
+}

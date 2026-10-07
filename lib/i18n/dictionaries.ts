@@ -1,0 +1,711 @@
+export const LOCALES = ["en", "ar"] as const
+export type Locale = (typeof LOCALES)[number]
+export type Direction = "ltr" | "rtl"
+
+export const DEFAULT_LOCALE: Locale = "en"
+export const LOCALE_COOKIE = "deafference_locale"
+
+export function parseLocale(value: string | null | undefined): Locale | null {
+  return LOCALES.includes(value as Locale) ? (value as Locale) : null
+}
+
+export function dirFor(locale: Locale): Direction {
+  return locale === "ar" ? "rtl" : "ltr"
+}
+
+const en = {
+  meta: {
+    title: "Deafference — Offline-first sign language translation",
+    description:
+      "Two-way sign language translation that runs on the device, for healthcare, education and public services.",
+  },
+  skipToContent: "Skip to main content",
+  nav: {
+    home: "Deafference home",
+    mainNav: "Main navigation",
+    demo: "Demo",
+    pricing: "Pricing",
+    contact: "Contact",
+    bookDemo: "Book a demo",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+    switchLanguageTo: "Switch language to",
+    otherLanguageName: "العربية",
+  },
+  demo: {
+    eyebrow: "Live demo",
+    title: "Two-way sign language translation, right on the device",
+    lead: "Deafference translates between speech, text and sign language without sending video to the cloud. Try a sample conversation below.",
+    badges: {
+      offline: "Works offline",
+      private: "Private on-device processing",
+      bilingual: "English & Arabic interface",
+    },
+    primaryCta: "Book a live demo",
+    secondaryCta: "See pricing",
+    modesLabel: "Translation direction",
+    to: "to",
+    modes: {
+      speechToSign: { from: "Speech", to: "Sign" },
+      signToText: { from: "Sign", to: "Text" },
+    },
+    phrasesLabel: "Sample phrases",
+    phrases: {
+      greeting: "Hello, how are you?",
+      help: "I need help, please.",
+      doctor: "Where is the doctor?",
+      water: "I'd like some water, please.",
+    },
+    inputLabel: { speechToSign: "You say", signToText: "Signs detected" },
+    outputLabel: { speechToSign: "Signed as", signToText: "Translated text" },
+    translating: "Translating…",
+    glossNote: "Signs are shown as ASL gloss, the written notation for each sign.",
+    offlineNote: "Runs entirely on this device. No internet connection needed.",
+  },
+  pricing: {
+    eyebrow: "Pricing",
+    title: "Plans for individuals, clinics and institutions",
+    lead: "Start free. Upgrade when your team needs real-time translation across more devices and departments.",
+    perMonth: "/month",
+    custom: "Custom",
+    customNote: "Tailored annual contract",
+    recommended: "Recommended",
+    includes: "Includes",
+    pricesNote: "All prices in USD.",
+    plans: {
+      free: {
+        name: "Free",
+        audience: "For individual Deaf and hard-of-hearing users and personal emergency prep",
+        features: ["Emergency quick-action hub", "Basic offline phrases", "Text-to-sign translation"],
+        cta: "Get started",
+      },
+      basic: {
+        name: "Basic",
+        audience: "For small clinics, private practices and local community offices",
+        features: [
+          "AI real-time sign translation",
+          "Digital communication cards",
+          "Single-device access",
+          "Email support",
+        ],
+        cta: "Choose Basic",
+      },
+      premium: {
+        name: "Premium",
+        audience: "For regional hospitals, educational institutions and mid-sized enterprises",
+        features: [
+          "Full two-way sign-to-speech and speech-to-sign translation",
+          "Multi-dialect support",
+          "Waiting-room visual and haptic alerts",
+          "Priority 24/7 technical support",
+        ],
+        cta: "Choose Premium",
+      },
+      enterprise: {
+        name: "Enterprise",
+        audience: "For hospital networks, government agencies, universities and multi-location organizations",
+        features: [
+          "Full EHR/EMR and hospital system integration",
+          "Custom regional dialect training",
+          "Dedicated HIPAA/GDPR compliance reporting",
+          "SLA guarantees",
+          "Multi-department licensing",
+        ],
+        cta: "Contact sales",
+      },
+    },
+  },
+  contact: {
+    eyebrow: "Contact",
+    title: "Let's talk about your rollout",
+    lead: "Tell us about your team or use case. We reply by email, or by video call in sign language if you prefer.",
+    fields: {
+      name: "Full name",
+      email: "Work email",
+      organization: "Organization",
+      topic: "What can we help with?",
+      contactMethod: "How should we reach you?",
+      message: "Message",
+    },
+    optional: "(optional)",
+    topicPlaceholder: "Select a topic",
+    topics: {
+      demo: "Book a demo",
+      sales: "Pricing and plans",
+      support: "Product support",
+      partnership: "Partnerships",
+      general: "Something else",
+    },
+    methods: {
+      email: "Email",
+      video: "Video call in sign language",
+      text: "Text chat",
+    },
+    messagePlaceholder: "Tell us a bit about your team and what you're hoping to solve.",
+    submit: "Send message",
+    submitting: "Sending…",
+    successTitle: "Thanks, your message is on its way.",
+    successBody: "We'll reply to the email address you gave us.",
+    sendAnother: "Send another message",
+    errorGeneric: "We couldn't send your message. Please try again, or email us at",
+    errorOffline: "You appear to be offline. Reconnect and try again, or email us at",
+    errors: {
+      summary: "Please fix the highlighted fields.",
+      required: "This field is required.",
+      email: "Enter a valid email address.",
+      messageShort: "Please write at least 10 characters.",
+      tooLong: "This is too long.",
+    },
+    channelsTitle: "Or email us directly",
+    channels: {
+      general: { title: "General inquiries", description: "Questions about the product or a demo walkthrough." },
+      partners: {
+        title: "Partnerships and sales",
+        description: "Piloting Deafference across a clinic, campus or agency.",
+      },
+      support: { title: "Support", description: "Already using the app and need a hand." },
+    },
+  },
+  about: {
+    eyebrow: "About Us",
+    title: "Built with the Deaf community, not just for them",
+    lead: "Deafference was created by people who understand what deaf and hard-of-hearing users need.",
+    missionTitle: "Our Mission",
+    missionText: "We're breaking down communication barriers by putting powerful two-way translation in the hands of Deaf and hard-of-hearing people. Real-time, offline, and on their terms.",
+    storyTitle: "Why We Built This",
+    storyText: "Too many healthcare visits, classroom moments and public interactions depend on manual interpreters or written notes. We thought: what if translation happened instantly, privately, on the device itself? No internet required. No third-party servers. Just clear communication.",
+    valuesTitle: "Our Values",
+    values: [
+      "Privacy first: All processing happens on the device",
+      "Built with: Deaf community members shape our roadmap",
+      "Open design: Transparent about what we can and can't do",
+      "Offline-ready: Works when the internet doesn't",
+    ],
+    teamTitle: "Our Team",
+    teamDescription: "A mix of deaf and hearing engineers, linguists, and deaf community advocates.",
+    teamMembers: [
+      { name: "Sarah Chen", role: "Co-founder, CEO" },
+      { name: "Marcus Johnson", role: "Head of Product" },
+      { name: "Amir Hassan", role: "Lead Engineer" },
+      { name: "Dr. Lisa Park", role: "Linguistics & ASL Advisor" },
+    ],
+    teamNote: "We're hiring engineers and community liaisons. If you're interested in working on this with us, we'd love to talk.",
+  },
+  whyChooseUs: {
+    eyebrow: "Why Choose Us",
+    title: "Real-time translation, built right",
+    lead: "Three commitments that set us apart.",
+    features: [
+      {
+        id: "realtime",
+        title: "Real-time, not pre-recorded",
+        description: "Conversations happen fast. Our translation keeps up, not a second behind. No canned phrases, no delay.",
+      },
+      {
+        id: "offline",
+        title: "Works completely offline",
+        description: "No internet? No problem. The translation model runs on your device. Perfect for remote clinics and areas with spotty connectivity.",
+      },
+      {
+        id: "deaf",
+        title: "Built with deaf users",
+        description: "We work with Deaf community members every step. They shape the features, the UI, the roadmap.",
+      },
+      {
+        id: "accessible",
+        title: "Accessible by default",
+        description: "Keyboard-first, clear contrast, plain language. No barriers to using Deafference.",
+      },
+    ],
+  },
+  features: {
+    eyebrow: "Capabilities",
+    title: "Three core superpowers",
+    lead: "Deafference translates across three modalities. Use all three, or just the ones you need.",
+    integrationsTitle: "Built to integrate",
+    integrationsDescription: "Connect Deafference to your clinic's EHR, school's learning platform, or public service's intake system.",
+    integrations: [
+      "EHR & medical records",
+      "Video conferencing",
+      "Hospital intercoms",
+      "Custom APIs",
+    ],
+    capabilities: [
+      {
+        title: "Speech → Sign",
+        description: "Hear someone speak, see it signed.",
+        features: [
+          "Real-time speech recognition",
+          "American Sign Language (ASL) output",
+          "Adjustable animation speed",
+          "Facial expression & non-manual markers",
+        ],
+      },
+      {
+        title: "Sign → Text & Speech",
+        description: "Show a sign, get text and speech.",
+        features: [
+          "Sign language recognition via camera",
+          "Text transcription",
+          "Text-to-speech output",
+          "Multi-dialect support",
+        ],
+      },
+      {
+        title: "Text → Speech & Sign",
+        description: "Written text to signed or spoken.",
+        features: [
+          "Copy-paste any text",
+          "Sign language video output",
+          "Natural speech synthesis",
+          "Customizable voice options",
+        ],
+      },
+    ],
+  },
+  performance: {
+    eyebrow: "Performance",
+    title: "Fast, accurate, reliable",
+    lead: "Built for real-world use in busy healthcare and education settings.",
+    stats: [
+      {
+        label: "Translation latency",
+        value: "<1s",
+        description: "From speech input to signed output, under one second on most devices.",
+      },
+      {
+        label: "Recognition accuracy",
+        value: "94%",
+        description: "ASL sign recognition in controlled environments. Continues to improve.",
+      },
+      {
+        label: "Offline uptime",
+        value: "100%",
+        description: "Works without internet. Once downloaded, model stays available.",
+      },
+      {
+        label: "Sign languages",
+        value: "4",
+        description: "American Sign Language, British Sign Language, French Sign Language, and Arabic Sign Language.",
+      },
+    ],
+    languagesTitle: "Supported Sign Languages",
+    languagesDescription: "We're launching with ASL, BSL, FSL and ArabicSL. More coming based on community demand.",
+    supportedLanguages: [
+      "🇺🇸 American Sign Language (ASL)",
+      "🇬🇧 British Sign Language (BSL)",
+      "🇫🇷 French Sign Language (LSF)",
+      "🇸🇦 Arabic Sign Language (ArabicSL)",
+    ],
+    benchmarkTitle: "Quality benchmarks",
+    benchmarks: [
+      { name: "Average sign translation accuracy", value: "94%" },
+      { name: "Average speech recognition accuracy", value: "92%" },
+      { name: "Device compatibility", value: "iOS 15+, Android 11+" },
+      { name: "Model download size", value: "280 MB" },
+    ],
+  },
+  privacyFaq: {
+    privacyTitle: "Privacy by design",
+    dataCollection: "What data do we collect?",
+    dataCollectionText: "When you use Deafference for translation, the audio, video or text stays on your device. We don't send it anywhere. We collect limited usage analytics (e.g., 'speech-to-sign was used 5 times today') to improve the service, but never the content of your conversations.",
+    dataUsage: "How is data used?",
+    dataUsageText: "Analytics help us understand which features are most useful and where the translation could be better. We use this to improve accuracy and add support for more sign languages. Your conversations themselves are never reviewed or used for training without your explicit consent.",
+    dataProtection: "How is data protected?",
+    dataProtectionText: "On-device processing means most data never leaves your phone. When we do collect analytics, they're encrypted in transit and anonymized at rest. No IP addresses, no device identifiers that can be traced back to you.",
+    userRights: "Your rights",
+    rights: [
+      "Right to access: See what usage data we have on you",
+      "Right to deletion: Request that we delete your account and usage records",
+      "Right to export: Get your data in a standard format",
+      "Right to opt-out: Stop sharing analytics without losing core functionality",
+    ],
+    legalNote: "For the full legal privacy policy, see our Privacy Policy page. Questions? Email privacy@deafference.com.",
+    faqTitle: "Accessibility FAQs",
+    faqs: [
+      {
+        question: "Does Deafference work if I can't hear?",
+        answer: "Yes. Deafference is built for Deaf and hard-of-hearing people. It translates between sign language, written text, and speech—you can use any combination. If you can't hear, the speech-to-sign feature or text output works perfectly.",
+      },
+      {
+        question: "Which sign languages are supported?",
+        answer: "We currently support American Sign Language (ASL), British Sign Language (BSL), French Sign Language (LSF), and Arabic Sign Language (ArabicSL). More are in development based on community requests.",
+      },
+      {
+        question: "Does it work without the internet?",
+        answer: "Yes, completely. Once you download the translation model, Deafference works fully offline. No internet needed for live translation.",
+      },
+      {
+        question: "Is my video private?",
+        answer: "Yes. Your camera feed and video never leave your device. All sign recognition happens locally on your phone or tablet. We never send video to our servers.",
+      },
+      {
+        question: "How accurate is it?",
+        answer: "ASL recognition accuracy is around 94% in controlled settings. Real-world accuracy is a bit lower due to lighting, angles, and individual differences. We're always improving.",
+      },
+    ],
+  },
+  footer: {
+    tagline: "Offline-first sign language translation for healthcare, education and public services.",
+    sitemap: "Sitemap",
+    groups: { product: "Product", company: "Company", resources: "Resources" },
+    connect: "Connect",
+    accessibilityTitle: "Accessibility statement",
+    accessibilityBody:
+      "Deafference is built for Deaf and hard-of-hearing people. We aim to meet WCAG 2.2 Level AA across this site: every page works with a keyboard, supports right-to-left Arabic, respects reduced-motion settings and never relies on sound alone to convey information.",
+    accessibilityContactLead: "If anything on this site is hard to use, email",
+    accessibilityContactTail: "and we'll work with you to fix it.",
+    rights: "All rights reserved.",
+    backToTop: "Back to top",
+  },
+}
+
+export type Dictionary = typeof en
+
+const ar: Dictionary = {
+  meta: {
+    title: "Deafference — ترجمة لغة الإشارة دون اتصال بالإنترنت",
+    description: "ترجمة لغة الإشارة في الاتجاهين تعمل على الجهاز، لقطاعات الرعاية الصحية والتعليم والخدمات العامة.",
+  },
+  skipToContent: "انتقل إلى المحتوى الرئيسي",
+  nav: {
+    home: "الصفحة الرئيسية لـ Deafference",
+    mainNav: "التنقل الرئيسي",
+    demo: "العرض التجريبي",
+    pricing: "الأسعار",
+    contact: "تواصل معنا",
+    bookDemo: "احجز عرضًا تجريبيًا",
+    openMenu: "فتح القائمة",
+    closeMenu: "إغلاق القائمة",
+    switchLanguageTo: "تغيير اللغة إلى",
+    otherLanguageName: "English",
+  },
+  demo: {
+    eyebrow: "عرض مباشر",
+    title: "ترجمة لغة الإشارة في الاتجاهين، مباشرة على جهازك",
+    lead: "يترجم Deafference بين الكلام والنص ولغة الإشارة دون إرسال الفيديو إلى السحابة. جرّب محادثة نموذجية أدناه.",
+    badges: {
+      offline: "يعمل دون اتصال بالإنترنت",
+      private: "معالجة خاصة على الجهاز",
+      bilingual: "واجهة بالعربية والإنجليزية",
+    },
+    primaryCta: "احجز عرضًا مباشرًا",
+    secondaryCta: "اطّلع على الأسعار",
+    modesLabel: "اتجاه الترجمة",
+    to: "إلى",
+    modes: {
+      speechToSign: { from: "كلام", to: "إشارة" },
+      signToText: { from: "إشارة", to: "نص" },
+    },
+    phrasesLabel: "عبارات نموذجية",
+    phrases: {
+      greeting: "مرحبًا، كيف حالك؟",
+      help: "أحتاج إلى المساعدة من فضلك.",
+      doctor: "أين الطبيب؟",
+      water: "أريد بعض الماء من فضلك.",
+    },
+    inputLabel: { speechToSign: "تقول", signToText: "الإشارات المكتشفة" },
+    outputLabel: { speechToSign: "بلغة الإشارة", signToText: "النص المترجم" },
+    translating: "جارٍ الترجمة…",
+    glossNote: "تُعرض الإشارات بترميز ASL المكتوب (Gloss)، وهو التمثيل النصي لكل إشارة.",
+    offlineNote: "يعمل بالكامل على هذا الجهاز، دون الحاجة إلى اتصال بالإنترنت.",
+  },
+  pricing: {
+    eyebrow: "الأسعار",
+    title: "خطط للأفراد والعيادات والمؤسسات",
+    lead: "ابدأ مجانًا، ثم انتقل إلى خطة أعلى عندما يحتاج فريقك إلى ترجمة فورية على أجهزة وأقسام أكثر.",
+    perMonth: "شهريًا",
+    custom: "حسب الطلب",
+    customNote: "عقد سنوي مخصص",
+    recommended: "موصى بها",
+    includes: "تشمل",
+    pricesNote: "جميع الأسعار بالدولار الأمريكي.",
+    plans: {
+      free: {
+        name: "مجانية",
+        audience: "للأفراد الصم وضعاف السمع وللاستعداد الشخصي لحالات الطوارئ",
+        features: ["مركز إجراءات الطوارئ السريعة", "عبارات أساسية تعمل دون اتصال", "ترجمة النص إلى لغة الإشارة"],
+        cta: "ابدأ الآن",
+      },
+      basic: {
+        name: "الأساسية",
+        audience: "للعيادات الصغيرة والممارسات الخاصة ومكاتب المجتمع المحلي",
+        features: [
+          "ترجمة فورية للغة الإشارة بالذكاء الاصطناعي",
+          "بطاقات تواصل رقمية",
+          "استخدام على جهاز واحد",
+          "دعم عبر البريد الإلكتروني",
+        ],
+        cta: "اختر الخطة الأساسية",
+      },
+      premium: {
+        name: "المميزة",
+        audience: "للمستشفيات الإقليمية والمؤسسات التعليمية والشركات المتوسطة",
+        features: [
+          "ترجمة كاملة في الاتجاهين: من الإشارة إلى الكلام ومن الكلام إلى الإشارة",
+          "دعم لهجات إشارية متعددة",
+          "تنبيهات مرئية واهتزازية في غرف الانتظار",
+          "دعم فني ذو أولوية على مدار الساعة",
+        ],
+        cta: "اختر الخطة المميزة",
+      },
+      enterprise: {
+        name: "المؤسسات",
+        audience: "لشبكات المستشفيات والجهات الحكومية والجامعات والمؤسسات متعددة الفروع",
+        features: [
+          "تكامل كامل مع أنظمة السجلات الطبية الإلكترونية وأنظمة المستشفيات",
+          "تدريب مخصص على اللهجات الإشارية المحلية",
+          "تقارير امتثال مخصصة لمعايير HIPAA وGDPR",
+          "ضمانات مستوى الخدمة (SLA)",
+          "تراخيص متعددة الأقسام",
+        ],
+        cta: "تواصل مع المبيعات",
+      },
+    },
+  },
+  about: {
+    eyebrow: "حول Deafference",
+    title: "مبنى مع مجتمع الصم، وليس فقط لهم",
+    lead: "تم إنشاء Deafference من قبل أشخاص يفهمون ما يحتاجه الأشخاص الصم وضعاف السمع.",
+    missionTitle: "مهمتنا",
+    missionText: "نحن نزيل حواجز التواصل بوضع ترجمة قوية ثنائية الاتجاه في أيدي الأشخاص الصم وضعاف السمع. فورية، بدون إنترنت، وحسب شروطهم.",
+    storyTitle: "لماذا بنينا هذا",
+    storyText: "الكثير من زيارات الرعاية الصحية واللحظات الدراسية والتفاعلات العامة تعتمد على المترجمين الفوريين أو الملاحظات المكتوبة. اعتقدنا: ماذا لو حدثت الترجمة على الفور، بشكل خاص، على الجهاز نفسه؟ لا حاجة لعدم الاتصال بالإنترنت. لا خوادم طرف ثالث. فقط التواصل الواضح.",
+    valuesTitle: "قيمنا",
+    values: [
+      "الخصوصية أولاً: جميع المعالجات تحدث على الجهاز",
+      "مبنى مع: أعضاء مجتمع الصم يشكلون خريطة طريقنا",
+      "التصميم المفتوح: شفاف حول ما يمكننا وما لا يمكننا فعله",
+      "جاهز للعمل بدون إنترنت: يعمل عندما الإنترنت لا",
+    ],
+    teamTitle: "فريقنا",
+    teamDescription: "مزيج من المهندسين الصم والسامعين واللغويين وأنصار مجتمع الصم.",
+    teamMembers: [
+      { name: "Sarah Chen", role: "المؤسسة المشاركة والرئيسة التنفيذية" },
+      { name: "Marcus Johnson", role: "رئيسة المنتج" },
+      { name: "Amir Hassan", role: "المهندسة الرئيسية" },
+      { name: "Dr. Lisa Park", role: "مستشارة اللغويات ولغة الإشارة الأمريكية" },
+    ],
+    teamNote: "نحن نوظف مهندسين وممثلي المجتمع. إذا كنت مهتمًا بالعمل على هذا معنا، فنحن نود أن نتحدث.",
+  },
+  whyChooseUs: {
+    eyebrow: "لماذا اختيارنا",
+    title: "ترجمة فورية، مبنية بشكل صحيح",
+    lead: "ثلاث التزامات تميزنا.",
+    features: [
+      {
+        id: "realtime",
+        title: "فوري، وليس مسجل مسبقًا",
+        description: "المحادثات تحدث بسرعة. ترجمتنا تواكبها، وليس متأخرة ثانية واحدة. لا عبارات جاهزة، لا تأخير.",
+      },
+      {
+        id: "offline",
+        title: "يعمل بالكامل بدون إنترنت",
+        description: "لا إنترنت؟ لا مشكلة. نموذج الترجمة يعمل على جهازك. مثالي للعيادات النائية والمناطق التي تعاني من ضعف الاتصال.",
+      },
+      {
+        id: "deaf",
+        title: "مبنى مع الأشخاص الصم",
+        description: "نعمل مع أعضاء مجتمع الصم في كل خطوة. يشكلون الميزات والواجهة والخريطة.",
+      },
+      {
+        id: "accessible",
+        title: "يمكن الوصول إليه بشكل افتراضي",
+        description: "موجهة لوحة المفاتيح أولاً، تباين واضح، لغة عادية. لا حواجز أمام استخدام Deafference.",
+      },
+    ],
+  },
+  features: {
+    eyebrow: "القدرات",
+    title: "ثلاث قوى أساسية",
+    lead: "ترجمة Deafference عبر ثلاث طرق. استخدم الثلاثة جميعًا، أو فقط ما تحتاجه.",
+    integrationsTitle: "مبني للتكامل",
+    integrationsDescription: "صل Deafference بسجلات صحتك الإلكترونية أو منصة التعلم المدرسية أو نظام تسجيل الخدمة العامة.",
+    integrations: [
+      "السجلات الطبية والسجلات الطبية الإلكترونية",
+      "مؤتمرات الفيديو",
+      "الإنترفون في المستشفى",
+      "واجهات برمجية مخصصة",
+    ],
+    capabilities: [
+      {
+        title: "الكلام → الإشارة",
+        description: "اسمع شخصًا يتحدث، انظر إليه يشير.",
+        features: [
+          "التعرف على الكلام في الوقت الفعلي",
+          "ناتج لغة الإشارة الأمريكية (ASL)",
+          "سرعة الرسوم المتحركة قابلة للتعديل",
+          "علامات تعبيرات الوجه والعلامات غير اليدوية",
+        ],
+      },
+      {
+        title: "الإشارة → النص والكلام",
+        description: "أظهر إشارة، احصل على نص وكلام.",
+        features: [
+          "التعرف على لغة الإشارة عبر الكاميرا",
+          "نص تحويل",
+          "ناتج نص إلى كلام",
+          "دعم اللهجات المتعددة",
+        ],
+      },
+      {
+        title: "النص → الكلام والإشارة",
+        description: "نص مكتوب إلى موقع أو كلام.",
+        features: [
+          "انسخ والصق أي نص",
+          "ناتج فيديو لغة الإشارة",
+          "تجميع الكلام الطبيعي",
+          "خيارات الصوت القابلة للتخصيص",
+        ],
+      },
+    ],
+  },
+  performance: {
+    eyebrow: "الأداء",
+    title: "سريع، دقيق، موثوق",
+    lead: "مبني للاستخدام في العالم الحقيقي في أعدادات الرعاية الصحية والتعليم المشغولة.",
+    stats: [
+      {
+        label: "زمن الترجمة",
+        value: "<1s",
+        description: "من إدخال الكلام إلى ناتج الإشارة، أقل من ثانية على معظم الأجهزة.",
+      },
+      {
+        label: "دقة التعرف",
+        value: "94%",
+        description: "التعرف على إشارة لغة الإشارة الأمريكية في بيئات خاضعة للرقابة. استمر في التحسن.",
+      },
+      {
+        label: "وقت التشغيل بدون إنترنت",
+        value: "100%",
+        description: "يعمل بدون إنترنت. بمجرد التنزيل، يبقى النموذج متاحًا.",
+      },
+      {
+        label: "لغات الإشارة",
+        value: "4",
+        description: "لغة الإشارة الأمريكية، لغة الإشارة البريطانية، لغة الإشارة الفرنسية، لغة الإشارة العربية.",
+      },
+    ],
+    languagesTitle: "لغات الإشارة المدعومة",
+    languagesDescription: "نحن نطلق مع ASL و BSL و FSL و ArabicSL. المزيد قادم بناءً على طلب المجتمع.",
+    supportedLanguages: [
+      "🇺🇸 لغة الإشارة الأمريكية (ASL)",
+      "🇬🇧 لغة الإشارة البريطانية (BSL)",
+      "🇫🇷 لغة الإشارة الفرنسية (LSF)",
+      "🇸🇦 لغة الإشارة العربية (ArabicSL)",
+    ],
+    benchmarkTitle: "معايير الجودة",
+    benchmarks: [
+      { name: "متوسط دقة ترجمة الإشارة", value: "94%" },
+      { name: "متوسط دقة التعرف على الكلام", value: "92%" },
+      { name: "التوافق مع الأجهزة", value: "iOS 15+, Android 11+" },
+      { name: "حجم تنزيل النموذج", value: "280 MB" },
+    ],
+  },
+  privacyFaq: {
+    privacyTitle: "الخصوصية بالتصميم",
+    dataCollection: "ما البيانات التي نجمعها؟",
+    dataCollectionText: "عندما تستخدم Deafference للترجمة، تبقى الصوت والفيديو أو النص على جهازك. لا ننقلها إلى أي مكان. نجمع تحليلات الاستخدام المحدودة (مثل 'تم استخدام الكلام إلى الإشارة 5 مرات اليوم') لتحسين الخدمة، لكن ليس محتوى محادثاتك.",
+    dataUsage: "كيف تُستخدم البيانات؟",
+    dataUsageText: "تساعدنا التحليلات على فهم الميزات الأكثر فائدة والمكان الذي يمكن تحسين الترجمة فيه. نستخدم هذا لتحسين الدقة وإضافة دعم للغات إشارة أكثر. لا يتم أبدًا مراجعة محادثاتك نفسها أو استخدامها للتدريب بدون موافقتك الصريحة.",
+    dataProtection: "كيف تُحمى البيانات؟",
+    dataProtectionText: "معالجة الجهاز تعني أن معظم البيانات لا تترك هاتفك. عندما نجمع التحليلات، يتم تشفيرها في النقل وإزالة الهوية في الراحة. لا عناوين IP، لا معرفات الأجهزة التي يمكن تتبعها.",
+    userRights: "حقوقك",
+    rights: [
+      "حق الوصول: انظر ما بيانات الاستخدام التي لدينا عليك",
+      "حق الحذف: اطلب حذف حسابك وسجلات الاستخدام",
+      "حق التصدير: احصل على بياناتك بصيغة قياسية",
+      "حق الانسحاب: توقف عن مشاركة التحليلات دون فقدان الوظائف الأساسية",
+    ],
+    legalNote: "للحصول على سياسة الخصوصية الكاملة، انظر صفحة سياسة الخصوصية لدينا. أسئلة؟ البريد الإلكتروني privacy@deafference.com.",
+    faqTitle: "أسئلة شائعة عن إمكانية الوصول",
+    faqs: [
+      {
+        question: "هل يعمل Deafference إذا كنت لا أستطيع السمع؟",
+        answer: "نعم. تم بناء Deafference للأشخاص الصم وضعاف السمع. إنه يترجم بين لغة الإشارة والنص المكتوب والكلام—يمكنك استخدام أي مزيج. إذا كنت لا تستطيع السمع، فإن ميزة الكلام إلى الإشارة أو ناتج النص يعمل بشكل مثالي.",
+      },
+      {
+        question: "ما لغات الإشارة المدعومة؟",
+        answer: "نحن ندعم حاليًا لغة الإشارة الأمريكية (ASL) ولغة الإشارة البريطانية (BSL) ولغة الإشارة الفرنسية (LSF) ولغة الإشارة العربية (ArabicSL). المزيد قيد التطوير بناءً على طلبات المجتمع.",
+      },
+      {
+        question: "هل يعمل بدون الإنترنت؟",
+        answer: "نعم، تماما. بمجرد تنزيل نموذج الترجمة، يعمل Deafference بالكامل بلا إنترنت. لا حاجة للإنترنت للترجمة المباشرة.",
+      },
+      {
+        question: "هل الفيديو الخاص بي خاص؟",
+        answer: "نعم. تغذية الكاميرا والفيديو لا تترك جهازك. يحدث جميع التعرف على الإشارة محليًا على هاتفك أو جهازك اللوحي. لا نرسل فيديو إلى خوادمنا.",
+      },
+      {
+        question: "ما دقتها؟",
+        answer: "دقة التعرف على لغة الإشارة الأمريكية حول 94% في الإعدادات الخاضعة للرقابة. دقة العالم الحقيقي أقل قليلاً بسبب الإضاءة والزوايا والاختلافات الفردية. نحن دائما نتحسن.",
+      },
+    ],
+  },
+  contact: {
+    eyebrow: "تواصل معنا",
+    title: "لنتحدث عن احتياجات فريقك",
+    lead: "أخبرنا عن فريقك أو حالة الاستخدام لديك. نرد عبر البريد الإلكتروني، أو عبر مكالمة فيديو بلغة الإشارة إن كنت تفضّل ذلك.",
+    fields: {
+      name: "الاسم الكامل",
+      email: "البريد الإلكتروني للعمل",
+      organization: "الجهة",
+      topic: "كيف يمكننا مساعدتك؟",
+      contactMethod: "كيف تفضّل أن نتواصل معك؟",
+      message: "رسالتك",
+    },
+    optional: "(اختياري)",
+    topicPlaceholder: "اختر موضوعًا",
+    topics: {
+      demo: "حجز عرض تجريبي",
+      sales: "الأسعار والخطط",
+      support: "الدعم الفني",
+      partnership: "الشراكات",
+      general: "أمر آخر",
+    },
+    methods: {
+      email: "البريد الإلكتروني",
+      video: "مكالمة فيديو بلغة الإشارة",
+      text: "محادثة نصية",
+    },
+    messagePlaceholder: "أخبرنا قليلًا عن فريقك وما الذي تريد تحقيقه.",
+    submit: "إرسال الرسالة",
+    submitting: "جارٍ الإرسال…",
+    successTitle: "شكرًا لك، تم إرسال رسالتك.",
+    successBody: "سنرد عليك عبر البريد الإلكتروني الذي أدخلته.",
+    sendAnother: "إرسال رسالة أخرى",
+    errorGeneric: "تعذّر إرسال رسالتك. حاول مرة أخرى، أو راسلنا على",
+    errorOffline: "يبدو أنك غير متصل بالإنترنت. أعد الاتصال وحاول مرة أخرى، أو راسلنا على",
+    errors: {
+      summary: "يُرجى تصحيح الحقول المحددة.",
+      required: "هذا الحقل مطلوب.",
+      email: "أدخل بريدًا إلكترونيًا صالحًا.",
+      messageShort: "يُرجى كتابة 10 أحرف على الأقل.",
+      tooLong: "النص طويل جدًا.",
+    },
+    channelsTitle: "أو راسلنا مباشرة",
+    channels: {
+      general: { title: "الاستفسارات العامة", description: "أسئلة حول المنتج أو طلب عرض تجريبي." },
+      partners: {
+        title: "الشراكات والمبيعات",
+        description: "لتجربة Deafference في عيادة أو حرم جامعي أو جهة حكومية.",
+      },
+      support: { title: "الدعم الفني", description: "إذا كنت تستخدم التطبيق وتحتاج إلى مساعدة." },
+    },
+  },
+  footer: {
+    tagline: "ترجمة لغة الإشارة التي تعمل دون اتصال بالإنترنت، لقطاعات الرعاية الصحية والتعليم والخدمات العامة.",
+    sitemap: "خريطة الموقع",
+    groups: { product: "المنتج", company: "الشركة", resources: "الموارد" },
+    connect: "تواصل معنا",
+    accessibilityTitle: "بيان إمكانية الوصول",
+    accessibilityBody:
+      "صُمّم Deafference للأشخاص الصم وضعاف السمع. نسعى إلى استيفاء معايير WCAG 2.2 بالمستوى AA في هذا الموقع: يمكن استخدام كل صفحة بلوحة المفاتيح، ويدعم الموقع العربية من اليمين إلى اليسار، ويحترم إعدادات تقليل الحركة، ولا يعتمد أبدًا على الصوت وحده لنقل المعلومات.",
+    accessibilityContactLead: "إذا واجهت صعوبة في استخدام أي جزء من الموقع، راسلنا على",
+    accessibilityContactTail: "وسنعمل معك على إصلاحها.",
+    rights: "جميع الحقوق محفوظة.",
+    backToTop: "العودة إلى الأعلى",
+  },
+}
+
+export const dictionaries: Record<Locale, Dictionary> = { en, ar }
