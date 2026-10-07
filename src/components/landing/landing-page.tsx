@@ -20,6 +20,7 @@ import { JudyCharacter } from "@/components/judy/judy-character"
 import { useI18n } from "@/i18n/use-i18n"
 import { cn } from "@/lib/utils"
 import { CalmModeProvider, useCalmMode } from "./calm-mode"
+import { SectionTransition } from "./ui/section-transition"
 import "./landing.css"
 
 export function LandingPage() {
@@ -54,19 +55,45 @@ function LandingContent() {
       />
       <Navbar />
       <main className="relative z-10">
-        <Hero />
-        <AboutUs />
-        <WhyChooseUs />
-        <HowItWorksVisual />
-        <Scenarios />
-        <DemoCenter />
-        <Features />
-        <Performance />
-        <Pricing />
-        <PrivacyPolicy />
-        <FAQ />
-        <Contact />
-        <CTA />
+        <SectionTransition first>
+          <Hero />
+        </SectionTransition>
+        <SectionTransition>
+          <AboutUs />
+        </SectionTransition>
+        <SectionTransition>
+          <WhyChooseUs />
+        </SectionTransition>
+        <SectionTransition>
+          <HowItWorksVisual />
+        </SectionTransition>
+        <SectionTransition>
+          <Scenarios />
+        </SectionTransition>
+        <SectionTransition>
+          <DemoCenter />
+        </SectionTransition>
+        <SectionTransition>
+          <Features />
+        </SectionTransition>
+        <SectionTransition>
+          <Performance />
+        </SectionTransition>
+        <SectionTransition>
+          <Pricing />
+        </SectionTransition>
+        <SectionTransition>
+          <PrivacyPolicy />
+        </SectionTransition>
+        <SectionTransition>
+          <FAQ />
+        </SectionTransition>
+        <SectionTransition>
+          <Contact />
+        </SectionTransition>
+        <SectionTransition>
+          <CTA />
+        </SectionTransition>
       </main>
       <Footer />
     </div>
