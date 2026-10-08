@@ -57,6 +57,8 @@ export default async function RootLayout({
       lang={locale}
       dir={dirFor(locale)}
       className={`${geistSans.variable} ${geistMono.variable} ${plexArabic.variable} scroll-smooth`}
+      // Lets Next turn smooth scrolling off during route changes (keeps it for in-page anchors).
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body className="min-h-dvh bg-background font-sans antialiased text-foreground">

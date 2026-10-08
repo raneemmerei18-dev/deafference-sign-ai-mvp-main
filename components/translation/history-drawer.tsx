@@ -24,7 +24,7 @@ export function HistoryDrawer({ isOpen, onClose, onReplay }: HistoryDrawerProps)
   const { dict } = useLanguage()
 
   let items: any[] = []
-  let deleteItem = () => {}
+  let deleteItem: (id: string) => void = () => {}
   let clearAll = () => {}
 
   try {

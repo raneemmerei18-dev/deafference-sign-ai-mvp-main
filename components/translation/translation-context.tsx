@@ -28,7 +28,6 @@ const STORAGE_KEY = "translationState"
 
 export function TranslationProvider({ children }: { children: React.ReactNode }) {
   const [state, setStateInternal] = useState<TranslationState>(DEFAULT_STATE)
-  const [isHydrated, setIsHydrated] = useState(false)
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -41,7 +40,6 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     } catch {
       // Silently fail on parse errors
     }
-    setIsHydrated(true)
   }, [])
 
   // Save state to localStorage whenever it changes
@@ -59,10 +57,6 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
 
   const setMode = (mode: TranslationState["mode"]) => {
     setState({ mode })
-  }
-
-  if (!isHydrated) {
-    return <>{children}</>
   }
 
   return (

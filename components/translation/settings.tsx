@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useLanguage } from "@/components/i18n/language-provider"
-import { useTranslation } from "@/components/translation/translation-context"
+import { useTranslation, type TranslationState } from "@/components/translation/translation-context"
 import { ChevronDownIcon } from "@/components/landing/icons"
 import styles from "./settings.module.css"
 
@@ -19,7 +19,7 @@ export function TranslationSettings() {
   const t = dict.translationSettings
 
   let state = { cameraEnabled: true, landmarkOverlay: false, signDialect: "asl" }
-  let setState = () => {}
+  let setState: (state: Partial<TranslationState>) => void = () => {}
 
   try {
     const context = useTranslation()

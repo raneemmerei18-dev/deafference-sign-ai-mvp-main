@@ -25,7 +25,6 @@ const MAX_HISTORY_ITEMS = 100
 
 export function HistoryProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<HistoryItem[]>([])
-  const [isHydrated, setIsHydrated] = useState(false)
 
   useEffect(() => {
     try {
@@ -37,7 +36,6 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Silently fail on parse errors
     }
-    setIsHydrated(true)
   }, [])
 
   const addItem = (item: Omit<HistoryItem, "id" | "timestamp">) => {
@@ -75,10 +73,6 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Silently fail if localStorage unavailable
     }
-  }
-
-  if (!isHydrated) {
-    return <>{children}</>
   }
 
   return (
