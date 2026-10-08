@@ -7,6 +7,7 @@ import {
   Building2,
   CodeXml,
   Compass,
+  Eye,
   Cpu,
   Globe2,
   HandHeart,
@@ -15,6 +16,7 @@ import {
   ShieldCheck,
   Target,
   WifiOff,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react"
 import { Container } from "@/components/shared/container"
@@ -32,9 +34,12 @@ import {
   AnimatedNumber,
   focusRingPop,
   popMotionProps,
+  popButtonSizes,
+  popSecondaryButton,
 } from "./ui/pop"
+import { requestContactTopic } from "./contact-intent"
 
-const VALUE_ICONS: LucideIcon[] = [Accessibility, ShieldCheck, Globe2, Cpu]
+const VALUE_ICONS: LucideIcon[] = [Accessibility, ShieldCheck, Globe2, Cpu, Eye]
 
 /** Team is described by role/responsibility, not by individual names or photos. */
 const TEAM_GROUP_ICONS: LucideIcon[] = [Target, CodeXml, HandHeart]
@@ -107,10 +112,12 @@ function ValuesPanel() {
         viewport={{ once: true, amount: 0.2 }}
         className="grid gap-4 sm:grid-cols-2"
       >
-        {t.landing.about.values.map((value, index) => {
+        {t.landing.about.values.map((value, index, all) => {
           const Icon = VALUE_ICONS[index] ?? Accessibility
+          // An odd last card spans both columns so the grid stays balanced.
+          const spanLast = all.length % 2 === 1 && index === all.length - 1
           return (
-            <motion.div key={value.title} variants={staggerItem}>
+            <motion.div key={value.title} variants={staggerItem} className={spanLast ? "sm:col-span-2" : undefined}>
               <GlassPanel tilt glow className="h-full p-6">
                 <IconBadge icon={Icon} />
                 <h3 className="mt-5 text-lg font-semibold text-brand-navy">{value.title}</h3>
@@ -163,6 +170,24 @@ function TeamPanel() {
           })}
         </div>
       </div>
+      <Reveal delay={0.2} className="mt-10">
+        <GlassPanel className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex items-start gap-4">
+            <IconBadge icon={Sparkles} size="compact" />
+            <div>
+              <h3 className="text-base font-semibold text-brand-navy">{about.hiring.title}</h3>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">{about.hiring.body}</p>
+            </div>
+          </div>
+          <a
+            href="#contact"
+            onClick={() => requestContactTopic("general")}
+            className={cn(popSecondaryButton, popButtonSizes.sm, "w-fit shrink-0")}
+          >
+            {about.hiring.cta}
+          </a>
+        </GlassPanel>
+      </Reveal>
     </article>
   )
 }

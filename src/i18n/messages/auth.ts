@@ -20,6 +20,8 @@ const en = {
     emailLabel: "Email",
     passwordLabel: "Password",
     forgotPassword: "Forgot password?",
+    passwordHint: "Passwords are case-sensitive.",
+    resetAction: "Reset your password",
     submit: "Sign In",
     submitting: "Signing in…",
     statusSubmitting: "Signing in, please wait.",
@@ -56,6 +58,7 @@ const en = {
     hide: "Hide password",
     hint: "At least {min} characters",
     strength: ["Too short", "Weak", "Fair", "Good", "Strong"],
+    match: "Passwords match",
   },
   validation: {
     emailRequired: "Enter your email address.",
@@ -77,6 +80,7 @@ const en = {
     signinFailed: "Sign in failed. Please try again.",
     signupFailed: "Account creation failed. Please try again.",
     resetLinkInvalid: "This reset link is invalid or has expired. Request a new one.",
+    rateLimited: "Too many attempts. Please wait a few minutes and try again.",
   },
   authRequired: {
     message: "Please sign in to continue.",
@@ -104,6 +108,9 @@ const en = {
     submitting: "Updating…",
     success: "Password updated. Redirecting to sign in…",
     missingToken: "This reset link is missing its token. Request a new one from the sign-in page.",
+    invalidTitle: "This link can't be used",
+    invalidBody: "Reset links expire after 1 hour and work only once. Request a new one and we'll email you a fresh link.",
+    requestNew: "Request a new link",
     backToSignin: "Back to sign in",
   },
   forbidden: {
@@ -144,6 +151,8 @@ const ar: AuthMessages = {
     emailLabel: "البريد الإلكتروني",
     passwordLabel: "كلمة المرور",
     forgotPassword: "نسيت كلمة المرور؟",
+    passwordHint: "كلمة المرور حساسة لحالة الأحرف.",
+    resetAction: "إعادة تعيين كلمة المرور",
     submit: "تسجيل الدخول",
     submitting: "جارٍ تسجيل الدخول…",
     statusSubmitting: "جارٍ تسجيل الدخول، يُرجى الانتظار.",
@@ -180,6 +189,7 @@ const ar: AuthMessages = {
     hide: "إخفاء كلمة المرور",
     hint: "{min} أحرف على الأقل",
     strength: ["قصيرة جدًا", "ضعيفة", "مقبولة", "جيدة", "قوية"],
+    match: "كلمتا المرور متطابقتان",
   },
   validation: {
     emailRequired: "أدخل بريدك الإلكتروني.",
@@ -201,6 +211,7 @@ const ar: AuthMessages = {
     signinFailed: "تعذّر تسجيل الدخول. يُرجى المحاولة مرة أخرى.",
     signupFailed: "تعذّر إنشاء الحساب. يُرجى المحاولة مرة أخرى.",
     resetLinkInvalid: "رابط إعادة التعيين غير صالح أو منتهي الصلاحية. اطلب رابطًا جديدًا.",
+    rateLimited: "محاولات كثيرة جدًا. يُرجى الانتظار بضع دقائق ثم المحاولة مجددًا.",
   },
   authRequired: {
     message: "يُرجى تسجيل الدخول للمتابعة.",
@@ -228,6 +239,9 @@ const ar: AuthMessages = {
     submitting: "جارٍ التحديث…",
     success: "تم تحديث كلمة المرور. جارٍ التوجيه إلى تسجيل الدخول…",
     missingToken: "رابط إعادة التعيين هذا لا يحتوي على الرمز المطلوب. اطلب رابطًا جديدًا من صفحة تسجيل الدخول.",
+    invalidTitle: "لا يمكن استخدام هذا الرابط",
+    invalidBody: "تنتهي صلاحية روابط إعادة التعيين بعد ساعة واحدة ولا تعمل إلا مرة واحدة. اطلب رابطًا جديدًا وسنرسل لك رابطًا آخر عبر البريد الإلكتروني.",
+    requestNew: "اطلب رابطًا جديدًا",
     backToSignin: "العودة إلى تسجيل الدخول",
   },
   forbidden: {

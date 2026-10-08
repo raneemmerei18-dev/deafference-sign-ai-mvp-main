@@ -19,17 +19,18 @@ import {
   staggerContainer,
   staggerItem,
 } from "./ui/pop"
+import { requestContactTopic, type ContactTopic } from "./contact-intent"
 
 /**
  * Plan copy and prices live in `t.landing.pricing.plans` (zipped by index).
  * The old Monthly/Annual switch was removed: no annual prices exist, so it
  * changed nothing on screen. Re-add it only alongside real annual pricing.
  */
-const PLAN_META: { id: string; icon: LucideIcon; href: string; highlighted?: boolean }[] = [
+const PLAN_META: { id: string; icon: LucideIcon; href: string; highlighted?: boolean; topic?: ContactTopic }[] = [
   { id: "free", icon: UserRound, href: APP_ROUTES.translate },
   { id: "basic", icon: Building, href: APP_ROUTES.signup },
   { id: "premium", icon: HeartPulse, href: APP_ROUTES.signup, highlighted: true },
-  { id: "enterprise", icon: Building2, href: "#contact" },
+  { id: "enterprise", icon: Building2, href: "#contact", topic: "sales" },
 ]
 
 export function Pricing() {
@@ -136,6 +137,7 @@ export function Pricing() {
                     <Magnetic strength={8} className="mt-8 block w-full">
                       <Link
                         href={meta.href}
+                        onClick={meta.topic ? () => requestContactTopic(meta.topic!) : undefined}
                         className={cn(
                           meta.highlighted ? popPrimaryButton : popSecondaryButton,
                           popButtonSizes.md,

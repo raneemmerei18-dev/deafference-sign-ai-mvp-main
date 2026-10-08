@@ -33,6 +33,11 @@ export function ForgotPasswordForm() {
       return
     }
     setError(undefined)
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      setStatus("error")
+      setFormError(t.common.errors.network)
+      return
+    }
     setFormError(null)
     setStatus("submitting")
     let res: Response
@@ -50,7 +55,13 @@ export function ForgotPasswordForm() {
     const data = await res.json().catch(() => ({}))
     if (!res.ok) {
       setStatus("error")
-      setFormError(res.status === 400 ? t.auth.validation.emailInvalid : t.common.errors.generic)
+      setFormError(
+        res.status === 400
+          ? t.auth.validation.emailInvalid
+          : res.status === 429
+            ? t.auth.errors.rateLimited
+            : t.common.errors.generic,
+      )
       return
     }
     setDevResetUrl(data.devResetUrl ?? null)

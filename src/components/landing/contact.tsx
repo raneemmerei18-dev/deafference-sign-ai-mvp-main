@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState, type FormEvent, type ReactNode } from "react"
+import { useEffect, useId, useState, type FormEvent, type ReactNode } from "react"
 import { motion } from "framer-motion"
 import { Check, Copy, HeadphonesIcon, Mail, Send, Users, type LucideIcon } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -22,8 +22,11 @@ import {
   staggerContainer,
   staggerItem,
 } from "./ui/pop"
+import { CONTACT_TOPICS, TOPIC_EMAIL, onContactTopic, type ContactTopic } from "./contact-intent"
 
-const CONTACT_EMAIL = "hello@deafference.ai"
+const CONTACT_METHODS = ["email", "video", "chat"] as const
+type ContactMethod = (typeof CONTACT_METHODS)[number]
+const MESSAGE_MIN_LENGTH = 10
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 /** Addresses/icons zipped by index with `t.landing.contact.channels`. */
@@ -102,12 +105,21 @@ export function Contact() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
+  const [organization, setOrganization] = useState("")
+  const [topic, setTopic] = useState<ContactTopic>("general")
+  const [method, setMethod] = useState<ContactMethod>("email")
   const [errors, setErrors] = useState<Errors>({})
   const [submitted, setSubmitted] = useState(false)
   const [copied, setCopied] = useState(false)
   const nameId = useId()
   const emailId = useId()
   const messageId = useId()
+  const organizationId = useId()
+  const topicId = useId()
+  const contactEmail = TOPIC_EMAIL[topic]
+
+  // "Contact sales", "Plan an integration", etc. pre-select the matching topic.
+  useEffect(() => onContactTopic(setTopic), [])
 
   function validate(): Errors {
     const next: Errors = {}
@@ -115,6 +127,7 @@ export function Contact() {
     if (!email.trim()) next.email = copy.errors.emailRequired
     else if (!EMAIL_PATTERN.test(email.trim())) next.email = copy.errors.emailInvalid
     if (!message.trim()) next.message = copy.errors.messageRequired
+    else if (message.trim().length < MESSAGE_MIN_LENGTH) next.message = copy.errors.messageShort
     return next
   }
 
@@ -138,14 +151,19 @@ export function Contact() {
     }
     // There's no contact API: hand the message to the visitor's email app.
     const subject = encodeURIComponent(fmt(copy.mailSubject, { name: name.trim() }))
-    const body = encodeURIComponent(`${message.trim()}\n\n— ${name.trim()} (${email.trim()})`)
+    const details = [
+      `${copy.mailTopic}: ${copy.topics[topic]}`,
+      organization.trim() ? `${copy.mailOrganization}: ${organization.trim()}` : null,
+      `${copy.mailMethod}: ${copy.methods[method]}`,
+    ].filter(Boolean)
+    const body = encodeURIComponent(`${message.trim()}\n\n${details.join("\n")}\n\n— ${name.trim()} (${email.trim()})`)
     setSubmitted(true)
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`
+    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`
   }
 
   async function copyAddress() {
     try {
-      await navigator.clipboard.writeText(CONTACT_EMAIL)
+      await navigator.clipboard.writeText(contactEmail)
       setCopied(true)
       window.setTimeout(() => setCopied(false), 2000)
     } catch {
@@ -229,6 +247,70 @@ export function Contact() {
                   </FloatingField>
                 </div>
 
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <FloatingField id={organizationId} label={copy.organization} value={organization}>
+                    {({ onFocus, onBlur }) => (
+                      <Input
+                        id={organizationId}
+                        name="organization"
+                        autoComplete="organization"
+                        value={organization}
+                        onChange={(e) => setOrganization(e.target.value)}
+                        onFocus={onFocus}
+                        onBlur={onBlur}
+                        className={inputClass}
+                      />
+                    )}
+                  </FloatingField>
+                  {/* Always has a value, so its label stays lifted like a filled field. */}
+                  <FloatingField id={topicId} label={copy.topic} value={topic}>
+                    {({ onFocus, onBlur }) => (
+                      <select
+                        id={topicId}
+                        name="topic"
+                        value={topic}
+                        onChange={(e) => setTopic(e.target.value as ContactTopic)}
+                        onFocus={onFocus}
+                        onBlur={onBlur}
+                        className="h-12 w-full cursor-pointer rounded-xl border border-transparent bg-background/70 px-3 text-sm text-foreground outline-none"
+                      >
+                        {CONTACT_TOPICS.map((value) => (
+                          <option key={value} value={value}>
+                            {copy.topics[value]}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </FloatingField>
+                </div>
+
+                <fieldset>
+                  <legend className="text-sm font-semibold text-foreground">{copy.method}</legend>
+                  <div className="mt-3 flex flex-wrap gap-2.5">
+                    {CONTACT_METHODS.map((value) => (
+                      <label
+                        key={value}
+                        className={cn(
+                          "inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[color:var(--primary)] has-[:focus-visible]:ring-offset-2",
+                          method === value
+                            ? "border-[color:var(--primary)]/40 bg-[color:var(--primary)]/10 text-[#1D4ED8]"
+                            : "border-border/70 bg-background/60 text-muted-foreground hover:text-foreground",
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          name="method"
+                          value={value}
+                          checked={method === value}
+                          onChange={() => setMethod(value)}
+                          className="size-3.5 accent-[#2563EB]"
+                        />
+                        {copy.methods[value]}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+
                 <FloatingField id={messageId} label={copy.message} value={message} error={errors.message} multiline>
                   {({ onFocus, onBlur, describedBy }) => (
                     <Textarea
@@ -265,11 +347,11 @@ export function Contact() {
                       <p className="mt-1">
                         {copy.statusBody}{" "}
                         <a
-                          href={`mailto:${CONTACT_EMAIL}`}
+                          href={`mailto:${contactEmail}`}
                           dir="ltr"
                           className={cn("rounded-sm font-semibold text-[#1D4ED8] underline underline-offset-4", focusRingPop)}
                         >
-                          {CONTACT_EMAIL}
+                          {contactEmail}
                         </a>
                       </p>
                       <button type="button" onClick={copyAddress} className={cn(popSecondaryButton, popButtonSizes.sm, "mt-3")}>

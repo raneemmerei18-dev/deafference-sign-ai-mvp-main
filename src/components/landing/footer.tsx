@@ -3,7 +3,7 @@
 import type { ReactNode } from "react"
 import { motion } from "framer-motion"
 import { usePathname } from "next/navigation"
-import { Mail } from "lucide-react"
+import { Accessibility, ArrowUp, Mail } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { FOOTER_EXPLORE_NAV, FOOTER_COMPANY_NAV } from "@/lib/constants"
 import { Logo } from "@/components/deafference/logo"
@@ -93,8 +93,38 @@ export function Footer() {
         </div>
       </Container>
 
-      <Container className="relative mt-14 border-t border-[color:var(--primary)]/10 pt-6">
+      <Container className="relative mt-14">
+        <section
+          id="accessibility"
+          aria-labelledby="accessibility-heading"
+          className="glass-pop rounded-2xl p-5 sm:flex sm:items-start sm:gap-4 sm:p-6"
+        >
+          <Accessibility className="size-5 shrink-0 text-[#2563EB] max-sm:mb-3" aria-hidden="true" />
+          <div>
+            <h2 id="accessibility-heading" className="text-sm font-semibold text-foreground">
+              {copy.a11yTitle}
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{copy.a11yBody}</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              {copy.a11yContact}{" "}
+              <a
+                href="mailto:hello@deafference.ai"
+                dir="ltr"
+                className={cn("rounded-sm font-semibold text-[#1D4ED8] underline-offset-4 hover:underline", focusRingPop)}
+              >
+                hello@deafference.ai
+              </a>
+            </p>
+          </div>
+        </section>
+      </Container>
+
+      <Container className="relative mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[color:var(--primary)]/10 pt-6">
         <p className="text-xs text-muted-foreground">{fmt(copy.rights, { year: new Date().getFullYear() })}</p>
+        <FooterLink href={resolveLandingHref("#top", pathname)}>
+          <ArrowUp className="size-4" aria-hidden="true" />
+          {copy.backToTop}
+        </FooterLink>
       </Container>
     </motion.footer>
   )

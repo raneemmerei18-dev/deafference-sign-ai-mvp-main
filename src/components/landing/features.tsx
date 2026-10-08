@@ -1,17 +1,21 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { BrainCircuit, Radio, ShieldCheck, type LucideIcon } from "lucide-react"
+import { BrainCircuit, CodeXml, FileText, PhoneCall, Plug, Radio, ShieldCheck, Video, type LucideIcon } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { SectionTitle } from "@/components/shared/section-title"
 import { IconBadge } from "@/components/shared/icon-badge"
 import { cn } from "@/lib/utils"
 import { useI18n } from "@/i18n/use-i18n"
 import { FeatureCardGrid } from "@/components/landing/features/feature-card-grid"
-import { GlassPanel } from "./ui/pop"
+import { GlassPanel, popButtonSizes, popSecondaryButton, staggerContainer, staggerItem } from "./ui/pop"
+import { requestContactTopic } from "./contact-intent"
 
 /** Icons zipped by index with `t.landing.features.trust`. */
 const TRUST_ICONS: LucideIcon[] = [ShieldCheck, BrainCircuit]
+
+/** Icons zipped by index with `t.landing.features.integrations.items`. */
+const INTEGRATION_ICONS: LucideIcon[] = [FileText, Video, PhoneCall, CodeXml]
 
 function FeatureCard({
   icon: Icon,
@@ -113,6 +117,41 @@ export function Features() {
               <FeatureCard key={feature.title} icon={TRUST_ICONS[i] ?? ShieldCheck} {...feature} emphasized />
             ))}
           </motion.div>
+        </div>
+
+        <div className="mt-12">
+          <h3 className="text-sm font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+            {copy.integrations.heading}
+          </h3>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">{copy.integrations.description}</p>
+          <motion.ul
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {copy.integrations.items.map((item, i) => (
+              <motion.li key={item.title} variants={staggerItem}>
+                <GlassPanel className="h-full p-5 transition-transform duration-300 hover:-translate-y-1">
+                  <IconBadge icon={INTEGRATION_ICONS[i] ?? Plug} size="compact" />
+                  <p className="mt-4 text-base font-semibold text-foreground">{item.title}</p>
+                  <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{item.text}</p>
+                </GlassPanel>
+              </motion.li>
+            ))}
+          </motion.ul>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm leading-6 text-muted-foreground">{copy.integrations.note}</p>
+            <a
+              href="#contact"
+              onClick={() => requestContactTopic("partnership")}
+              className={cn(popSecondaryButton, popButtonSizes.sm, "w-fit shrink-0")}
+            >
+              <Plug className="size-4" aria-hidden="true" />
+              {copy.integrations.cta}
+            </a>
+          </div>
         </div>
       </Container>
     </section>

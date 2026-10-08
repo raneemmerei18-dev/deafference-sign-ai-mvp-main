@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Database, Eye, Lock, ShieldCheck, UserCheck, type LucideIcon } from "lucide-react"
+import { CheckCircle2, Database, Eye, Lock, ShieldCheck, UserCheck, type LucideIcon } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { SectionTitle } from "@/components/shared/section-title"
 import { IconBadge } from "@/components/shared/icon-badge"
@@ -76,6 +76,20 @@ export function PrivacyPolicy() {
             )
           })}
         </motion.div>
+
+        <Reveal delay={0.05} className="mt-5">
+          <GlassPanel className="p-6 sm:p-8">
+            <h3 className="text-base font-semibold text-foreground">{copy.rights.title}</h3>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {copy.rights.items.map((right) => (
+                <li key={right} className="flex gap-3 text-sm leading-6 text-muted-foreground">
+                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-[#2563EB]" aria-hidden="true" />
+                  <span>{right}</span>
+                </li>
+              ))}
+            </ul>
+          </GlassPanel>
+        </Reveal>
 
         <Reveal delay={0.1} className="mt-4">
           <GlassPanel className="p-6">

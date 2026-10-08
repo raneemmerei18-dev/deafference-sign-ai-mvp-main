@@ -3,7 +3,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type SubmitEvent } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Info, Loader2 } from 'lucide-react'
+import { Check, Info, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { FieldError } from '@/components/shared/field-error'
@@ -94,6 +94,8 @@ function authErrorMessage(err: unknown, t: Translations, flow: 'signin' | 'signu
     return err instanceof TypeError ? t.common.errors.network : fallback
   }
   if (err.status === 0) return t.common.errors.network
+  // No route rate-limits yet; handled so the UI is ready when the backend adds 429s.
+  if (err.status === 429) return t.auth.errors.rateLimited
   if (err.status >= 500) return t.common.errors.generic
   if (flow === 'signin' && err.status === 401) return t.auth.errors.invalidCredentials
   if (flow === 'signin' && err.status === 403) return t.auth.errors.suspended
@@ -223,6 +225,11 @@ const initialSignIn: SignInValues = { identifier: '', password: '' }
 
 const FORM_ERROR_CLASS = 'rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive'
 
+/** Skip the round trip when the browser already knows it's offline. */
+function isOffline() {
+  return typeof navigator !== 'undefined' && navigator.onLine === false
+}
+
 function SignInForm({
   onSignIn,
   onFederatedAuth,
@@ -234,6 +241,11 @@ function SignInForm({
   const idPrefix = useId()
   const [values, setValues] = useState<SignInValues>(initialSignIn)
   const [errors, setErrors] = useState<SignInErrors>({})
+  // Typing into a field clears its error, so stale messages don't linger.
+  function update<K extends keyof SignInValues>(key: K, value: SignInValues[K]) {
+    setValues((v) => ({ ...v, [key]: value }))
+    setErrors((e) => (e[key] ? { ...e, [key]: undefined } : e))
+  }
   const [status, setStatus] = useState<SubmitStatus>('idle')
   const [formError, setFormError] = useState<string | null>(null)
 
@@ -251,6 +263,11 @@ function SignInForm({
     const nextErrors = validate(values)
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
+    if (isOffline()) {
+      setStatus('error')
+      setFormError(t.common.errors.network)
+      return
+    }
 
     setFormError(null)
     setStatus('submitting')
@@ -273,9 +290,15 @@ function SignInForm({
           <legend className="sr-only">{t.auth.signin.legend}</legend>
 
           {formError ? (
-            <p role="alert" className={FORM_ERROR_CLASS}>
-              {formError}
-            </p>
+            <div role="alert" className={FORM_ERROR_CLASS}>
+              <p>{formError}</p>
+              {/* Wrong password is the likeliest cause: offer the way out right in the alert. */}
+              {formError === t.auth.errors.invalidCredentials ? (
+                <Link href="/forgot-password" className="mt-1 inline-block font-medium underline underline-offset-2">
+                  {t.auth.signin.resetAction}
+                </Link>
+              ) : null}
+            </div>
           ) : null}
 
           <div className="flex flex-col gap-1.5">
@@ -291,7 +314,7 @@ function SignInForm({
               autoComplete="username"
               required
               value={values.identifier}
-              onChange={(event) => setValues((v) => ({ ...v, identifier: event.target.value }))}
+              onChange={(event) => update('identifier', event.target.value)}
               aria-invalid={Boolean(errors.identifier) || undefined}
               aria-describedby={errors.identifier ? `${idPrefix}-identifier-error` : undefined}
             />
@@ -314,10 +337,15 @@ function SignInForm({
               id={`${idPrefix}-password`}
               autoComplete="current-password"
               value={values.password}
-              onChange={(value) => setValues((v) => ({ ...v, password: value }))}
+              onChange={(value) => update('password', value)}
               invalid={Boolean(errors.password)}
-              describedBy={errors.password ? `${idPrefix}-password-error` : undefined}
+              describedBy={[`${idPrefix}-password-hint`, errors.password && `${idPrefix}-password-error`]
+                .filter(Boolean)
+                .join(' ')}
             />
+            <p id={`${idPrefix}-password-hint`} className="text-xs text-muted-foreground">
+              {t.auth.signin.passwordHint}
+            </p>
             <FieldError id={`${idPrefix}-password-error`} message={errors.password} />
           </div>
 
@@ -356,6 +384,10 @@ function SignUpForm({
   const idPrefix = useId()
   const [values, setValues] = useState<SignUpValues>(initialSignUp)
   const [errors, setErrors] = useState<SignUpErrors>({})
+  function update<K extends keyof SignUpValues>(key: K, value: SignUpValues[K]) {
+    setValues((v) => ({ ...v, [key]: value }))
+    setErrors((e) => (e[key] ? { ...e, [key]: undefined } : e))
+  }
   const [status, setStatus] = useState<SubmitStatus>('idle')
   const [formError, setFormError] = useState<string | null>(null)
 
@@ -391,6 +423,11 @@ function SignUpForm({
     const nextErrors = validate(values)
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
+    if (isOffline()) {
+      setStatus('error')
+      setFormError(t.common.errors.network)
+      return
+    }
 
     setFormError(null)
     setStatus('submitting')
@@ -436,7 +473,7 @@ function SignUpForm({
               autoComplete="name"
               required
               value={values.fullName}
-              onChange={(event) => setValues((v) => ({ ...v, fullName: event.target.value }))}
+              onChange={(event) => update('fullName', event.target.value)}
               aria-invalid={Boolean(errors.fullName) || undefined}
               aria-describedby={errors.fullName ? `${idPrefix}-name-error` : undefined}
             />
@@ -455,7 +492,7 @@ function SignUpForm({
               autoComplete="email"
               required
               value={values.email}
-              onChange={(event) => setValues((v) => ({ ...v, email: event.target.value }))}
+              onChange={(event) => update('email', event.target.value)}
               aria-invalid={Boolean(errors.email) || undefined}
               aria-describedby={errors.email ? `${idPrefix}-email-error` : undefined}
             />
@@ -471,7 +508,7 @@ function SignUpForm({
               autoComplete="new-password"
               minLength={MIN_PASSWORD_LENGTH}
               value={values.password}
-              onChange={(value) => setValues((v) => ({ ...v, password: value }))}
+              onChange={(value) => update('password', value)}
               invalid={Boolean(errors.password)}
               describedBy={passwordDescribedBy}
             />
@@ -507,11 +544,19 @@ function SignUpForm({
               id={`${idPrefix}-confirm-password`}
               autoComplete="new-password"
               value={values.confirmPassword}
-              onChange={(value) => setValues((v) => ({ ...v, confirmPassword: value }))}
+              onChange={(value) => update('confirmPassword', value)}
               invalid={Boolean(errors.confirmPassword)}
               describedBy={errors.confirmPassword ? `${idPrefix}-confirm-password-error` : undefined}
             />
             <FieldError id={`${idPrefix}-confirm-password-error`} message={errors.confirmPassword} />
+            <p aria-live="polite" className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
+              {values.confirmPassword && values.confirmPassword === values.password && !errors.confirmPassword ? (
+                <span className="inline-flex items-center gap-1">
+                  <Check className="size-3.5" aria-hidden="true" />
+                  {t.auth.password.match}
+                </span>
+              ) : null}
+            </p>
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -522,7 +567,7 @@ function SignUpForm({
                 type="checkbox"
                 required
                 checked={values.agreeToTerms}
-                onChange={(event) => setValues((v) => ({ ...v, agreeToTerms: event.target.checked }))}
+                onChange={(event) => update('agreeToTerms', event.target.checked)}
                 aria-invalid={Boolean(errors.agreeToTerms) || undefined}
                 aria-describedby={errors.agreeToTerms ? `${idPrefix}-terms-error` : undefined}
                 className={cn(

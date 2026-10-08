@@ -3,7 +3,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { CheckCircle2, Loader2 } from "lucide-react"
+import { CheckCircle2, Link2Off, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AuthCard } from "./auth-shell"
 import { FieldError } from "@/components/shared/field-error"
@@ -27,6 +27,7 @@ export function ResetPasswordForm({ token }: { token: string | undefined }) {
   const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string }>({})
   const [status, setStatus] = useState<Status>("idle")
   const [formError, setFormError] = useState<string | null>(null)
+  const [linkInvalid, setLinkInvalid] = useState(false)
   const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => {
@@ -45,6 +46,11 @@ export function ResetPasswordForm({ token }: { token: string | undefined }) {
     else if (confirmPassword !== password) nextErrors.confirmPassword = v.passwordsMismatch
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      setStatus("error")
+      setFormError(t.common.errors.network)
+      return
+    }
 
     setFormError(null)
     setStatus("submitting")
@@ -63,21 +69,35 @@ export function ResetPasswordForm({ token }: { token: string | undefined }) {
     await res.json().catch(() => ({}))
     if (!res.ok) {
       setStatus("error")
-      // 400 = invalid/expired token (password length is validated above).
-      setFormError(res.status === 400 ? t.auth.errors.resetLinkInvalid : t.common.errors.generic)
+      // 400 = invalid/expired token (password length is validated above): show the dead-link state.
+      if (res.status === 400) setLinkInvalid(true)
+      else setFormError(res.status === 429 ? t.auth.errors.rateLimited : t.common.errors.generic)
       return
     }
     setStatus("success")
     redirectTimer.current = setTimeout(() => router.push(APP_ROUTES.login), 1800)
   }
 
-  if (!token) {
+  // Missing, expired or already-used link: explain it and offer the one useful next step.
+  if (!token || linkInvalid) {
     return (
-      <AuthCard>
-        <p role="alert" className={FORM_ERROR_CLASS}>
-          {t.auth.reset.missingToken}
-        </p>
-        <Link href={APP_ROUTES.login} className={`mt-4 ${BACK_LINK_CLASS}`}>
+      <AuthCard className="text-center">
+        <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-[color:var(--primary)]/10" aria-hidden="true">
+          <Link2Off className="size-6 text-[#1D4ED8]" />
+        </div>
+        <div role="alert">
+          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-brand-navy">{t.auth.reset.invalidTitle}</h1>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            {token ? t.auth.reset.invalidBody : t.auth.reset.missingToken}
+          </p>
+        </div>
+        <Button
+          size="lg"
+          className="mt-6 h-11 w-full justify-center text-sm"
+          nativeButton={false}
+          render={<Link href="/forgot-password">{t.auth.reset.requestNew}</Link>}
+        />
+        <Link href={APP_ROUTES.login} className={`mt-2 ${BACK_LINK_CLASS}`}>
           {t.auth.reset.backToSignin}
         </Link>
       </AuthCard>
@@ -108,14 +128,9 @@ export function ResetPasswordForm({ token }: { token: string | undefined }) {
             <legend className="sr-only">{t.auth.reset.legend}</legend>
 
             {formError ? (
-              <div role="alert" className={FORM_ERROR_CLASS}>
-                <p>{formError}</p>
-                {status === "error" && formError === t.auth.errors.resetLinkInvalid ? (
-                  <Link href="/forgot-password" className="mt-1 inline-block font-medium underline underline-offset-2">
-                    {t.auth.forgot.submit}
-                  </Link>
-                ) : null}
-              </div>
+              <p role="alert" className={FORM_ERROR_CLASS}>
+                {formError}
+              </p>
             ) : null}
 
             <div className="flex flex-col gap-1.5">
@@ -127,7 +142,10 @@ export function ResetPasswordForm({ token }: { token: string | undefined }) {
                 autoComplete="new-password"
                 minLength={MIN_PASSWORD_LENGTH}
                 value={password}
-                onChange={setPassword}
+                onChange={(value) => {
+                  setPassword(value)
+                  setErrors((e) => (e.password ? { ...e, password: undefined } : e))
+                }}
                 invalid={Boolean(errors.password)}
                 describedBy={[`${idPrefix}-password-strength`, errors.password && `${idPrefix}-password-error`]
                   .filter(Boolean)
@@ -150,7 +168,10 @@ export function ResetPasswordForm({ token }: { token: string | undefined }) {
                 id={`${idPrefix}-confirm`}
                 autoComplete="new-password"
                 value={confirmPassword}
-                onChange={setConfirmPassword}
+                onChange={(value) => {
+                  setConfirmPassword(value)
+                  setErrors((e) => (e.confirmPassword ? { ...e, confirmPassword: undefined } : e))
+                }}
                 invalid={Boolean(errors.confirmPassword)}
                 describedBy={errors.confirmPassword ? `${idPrefix}-confirm-error` : undefined}
               />

@@ -39,6 +39,13 @@ function LandingContent() {
 
   return (
     <div className={cn("landing-pop relative min-h-dvh bg-background text-foreground", calm && "reduce-motion")}>
+      {/* First focusable element: lets keyboard users jump past Judy and the navbar. */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-[#1D4ED8] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+      >
+        {t.landing.nav.skipLink}
+      </a>
       <div aria-hidden="true" className="pop-particles pointer-events-none fixed inset-0 z-0 opacity-60" />
       {/* Decorative companion: hidden below `sm` (landing.css) so it never covers content on phones. */}
       {/* Rests on the start side so she never sits under the emergency button (end side). */}
@@ -54,12 +61,11 @@ function LandingContent() {
         className="landing-judy"
       />
       <Navbar />
-      <main className="relative z-10">
+      {/* Story order: the problem → how it works → Judy's everyday scenarios → try it →
+          what it does → trust (performance, team) → pricing → privacy → questions → contact. */}
+      <main id="main-content" tabIndex={-1} className="relative z-10 outline-none">
         <SectionTransition first>
           <Hero />
-        </SectionTransition>
-        <SectionTransition>
-          <AboutUs />
         </SectionTransition>
         <SectionTransition>
           <WhyChooseUs />
@@ -78,6 +84,9 @@ function LandingContent() {
         </SectionTransition>
         <SectionTransition>
           <Performance />
+        </SectionTransition>
+        <SectionTransition>
+          <AboutUs />
         </SectionTransition>
         <SectionTransition>
           <Pricing />

@@ -17,6 +17,7 @@ import {
   popPrimaryButton,
   popSecondaryButton,
 } from "./ui/pop"
+import { requestContactTopic } from "./contact-intent"
 
 export function CTA() {
   const { t } = useI18n()
@@ -86,7 +87,7 @@ export function CTA() {
                     <ArrowRight className={popArrowIcon} aria-hidden="true" />
                   </Link>
                 </Magnetic>
-                <a href="#contact" className={cn(popSecondaryButton, popButtonSizes.lg)}>
+                <a href="#contact" onClick={() => requestContactTopic("general")} className={cn(popSecondaryButton, popButtonSizes.lg)}>
                   <Mail className="size-4" aria-hidden="true" />
                   {copy.secondary}
                 </a>

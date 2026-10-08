@@ -20,6 +20,7 @@ const en = {
     openMenu: "Open menu",
     closeMenu: "Close menu",
     requestDemo: "Request a demo",
+    skipLink: "Skip to main content",
   },
   calm: {
     label: "Calm mode",
@@ -102,6 +103,11 @@ const en = {
         description:
           "Speed and accuracy are one requirement, not a trade-off — a delayed or wrong sign is a missed conversation.",
       },
+      {
+        title: "Honest about limits",
+        description:
+          "We're open about what Deafference can't do yet, and we say clearly when a qualified interpreter is the right choice.",
+      },
     ],
     teamIntro:
       "We describe our team by what each group is responsible for. Deaf and hard-of-hearing people are involved in shaping the product, not only testing it.",
@@ -128,6 +134,11 @@ const en = {
         ],
       },
     ],
+    hiring: {
+      title: "We're hiring",
+      body: "We're looking for engineers and community liaisons. Deaf and hard-of-hearing applicants are especially welcome.",
+      cta: "Get in touch",
+    },
     goals: [
       {
         title: "More sign languages and dialects",
@@ -324,6 +335,18 @@ const en = {
           "AI models focused on sign recognition, with extra care for everyday and medical vocabulary. For critical decisions, always confirm with a qualified interpreter.",
       },
     ],
+    integrations: {
+      heading: "Built to integrate",
+      description: "Planned integrations that fit the tools organisations already use.",
+      items: [
+        { title: "Health records (EHR)", text: "Bring translation into clinical workflows." },
+        { title: "Video calls", text: "Add sign and captions to remote appointments and meetings." },
+        { title: "Intercoms & front desks", text: "Help at reception desks and hospital intercoms." },
+        { title: "Custom APIs", text: "Connect Deafference to your own systems." },
+      ],
+      note: "These integrations are on our roadmap and are set up with each organisation.",
+      cta: "Plan an integration",
+    },
   },
   performance: {
     eyebrow: "Performance",
@@ -420,6 +443,15 @@ const en = {
       },
     ],
     contact: "Questions about your data? Email us at",
+    rights: {
+      title: "Your rights",
+      items: [
+        "See and update your profile information at any time.",
+        "Delete your account from your profile page.",
+        "Ask for a copy of your data by emailing us.",
+        "Clear settings saved on this device (such as calm mode and camera preferences) by clearing your browser's site data.",
+      ],
+    },
   },
   faq: {
     eyebrow: "FAQ",
@@ -455,6 +487,16 @@ const en = {
         question: "Is Deafference available in Arabic?",
         answer: "Yes. The interface is available in English and Arabic — use the language button at the top of the page to switch.",
       },
+      {
+        question: "How accurate is the translation?",
+        answer:
+          "Accuracy keeps improving, with extra care for everyday and medical vocabulary. It can still make mistakes, so for medical consent, legal matters or other critical decisions, always confirm with a qualified interpreter.",
+      },
+      {
+        question: "Does Deafference work without internet?",
+        answer:
+          "Live translation needs an internet connection. The free plan includes some basic phrases designed for offline use, and we're moving more processing onto the device so it keeps working on weak connections.",
+      },
     ],
   },
   contact: {
@@ -467,11 +509,30 @@ const en = {
     email: "Email",
     message: "Message",
     submit: "Send message",
+    organization: "Organisation (optional)",
+    topic: "Topic",
+    topics: {
+      general: "General question",
+      demo: "Book a demo",
+      sales: "Pricing & sales",
+      partnership: "Partnership",
+      support: "Support",
+    },
+    method: "Preferred way to reply",
+    methods: {
+      email: "Email",
+      video: "Video call in sign language",
+      chat: "Text chat",
+    },
+    mailTopic: "Topic",
+    mailOrganization: "Organisation",
+    mailMethod: "Preferred reply",
     errors: {
       nameRequired: "Please enter your name.",
       emailRequired: "Please enter your email address.",
       emailInvalid: "Please enter a valid email address, like name@example.com.",
       messageRequired: "Please write a message.",
+      messageShort: "Please write at least 10 characters.",
       summary: "Please fix the highlighted fields.",
     },
     statusTitle: "Your email app should open with your message.",
@@ -501,6 +562,11 @@ const en = {
     contactHeading: "Contact",
     email: "Email",
     rights: "© {year} Deafference. All rights reserved.",
+    a11yTitle: "Accessibility statement",
+    a11yBody:
+      "We aim to meet WCAG 2.2 AA. The site works with a keyboard and screen readers, supports right-to-left Arabic, respects reduced-motion settings, and never relies on sound alone.",
+    a11yContact: "Found a barrier? Tell us at",
+    backToTop: "Back to top",
   },
 }
 
@@ -526,6 +592,7 @@ const ar: LandingMessages = {
     mobileLabel: "التنقل على الجوال",
     openMenu: "فتح القائمة",
     closeMenu: "إغلاق القائمة",
+    skipLink: "انتقل إلى المحتوى الرئيسي",
     requestDemo: "اطلب عرضًا توضيحيًا",
   },
   calm: {
@@ -604,6 +671,10 @@ const ar: LandingMessages = {
         title: "عناية تقنية",
         description: "السرعة والدقة متطلب واحد لا مفاضلة بينهما — فالإشارة المتأخرة أو الخاطئة محادثة ضائعة.",
       },
+      {
+        title: "الصراحة بشأن الحدود",
+        description: "نتحدث بوضوح عمّا لا يستطيع Deafference فعله بعد، ونخبرك متى يكون المترجم المؤهّل هو الخيار الصحيح.",
+      },
     ],
     teamIntro: "نعرّف فريقنا بما تتولاه كل مجموعة. يشارك الصمّ وضعاف السمع في تشكيل المنتج، لا في اختباره فقط.",
     teamGroups: [
@@ -629,6 +700,11 @@ const ar: LandingMessages = {
         ],
       },
     ],
+    hiring: {
+      title: "نحن نوظّف",
+      body: "نبحث عن مهندسين ومنسّقين للتواصل مع المجتمع، ونرحّب بشكل خاص بالمتقدّمين الصمّ وضعاف السمع.",
+      cta: "تواصل معنا",
+    },
     goals: [
       {
         title: "المزيد من لغات الإشارة واللهجات",
@@ -820,6 +896,18 @@ const ar: LandingMessages = {
         description: "نماذج ذكاء اصطناعي تركّز على التعرّف على الإشارة، مع عناية خاصة بالمفردات اليومية والطبية. في القرارات الحرجة، تحقّق دائمًا مع مترجم مؤهل.",
       },
     ],
+    integrations: {
+      heading: "مصمَّم للتكامل",
+      description: "تكاملات مخطَّط لها لتناسب الأدوات التي تستخدمها المؤسسات بالفعل.",
+      items: [
+        { title: "السجلات الصحية الإلكترونية", text: "إدخال الترجمة في سير العمل السريري." },
+        { title: "مكالمات الفيديو", text: "إضافة الإشارة والترجمة النصية إلى المواعيد والاجتماعات عن بُعد." },
+        { title: "الاتصال الداخلي ومكاتب الاستقبال", text: "المساعدة عند مكاتب الاستقبال وأنظمة الاتصال الداخلي في المستشفيات." },
+        { title: "واجهات برمجة مخصّصة", text: "ربط Deafference بأنظمتك الخاصة." },
+      ],
+      note: "هذه التكاملات ضمن خطتنا القادمة، ويتم إعدادها مع كل مؤسسة.",
+      cta: "خطّط لتكاملك",
+    },
   },
   performance: {
     eyebrow: "الأداء",
@@ -912,6 +1000,15 @@ const ar: LandingMessages = {
       },
     ],
     contact: "لديك أسئلة عن بياناتك؟ راسلنا على",
+    rights: {
+      title: "حقوقك",
+      items: [
+        "الاطلاع على معلومات ملفك الشخصي وتحديثها في أي وقت.",
+        "حذف حسابك من صفحة ملفك الشخصي.",
+        "طلب نسخة من بياناتك عبر مراسلتنا بالبريد الإلكتروني.",
+        "مسح الإعدادات المحفوظة على هذا الجهاز (مثل الوضع الهادئ وتفضيلات الكاميرا) بمسح بيانات الموقع من متصفحك.",
+      ],
+    },
   },
   faq: {
     eyebrow: "الأسئلة الشائعة",
@@ -944,6 +1041,16 @@ const ar: LandingMessages = {
         question: "هل يتوفر Deafference باللغة العربية؟",
         answer: "نعم. الواجهة متاحة بالعربية والإنجليزية — استخدم زر اللغة أعلى الصفحة للتبديل.",
       },
+      {
+        question: "ما مدى دقة الترجمة؟",
+        answer:
+          "تتحسّن الدقة باستمرار، مع عناية إضافية بالمفردات اليومية والطبية. ومع ذلك قد تحدث أخطاء، لذا تحقّق دائمًا مع مترجم مؤهّل في حالات الموافقة الطبية أو المسائل القانونية أو القرارات المهمة الأخرى.",
+      },
+      {
+        question: "هل يعمل Deafference بدون إنترنت؟",
+        answer:
+          "تحتاج الترجمة المباشرة إلى اتصال بالإنترنت. تتضمن الخطة المجانية بعض العبارات الأساسية المصمّمة للاستخدام دون اتصال، ونعمل على نقل المزيد من المعالجة إلى الجهاز ليستمر العمل مع الاتصال الضعيف.",
+      },
     ],
   },
   contact: {
@@ -956,11 +1063,30 @@ const ar: LandingMessages = {
     email: "البريد الإلكتروني",
     message: "الرسالة",
     submit: "إرسال الرسالة",
+    organization: "المؤسسة (اختياري)",
+    topic: "الموضوع",
+    topics: {
+      general: "سؤال عام",
+      demo: "حجز عرض توضيحي",
+      sales: "الأسعار والمبيعات",
+      partnership: "شراكة",
+      support: "الدعم",
+    },
+    method: "طريقة الرد المفضّلة",
+    methods: {
+      email: "البريد الإلكتروني",
+      video: "مكالمة فيديو بلغة الإشارة",
+      chat: "محادثة نصية",
+    },
+    mailTopic: "الموضوع",
+    mailOrganization: "المؤسسة",
+    mailMethod: "طريقة الرد المفضّلة",
     errors: {
       nameRequired: "يُرجى إدخال اسمك.",
       emailRequired: "يُرجى إدخال بريدك الإلكتروني.",
       emailInvalid: "يُرجى إدخال بريد إلكتروني صالح، مثل name@example.com.",
       messageRequired: "يُرجى كتابة رسالة.",
+      messageShort: "يُرجى كتابة 10 أحرف على الأقل.",
       summary: "يُرجى تصحيح الحقول المميزة.",
     },
     statusTitle: "من المفترض أن يفتح تطبيق البريد لديك ومعه رسالتك.",
@@ -989,6 +1115,11 @@ const ar: LandingMessages = {
     contactHeading: "تواصل",
     email: "البريد الإلكتروني",
     rights: "© {year} Deafference. جميع الحقوق محفوظة.",
+    a11yTitle: "بيان إمكانية الوصول",
+    a11yBody:
+      "نسعى إلى استيفاء معيار WCAG 2.2 بمستوى AA. يعمل الموقع باستخدام لوحة المفاتيح وقارئات الشاشة، ويدعم العربية من اليمين إلى اليسار، ويحترم إعدادات تقليل الحركة، ولا يعتمد على الصوت وحده أبدًا.",
+    a11yContact: "واجهت عائقًا؟ أخبرنا على",
+    backToTop: "العودة إلى الأعلى",
   },
 }
 
