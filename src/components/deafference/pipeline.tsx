@@ -4,29 +4,35 @@ import { ArrowDown, ArrowRight, Camera, Hand, Languages, Sparkles } from "lucide
 import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/i18n/use-i18n"
 
-const PIPELINE_STEPS = [
-  { label: "Camera", description: "Capture the live stream.", icon: Camera },
-  { label: "Hand Detection", description: "Track hands and posture.", icon: Hand },
-  { label: "AI Recognition", description: "Identify the sign pattern.", icon: Sparkles },
-  { label: "Translation", description: "Render the translated message.", icon: Languages },
-] as const
+const PIPELINE_ICONS = [Camera, Hand, Sparkles, Languages] as const
 
 // Centralized switch for the mock-data disclosure badge below. Flip to
 // `false` once the pipeline is wired to a real recognition model — the
 // badge (and its tooltip) disappear entirely, no other changes needed.
 function MockModeBadge() {
+  const { t } = useI18n()
+  const tooltipId = "pipeline-mock-tooltip"
   return (
     <div className="group relative inline-flex">
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-amber-600 dark:text-amber-400">
-        <span className="relative flex size-1.5">
+      <span
+        tabIndex={0}
+        aria-describedby={tooltipId}
+        className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-amber-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-amber-400"
+      >
+        <span className="relative flex size-1.5" aria-hidden="true">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" />
           <span className="relative inline-flex size-1.5 rounded-full bg-amber-500" />
         </span>
-        Demo Pipeline Active
+        {t.app.pipeline.mockBadge}
       </span>
-      <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-64 -translate-x-1/2 rounded-lg border border-border bg-popover px-3 py-2 text-xs leading-5 text-popover-foreground opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
-        Currently showing simulated translations. Real-time model integration is pending.
+      <div
+        id={tooltipId}
+        role="tooltip"
+        className="pointer-events-none absolute start-0 top-full z-20 mt-2 w-[min(16rem,calc(100vw-4rem))] rounded-lg border border-border bg-popover px-3 py-2 text-start text-xs leading-5 text-popover-foreground opacity-0 shadow-lg transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100"
+      >
+        {t.app.pipeline.mockTooltip}
       </div>
     </div>
   )
@@ -39,16 +45,18 @@ export function Pipeline({
   currentStep?: number
   isMockMode?: boolean
 }) {
+  const { t } = useI18n()
+  const steps = t.app.pipeline.steps
   return (
     <Card className="p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2.5">
           <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-            Pipeline
+            {t.app.pipeline.eyebrow}
           </p>
           {isMockMode && <MockModeBadge />}
         </div>
-        <span className="text-xs font-medium text-muted-foreground">Listening workflow</span>
+        <span className="text-xs font-medium text-muted-foreground">{t.app.pipeline.workflow}</span>
       </div>
       <motion.ol
         initial={{ opacity: 0, y: 16 }}
@@ -56,12 +64,12 @@ export function Pipeline({
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="mt-5 grid gap-3 sm:grid-cols-4"
       >
-        {PIPELINE_STEPS.map((step, index) => {
-          const Icon = step.icon
+        {steps.map((step, index) => {
+          const Icon = PIPELINE_ICONS[index]
           const done = currentStep > index
           const active = currentStep === index
           return (
-            <li key={step.label} className="relative">
+            <li key={index} className="relative" aria-current={active ? "step" : undefined}>
               <div
                 className={cn(
                   "flex h-full flex-col items-center justify-center rounded-2xl border p-4 text-center transition-shadow",
@@ -77,7 +85,7 @@ export function Pipeline({
                     active && !done && "state-active-pulse",
                   )}
                 >
-                  <Icon className="size-5" />
+                  <Icon className="size-5" aria-hidden="true" />
                 </div>
                 <p
                   className={cn(
@@ -87,14 +95,15 @@ export function Pipeline({
                 >
                   {step.label}
                 </p>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  {step.description}
-                </p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">{step.description}</p>
               </div>
-              {index < PIPELINE_STEPS.length - 1 ? (
+              {index < steps.length - 1 ? (
                 <>
-                  <ArrowRight className="absolute -right-2 top-1/2 hidden size-4 -translate-y-1/2 text-muted-foreground sm:block" />
-                  <ArrowDown className="mx-auto mt-2 size-4 text-muted-foreground sm:hidden" />
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="absolute -end-2 top-1/2 hidden size-4 -translate-y-1/2 text-muted-foreground rtl:-scale-x-100 sm:block"
+                  />
+                  <ArrowDown aria-hidden="true" className="mx-auto mt-2 size-4 text-muted-foreground sm:hidden" />
                 </>
               ) : null}
             </li>

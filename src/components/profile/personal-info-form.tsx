@@ -1,20 +1,16 @@
 'use client'
 
 import { useId, useState, type SubmitEvent } from 'react'
+import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { FieldError } from '@/components/shared/field-error'
 import { EMAIL_PATTERN } from '@/lib/validation'
+import { useI18n } from '@/i18n/use-i18n'
+import { ApiError } from './api-error'
 
-const SIGN_LANGUAGE_OPTIONS = [
-  { value: '', label: 'No preference' },
-  { value: 'asl', label: 'American Sign Language (ASL)' },
-  { value: 'bsl', label: 'British Sign Language (BSL)' },
-  { value: 'lsf', label: 'Langue des signes française (LSF)' },
-  { value: 'dgs', label: 'Deutsche Gebärdensprache (DGS)' },
-  { value: 'other', label: 'Other' },
-] as const
+const SIGN_LANGUAGE_VALUES = ['', 'asl', 'bsl', 'lsf', 'dgs', 'other'] as const
 
 export interface PersonalInfoValues {
   fullName: string
@@ -24,7 +20,8 @@ export interface PersonalInfoValues {
 
 export interface PersonalInfoFormProps {
   defaultValues?: Partial<PersonalInfoValues>
-  onSave?: (values: PersonalInfoValues) => void | Promise<void>
+  /** Receives only the changed fields. May resolve to the saved account; throws `ApiError` on failure. */
+  onSave?: (changes: Partial<PersonalInfoValues>) => Promise<unknown>
 }
 
 interface PersonalInfoErrors {
@@ -32,41 +29,110 @@ interface PersonalInfoErrors {
   email?: string
 }
 
-type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error'
+type SubmitStatus = 'idle' | 'submitting' | 'success'
+
+function normalize(values: PersonalInfoValues): PersonalInfoValues {
+  return { fullName: values.fullName.trim(), email: values.email.trim(), signLanguage: values.signLanguage }
+}
+
+function diff(current: PersonalInfoValues, saved: PersonalInfoValues): Partial<PersonalInfoValues> {
+  const a = normalize(current)
+  const b = normalize(saved)
+  const changes: Partial<PersonalInfoValues> = {}
+  if (a.fullName !== b.fullName) changes.fullName = a.fullName
+  if (a.email.toLowerCase() !== b.email.toLowerCase()) changes.email = a.email
+  if (a.signLanguage !== b.signLanguage) changes.signLanguage = a.signLanguage
+  return changes
+}
 
 export function PersonalInfoForm({ defaultValues, onSave }: PersonalInfoFormProps) {
+  const { t } = useI18n()
+  const m = t.profile.personal
   const idPrefix = useId()
-  const [values, setValues] = useState<PersonalInfoValues>({
+  const initial: PersonalInfoValues = {
     fullName: defaultValues?.fullName ?? '',
     email: defaultValues?.email ?? '',
     signLanguage: defaultValues?.signLanguage ?? '',
-  })
+  }
+  const [saved, setSaved] = useState<PersonalInfoValues>(initial)
+  const [values, setValues] = useState<PersonalInfoValues>(initial)
   const [errors, setErrors] = useState<PersonalInfoErrors>({})
+  const [formError, setFormError] = useState<string>()
   const [status, setStatus] = useState<SubmitStatus>('idle')
+
+  const changes = diff(values, saved)
+  const isDirty = Object.keys(changes).length > 0
+  const submitting = status === 'submitting'
+
+  // Keep an unknown stored value selectable instead of silently showing the first option.
+  const signLanguageValues: string[] = SIGN_LANGUAGE_VALUES.includes(
+    values.signLanguage as (typeof SIGN_LANGUAGE_VALUES)[number],
+  )
+    ? [...SIGN_LANGUAGE_VALUES]
+    : [...SIGN_LANGUAGE_VALUES, values.signLanguage]
+
+  function signLanguageLabel(value: string) {
+    if (value === '') return t.profile.signLanguages.none
+    const labels = t.profile.signLanguages as Record<string, string>
+    return labels[value] ?? value
+  }
+
+  function setField<K extends keyof PersonalInfoValues>(key: K, value: PersonalInfoValues[K]) {
+    setValues((v) => ({ ...v, [key]: value }))
+    if (status === 'success') setStatus('idle')
+    setFormError(undefined)
+    if (key === 'fullName' || key === 'email') setErrors((e) => ({ ...e, [key]: undefined }))
+  }
 
   function validate(current: PersonalInfoValues): PersonalInfoErrors {
     const next: PersonalInfoErrors = {}
-    if (!current.fullName.trim()) next.fullName = 'Enter your full name.'
+    if (!current.fullName.trim()) next.fullName = m.nameRequired
     if (!current.email.trim()) {
-      next.email = 'Enter your email address.'
-    } else if (!EMAIL_PATTERN.test(current.email)) {
-      next.email = 'Enter a valid email address.'
+      next.email = m.emailRequired
+    } else if (!EMAIL_PATTERN.test(current.email.trim())) {
+      next.email = m.emailInvalid
     }
     return next
   }
 
+  function applyServerError(error: unknown) {
+    if (error instanceof ApiError) {
+      if (error.status === 409) return setErrors({ email: m.emailInUse })
+      if (error.status === 401) return setFormError(m.sessionExpired)
+      if (error.status === 400) {
+        // Known server validation messages map onto translated field errors.
+        if (error.message === 'Enter your full name.') return setErrors({ fullName: m.nameRequired })
+        if (error.message === 'Enter a valid email address.') return setErrors({ email: m.emailInvalid })
+        return setFormError(error.message || t.common.errors.generic)
+      }
+      if (error.status === 0) return setFormError(t.common.errors.network)
+    }
+    setFormError(t.common.errors.generic)
+  }
+
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
+    setFormError(undefined)
     const nextErrors = validate(values)
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
+    if (!isDirty) return
 
     setStatus('submitting')
     try {
-      await onSave?.(values)
+      const result = (await onSave?.(changes)) as Partial<{ name: string; email: string; signLanguage: string }> | undefined
+      const next = normalize(values)
+      const savedValues: PersonalInfoValues = {
+        fullName: result?.name ?? next.fullName,
+        email: result?.email ?? next.email,
+        signLanguage: result?.signLanguage ?? next.signLanguage,
+      }
+      setSaved(savedValues)
+      setValues(savedValues)
       setStatus('success')
-    } catch {
-      setStatus('error')
+    } catch (error) {
+      setStatus('idle')
+      applyServerError(error)
     }
   }
 
@@ -74,16 +140,16 @@ export function PersonalInfoForm({ defaultValues, onSave }: PersonalInfoFormProp
     <Card>
       <section aria-labelledby={`${idPrefix}-heading`} className="flex flex-col gap-4">
         <h2 id={`${idPrefix}-heading`} className="text-lg font-semibold text-foreground">
-          Personal Information
+          {m.heading}
         </h2>
 
-        <form onSubmit={handleSubmit}>
-          <fieldset className="flex flex-col gap-4" disabled={status === 'submitting'}>
-            <legend className="sr-only">Edit personal information</legend>
+        <form onSubmit={handleSubmit} noValidate>
+          <fieldset className="flex flex-col gap-4" disabled={submitting} aria-busy={submitting}>
+            <legend className="sr-only">{m.legend}</legend>
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor={`${idPrefix}-name`} className="text-sm font-medium">
-                Full name
+                {m.fullName}
               </label>
               <Input
                 id={`${idPrefix}-name`}
@@ -92,7 +158,7 @@ export function PersonalInfoForm({ defaultValues, onSave }: PersonalInfoFormProp
                 autoComplete="name"
                 required
                 value={values.fullName}
-                onChange={(event) => setValues((v) => ({ ...v, fullName: event.target.value }))}
+                onChange={(event) => setField('fullName', event.target.value)}
                 aria-invalid={Boolean(errors.fullName) || undefined}
                 aria-describedby={errors.fullName ? `${idPrefix}-name-error` : undefined}
               />
@@ -101,50 +167,62 @@ export function PersonalInfoForm({ defaultValues, onSave }: PersonalInfoFormProp
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor={`${idPrefix}-email`} className="text-sm font-medium">
-                Email address
+                {m.email}
               </label>
               <Input
                 id={`${idPrefix}-email`}
                 name="email"
                 type="email"
+                dir="ltr"
                 autoComplete="email"
                 required
                 value={values.email}
-                onChange={(event) => setValues((v) => ({ ...v, email: event.target.value }))}
+                onChange={(event) => setField('email', event.target.value)}
                 aria-invalid={Boolean(errors.email) || undefined}
                 aria-describedby={errors.email ? `${idPrefix}-email-error` : undefined}
+                className="text-start rtl:text-end"
               />
               <FieldError id={`${idPrefix}-email-error`} message={errors.email} />
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor={`${idPrefix}-sign-language`} className="text-sm font-medium">
-                Preferred sign language
+                {m.signLanguage}
               </label>
               <select
                 id={`${idPrefix}-sign-language`}
                 name="signLanguage"
                 value={values.signLanguage}
-                onChange={(event) => setValues((v) => ({ ...v, signLanguage: event.target.value }))}
+                onChange={(event) => setField('signLanguage', event.target.value)}
                 className="flex h-11 w-full rounded-xl border border-input bg-background px-4 text-sm text-foreground shadow-sm focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:outline-none"
               >
-                {SIGN_LANGUAGE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
+                {signLanguageValues.map((value) => (
+                  <option key={value} value={value}>
+                    {signLanguageLabel(value)}
                   </option>
                 ))}
               </select>
             </div>
 
-            <Button type="submit" className="mt-2 w-fit">
-              {status === 'submitting' ? 'Saving…' : 'Save Changes'}
-            </Button>
+            {formError ? (
+              <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {formError}
+              </p>
+            ) : null}
 
-            <p aria-live="polite" className="sr-only">
-              {status === 'submitting' && 'Saving changes, please wait.'}
-              {status === 'success' && 'Changes saved successfully.'}
-              {status === 'error' && 'Could not save changes. Please try again.'}
-            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <Button type="submit" className="h-10 px-4" disabled={!isDirty || submitting}>
+                {submitting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : null}
+                {submitting ? m.saving : m.save}
+              </Button>
+              <p
+                role="status"
+                aria-live="polite"
+                className={status === 'success' ? 'text-sm font-medium text-emerald-700 dark:text-emerald-400' : 'text-sm text-muted-foreground'}
+              >
+                {status === 'success' ? m.saved : !isDirty && !submitting ? m.noChanges : ''}
+              </p>
+            </div>
           </fieldset>
         </form>
       </section>

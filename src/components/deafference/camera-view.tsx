@@ -2,13 +2,28 @@
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { motion } from "framer-motion"
-import { AlertTriangle, Bug, Loader2, RotateCcw, ShieldAlert, VideoOff } from "lucide-react"
+import { AlertTriangle, Bug, FlipHorizontal2, Hand, Loader2, RotateCcw, ShieldAlert, Video, VideoOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/i18n/use-i18n"
 import { loadPersistedCameraPermission, updateCameraPermission } from "@/lib/camera-permission-service"
+import { useCameraPreferences } from "./camera-preferences"
 
-type CameraStatus = "loading" | "streaming" | "denied" | "unsupported" | "error" | "no-devices" | "simulation"
+export type CameraStatus = "loading" | "streaming" | "denied" | "unsupported" | "error" | "no-devices" | "simulation"
+
+/** One hand's landmarks in normalized video coordinates (0–1). Only a real detector should supply these. */
+export type HandLandmarks = { x: number; y: number }[]
+
+export interface CameraViewProps {
+  /** Fires whenever the camera lifecycle state changes (drives the status card). */
+  onStateChange?: (status: CameraStatus) => void
+  /**
+   * Landmarks from a hand-tracking model. No detector is wired up yet, so this is
+   * left undefined and the overlay honestly reports tracking as unavailable.
+   */
+  landmarks?: HandLandmarks[] | null
+}
 
 export interface CameraViewHandle {
   /** Re-requests camera access, same as clicking the in-card "Try Again" button. */
@@ -23,7 +38,16 @@ const LOG_PREFIX = "[CameraView]"
 // access..." forever.
 const REQUEST_TIMEOUT_MS = 6000
 
-export const CameraView = forwardRef<CameraViewHandle>(function CameraView(_props, ref) {
+const IS_DEV = process.env.NODE_ENV !== "production"
+
+export const CameraView = forwardRef<CameraViewHandle, CameraViewProps>(function CameraView(
+  { onStateChange, landmarks },
+  ref,
+) {
+  const { t } = useI18n()
+  const copy = t.app.camera
+  const [prefs] = useCameraPreferences()
+  const preferredDeviceId = prefs.preferredDeviceId
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -37,7 +61,15 @@ export const CameraView = forwardRef<CameraViewHandle>(function CameraView(_prop
   const [retryToken, setRetryToken] = useState(0)
   const [resolution, setResolution] = useState<{ width: number; height: number } | null>(null)
   const [errorInfo, setErrorInfo] = useState<{ name: string; message: string } | null>(null)
-  const [debugOpen, setDebugOpen] = useState(process.env.NODE_ENV !== "production")
+  const [debugOpen, setDebugOpen] = useState(false)
+  const onStateChangeRef = useRef(onStateChange)
+  useEffect(() => {
+    onStateChangeRef.current = onStateChange
+  }, [onStateChange])
+
+  useEffect(() => {
+    onStateChangeRef.current?.(status)
+  }, [status])
 
   useEffect(() => {
     let cancelled = false
@@ -106,7 +138,11 @@ export const CameraView = forwardRef<CameraViewHandle>(function CameraView(_prop
       if (settledRef.current) return // watchdog already fired while Phase 1 was hanging
 
       // ---- Phase 2: call getUserMedia ----
-      const constraints: MediaStreamConstraints = { video: { facingMode: "user" }, audio: false }
+      // `ideal` (not `exact`) so a stale/unplugged preferred device falls back to the default camera instead of failing.
+      const constraints: MediaStreamConstraints = {
+        video: preferredDeviceId ? { deviceId: { ideal: preferredDeviceId } } : { facingMode: "user" },
+        audio: false,
+      }
       console.log(`${LOG_PREFIX} Phase 2: calling getUserMedia() with constraints:`, constraints)
 
       try {
@@ -199,7 +235,7 @@ export const CameraView = forwardRef<CameraViewHandle>(function CameraView(_prop
         videoRef.current.srcObject = null
       }
     }
-  }, [retryToken])
+  }, [retryToken, preferredDeviceId])
 
   const handleRetry = useCallback(() => {
     console.log(`${LOG_PREFIX} Retry requested by user.`)
@@ -213,42 +249,39 @@ export const CameraView = forwardRef<CameraViewHandle>(function CameraView(_prop
     { icon: React.ReactNode; title: string; desc: string; retry: boolean }
   > = {
     loading: {
-      icon: <Loader2 className="size-9 animate-spin text-muted-foreground" />,
-      title: "Requesting camera access…",
-      desc: "Allow camera permissions when prompted by your browser.",
+      icon: <Loader2 className="size-9 animate-spin text-muted-foreground" aria-hidden="true" />,
+      ...copy.states.loading,
       retry: false,
     },
     denied: {
-      icon: <ShieldAlert className="size-9 text-muted-foreground" />,
-      title: "Camera access denied",
-      desc: "Enable camera permissions for this site in your browser settings, then try again.",
+      icon: <ShieldAlert className="size-9 text-destructive" aria-hidden="true" />,
+      ...copy.states.denied,
       retry: true,
     },
     unsupported: {
-      icon: <VideoOff className="size-9 text-muted-foreground" />,
-      title: "Camera not supported",
-      desc: "Your browser doesn't support live camera access. Try a recent version of Chrome, Edge, or Firefox.",
+      icon: <VideoOff className="size-9 text-muted-foreground" aria-hidden="true" />,
+      ...copy.states.unsupported,
       retry: false,
     },
     error: {
-      icon: <AlertTriangle className="size-9 text-muted-foreground" />,
-      title: "Unable to access camera",
-      desc: "Something went wrong while starting the camera. Please try again.",
+      icon: <AlertTriangle className="size-9 text-destructive" aria-hidden="true" />,
+      ...copy.states.error,
       retry: true,
     },
     "no-devices": {
-      icon: <VideoOff className="size-9 text-muted-foreground" />,
-      title: "No camera detected",
-      desc: "Connect a webcam or check your device's camera privacy settings, then retry.",
+      icon: <VideoOff className="size-9 text-muted-foreground" aria-hidden="true" />,
+      ...copy.states.noDevices,
       retry: true,
     },
     simulation: {
-      icon: <AlertTriangle className="size-9 text-muted-foreground" />,
-      title: "Camera Simulation Mode",
-      desc: "We couldn't get a live feed in time, so we're running in simulation mode. You can still retry camera access.",
+      icon: <AlertTriangle className="size-9 text-amber-600" aria-hidden="true" />,
+      ...copy.states.simulation,
       retry: true,
     },
   }
+
+  const streaming = status === "streaming"
+  const hasLandmarks = !!landmarks && landmarks.length > 0
 
   return (
     <motion.div
@@ -257,82 +290,173 @@ export const CameraView = forwardRef<CameraViewHandle>(function CameraView(_prop
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
       <Card className="overflow-hidden p-0">
-        <div className="border-b border-border px-6 py-5">
-          <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-            Live Camera
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Point your camera toward the signer.
-          </p>
+        <div className="border-b border-border px-6 py-5 text-start">
+          <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">{copy.eyebrow}</p>
+          <p className="mt-2 text-sm text-muted-foreground">{copy.hint}</p>
         </div>
         <div className="p-4 sm:p-6">
           <div
             className={cn(
-              "relative aspect-video overflow-hidden rounded-3xl border-2",
-              status === "streaming"
-                ? "state-active-ring border-indicator-indigo/40 bg-black"
-                : "border-dashed border-border bg-muted/35",
+              "relative overflow-hidden rounded-3xl border-2",
+              streaming
+                ? "state-active-ring aspect-video border-indicator-indigo/40 bg-muted"
+                : "min-h-[18rem] border-dashed border-border bg-muted/40 sm:aspect-video sm:min-h-0",
             )}
           >
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className={cn(
-                "absolute inset-0 size-full object-cover",
-                status === "streaming" ? "opacity-100" : "pointer-events-none opacity-0",
-              )}
-            />
+            {/* Video + landmark points share one (optionally mirrored) layer so points line up with the image. */}
+            <div className={cn("absolute inset-0", prefs.mirrorVideo && "-scale-x-100")}>
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={cn(
+                  "absolute inset-0 size-full object-cover",
+                  streaming ? "opacity-100" : "pointer-events-none opacity-0",
+                )}
+              />
+              {streaming && prefs.showLandmarks && hasLandmarks ? <LandmarkPoints hands={landmarks!} /> : null}
+            </div>
 
-            {status !== "streaming" && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
+            {streaming && prefs.showFramingGuide ? <FramingGuide /> : null}
+
+            {streaming ? (
+              <>
+                <div className="absolute start-3 top-3 z-10 flex flex-wrap items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-background/90 px-2.5 py-1 text-xs font-semibold text-foreground shadow-sm">
+                    <Video className="size-3.5 text-emerald-600" aria-hidden="true" />
+                    {copy.on}
+                  </span>
+                  {prefs.mirrorVideo ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-background/90 px-2.5 py-1 text-xs font-medium text-muted-foreground shadow-sm">
+                      <FlipHorizontal2 className="size-3.5" aria-hidden="true" />
+                      {copy.mirrored}
+                    </span>
+                  ) : null}
+                </div>
+
+                <div className="absolute inset-x-3 bottom-3 z-10 flex flex-col items-center gap-1.5 text-center">
+                  {prefs.showLandmarks && !hasLandmarks ? (
+                    <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-amber-50/95 px-3 py-1 text-xs font-medium text-amber-800 shadow-sm ring-1 ring-amber-300/60">
+                      <Hand className="size-3.5 shrink-0" aria-hidden="true" />
+                      {copy.landmarksUnavailable}
+                    </span>
+                  ) : null}
+                  {prefs.showFramingGuide ? (
+                    <span className="inline-flex max-w-full rounded-full bg-background/90 px-3 py-1 text-xs font-medium text-foreground shadow-sm">
+                      {copy.framingHint}
+                    </span>
+                  ) : null}
+                </div>
+              </>
+            ) : (
+              <div className="relative flex size-full min-h-[inherit] flex-col items-center justify-center gap-4 px-6 py-8 text-center sm:absolute sm:inset-0">
                 <div className="flex size-20 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border">
                   {statusCopy[status].icon}
                 </div>
-                <div>
-                  <p className="text-base font-semibold text-foreground sm:text-lg">
-                    {statusCopy[status].title}
-                  </p>
+                <div className="max-w-md">
+                  <p className="text-base font-semibold text-foreground sm:text-lg">{statusCopy[status].title}</p>
                   <p className="mt-2 text-sm text-muted-foreground">{statusCopy[status].desc}</p>
-                  {errorInfo && (status === "denied" || status === "error" || status === "no-devices") && (
-                    <p className="mt-2 font-mono text-xs text-destructive/80">{errorInfo.name}</p>
+                  {status === "denied" ? (
+                    <ol className="mt-3 list-decimal space-y-1 ps-5 text-start text-sm text-foreground">
+                      {copy.deniedSteps.map((step) => (
+                        <li key={step}>{step}</li>
+                      ))}
+                    </ol>
+                  ) : null}
+                  {IS_DEV && errorInfo && (status === "denied" || status === "error" || status === "no-devices") && (
+                    <p className="mt-2 font-mono text-xs text-destructive/80" dir="ltr">
+                      {errorInfo.name}
+                    </p>
                   )}
                 </div>
                 {statusCopy[status].retry && (
-                  <Button variant="outline" onClick={handleRetry}>
-                    <RotateCcw className="size-4" />
-                    Try Again
+                  <Button variant="outline" className="h-10 rounded-full px-4" onClick={handleRetry}>
+                    <RotateCcw className="size-4" aria-hidden="true" />
+                    {copy.retry}
                   </Button>
                 )}
               </div>
             )}
 
-            {/* Dev debug toggle — corner button so QA can flip the overlay on/off even in prod builds. */}
-            <button
-              type="button"
-              onClick={() => setDebugOpen((v) => !v)}
-              aria-label="Toggle camera debug overlay"
-              className="absolute right-2 top-2 z-10 flex size-6 items-center justify-center rounded-full bg-black/60 text-white/80 transition-colors hover:text-white"
-            >
-              <Bug className="size-3.5" />
-            </button>
-
-            {debugOpen && (
-              <div className="absolute left-2 top-2 z-10 max-w-[220px] rounded-lg bg-black/75 px-2.5 py-2 font-mono text-[10px] leading-relaxed text-emerald-300 shadow-lg backdrop-blur-sm">
-                <div>
-                  state: <span className="text-white">{status}</span>
-                </div>
-                <div>
-                  resolution:{" "}
-                  <span className="text-white">{resolution ? `${resolution.width}x${resolution.height}` : "—"}</span>
-                </div>
-                {errorInfo && <div className="text-red-400">error: {errorInfo.name}</div>}
-              </div>
-            )}
+            {/* Dev-only debug HUD (never rendered in production builds). */}
+            {IS_DEV ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setDebugOpen((v) => !v)}
+                  aria-label={copy.debugToggle}
+                  aria-pressed={debugOpen}
+                  className="absolute end-2 top-2 z-20 flex size-10 items-center justify-center rounded-full bg-background/80 text-muted-foreground shadow-sm ring-1 ring-border transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <Bug className="size-4" aria-hidden="true" />
+                </button>
+                {debugOpen && (
+                  <div
+                    dir="ltr"
+                    className="absolute end-2 top-14 z-20 max-w-[220px] rounded-lg bg-background/95 px-2.5 py-2 text-start font-mono text-[11px] leading-relaxed text-foreground shadow-lg ring-1 ring-border"
+                  >
+                    <div>state: {status}</div>
+                    <div>resolution: {resolution ? `${resolution.width}x${resolution.height}` : "—"}</div>
+                    <div>device: {preferredDeviceId ? preferredDeviceId.slice(0, 8) : "default"}</div>
+                    <div>landmarks: {hasLandmarks ? landmarks!.length : "none (no detector)"}</div>
+                    {errorInfo && <div className="text-destructive">error: {errorInfo.name}</div>}
+                  </div>
+                )}
+              </>
+            ) : null}
           </div>
         </div>
       </Card>
     </motion.div>
   )
 })
+
+/** Decorative head/shoulders + hands-zone outline. Symmetric, so it needs no mirroring. */
+function FramingGuide() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 160 90"
+      preserveAspectRatio="xMidYMid meet"
+      className="pointer-events-none absolute inset-0 size-full"
+      fill="none"
+    >
+      <rect
+        x="28"
+        y="40"
+        width="104"
+        height="44"
+        rx="8"
+        stroke="white"
+        strokeOpacity="0.7"
+        strokeWidth="1.5"
+        strokeDasharray="4 3"
+        vectorEffect="non-scaling-stroke"
+        fill="white"
+        fillOpacity="0.06"
+      />
+      <ellipse cx="80" cy="26" rx="11" ry="14" stroke="white" strokeOpacity="0.8" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+      <path
+        d="M48 90 C50 62 62 48 80 46 C98 48 110 62 112 90"
+        stroke="white"
+        strokeOpacity="0.8"
+        strokeWidth="2"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
+  )
+}
+
+/** Renders landmarks supplied by a real detector. Never fed synthetic data. */
+function LandmarkPoints({ hands }: { hands: HandLandmarks[] }) {
+  return (
+    <svg aria-hidden="true" className="pointer-events-none absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      {hands.flatMap((hand, h) =>
+        hand.map((point, i) => (
+          <circle key={`${h}-${i}`} cx={point.x * 100} cy={point.y * 100} r="0.8" className="fill-indicator-indigo" />
+        )),
+      )}
+    </svg>
+  )
+}

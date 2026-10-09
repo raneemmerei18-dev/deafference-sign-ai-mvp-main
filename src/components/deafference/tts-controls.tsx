@@ -1,13 +1,15 @@
 "use client"
 
-import { useState, useSyncExternalStore } from "react"
+import { useId, useState } from "react"
 import { motion } from "framer-motion"
-import { Square, Volume2 } from "lucide-react"
+import { AlertCircle, Square, Volume2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { getServerSnapshot, getSnapshot, setVoice, speak, stop, subscribe } from "@/lib/speech"
+import { useI18n } from "@/i18n/use-i18n"
+import { useSpeechSynthesis } from "./use-speech-synthesis"
 
 export interface TTSControlsProps {
   /** Lifted up to `DeafferenceApp` and shared with `TranslationPanel` — manual entry
@@ -18,27 +20,14 @@ export interface TTSControlsProps {
 }
 
 export function TTSControls({ translationText, onTranslationTextChange }: TTSControlsProps) {
-  const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
-  const [notice, setNotice] = useState<string | null>(null)
+  const { t, fmt } = useI18n()
+  const s = t.studio.tts
+  const errors = t.studio.speech.errors
+  const speech = useSpeechSynthesis()
+  const [voiceURI, setVoiceURI] = useState("")
+  const ids = useId()
 
   const hasText = translationText.trim().length > 0
-  const isBusy = state.speaking || state.queue.length > 0
-
-  function handleSpeak() {
-    const result = speak(translationText)
-    setNotice(
-      result.ok
-        ? null
-        : result.reason === "unsupported"
-          ? "Speech synthesis isn't supported in this browser."
-          : "There's no translation text to speak yet.",
-    )
-  }
-
-  function handleStop() {
-    stop()
-    setNotice(null)
-  }
 
   return (
     <motion.div
@@ -48,122 +37,107 @@ export function TTSControls({ translationText, onTranslationTextChange }: TTSCon
     >
       <Card className="p-5 sm:p-6">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-            Listen
-          </p>
+          <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">{s.eyebrow}</p>
           <span className="inline-flex items-center gap-2 rounded-full bg-brand-orange/12 px-3 py-1 text-xs font-semibold text-brand-red">
-            <Volume2 className="size-3.5" />
-            Text-to-Speech
+            <Volume2 className="size-3.5" aria-hidden="true" />
+            {s.badge}
           </span>
         </div>
 
-        {!state.supported ? (
-          <p className="mt-4 rounded-2xl border border-dashed border-border bg-background/60 px-4 py-4 text-sm text-muted-foreground">
-            Speech synthesis isn&apos;t supported in this browser. Try a recent version of
-            Chrome, Edge, or Safari.
+        {speech.supported === false ? (
+          <p role="alert" className="mt-4 rounded-2xl border border-dashed border-border bg-background/60 px-4 py-4 text-sm text-muted-foreground">
+            {t.studio.speech.unsupported}
           </p>
         ) : (
           <>
             <div className="mt-4">
               <label
-                htmlFor="tts-text"
+                htmlFor={`${ids}-text`}
                 className="mb-1.5 block text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase"
               >
-                Translation
+                {s.label}
               </label>
               <Textarea
-                id="tts-text"
+                id={`${ids}-text`}
+                dir="auto"
                 value={translationText}
                 onChange={(e) => onTranslationTextChange(e.target.value)}
-                placeholder="Type text to speak..."
+                placeholder={s.placeholder}
                 rows={3}
               />
             </div>
 
             <div className="mt-4">
               <label
-                htmlFor="tts-voice"
+                htmlFor={`${ids}-voice`}
                 className="mb-1.5 block text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase"
               >
-                Voice
+                {s.voice}
               </label>
-              {state.voices.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No voices available yet.</p>
+              {speech.voicesLoading ? (
+                <p className="text-sm text-muted-foreground" aria-live="polite">{t.studio.speech.loadingVoices}</p>
+              ) : speech.voices.length === 0 ? (
+                <p className="text-sm text-muted-foreground">{s.noVoices}</p>
               ) : (
-                <div className="relative inline-flex w-full items-center">
-                  <select
-                    id="tts-voice"
-                    aria-label="Select voice"
-                    value={state.voiceURI ?? ""}
-                    onChange={(e) => setVoice(e.target.value || null)}
-                    className="h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-background px-3 pr-8 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                  >
-                    {state.voices.map((voice) => (
-                      <option key={voice.voiceURI} value={voice.voiceURI}>
-                        {voice.name} ({voice.lang})
-                      </option>
-                    ))}
-                  </select>
-                  <svg
-                    className="pointer-events-none absolute right-3 size-3.5 text-muted-foreground"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M3 4.5 6 7.5 9 4.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
+                <Select id={`${ids}-voice`} value={voiceURI} onChange={(e) => setVoiceURI(e.target.value)} className="h-10">
+                  <option value="">{t.studio.speech.defaultVoice}</option>
+                  {speech.voices.map((voice) => (
+                    <option key={voice.voiceURI} value={voice.voiceURI}>
+                      {voice.name} ({voice.lang})
+                    </option>
+                  ))}
+                </Select>
               )}
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <Button className="h-11 rounded-full" onClick={handleSpeak} disabled={!hasText}>
-                <Volume2 className="size-4" />
-                Speak Translation
-              </Button>
               <Button
-                variant="outline"
                 className="h-11 rounded-full"
-                onClick={handleStop}
-                disabled={!isBusy}
+                onClick={() => speech.speak(translationText, { voiceURI: voiceURI || null, queue: true })}
+                disabled={!hasText || speech.supported === null}
               >
-                <Square className="size-4" />
-                Stop
+                <Volume2 className="size-4 rtl:-scale-x-100" aria-hidden="true" />
+                {s.speak}
+              </Button>
+              <Button variant="outline" className="h-11 rounded-full" onClick={speech.stop} disabled={!speech.speaking}>
+                <Square className="size-4" aria-hidden="true" />
+                {s.stop}
               </Button>
             </div>
 
-            {notice && <p className="mt-3 text-xs text-muted-foreground">{notice}</p>}
+            {speech.error ? (
+              <p role="alert" className="mt-3 flex items-start gap-2 text-sm text-destructive">
+                <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                {errors[speech.error]}
+              </p>
+            ) : null}
 
-            {(state.current || state.queue.length > 0) && (
-              <div className="mt-4 space-y-2">
-                {state.current && (
-                  <p className="text-xs text-muted-foreground">
-                    <span className="font-semibold text-foreground">Speaking now:</span>{" "}
-                    {state.current.text}
-                  </p>
-                )}
-                {state.queue.length > 0 && (
-                  <div>
-                    <p className="text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">
-                      Queued ({state.queue.length})
+            <div aria-live="polite">
+              {speech.speaking ? (
+                <div className="mt-4 space-y-2">
+                  {speech.current && (
+                    <p className="text-xs text-muted-foreground">
+                      <span className="font-semibold text-foreground">{s.speakingNow}</span>{" "}
+                      <span dir="auto">{speech.current.text}</span>
                     </p>
-                    <div className="mt-1.5 flex flex-wrap gap-1.5">
-                      {state.queue.map((item) => (
-                        <Badge key={item.id} className="max-w-[12rem] truncate">
-                          {item.text}
-                        </Badge>
-                      ))}
+                  )}
+                  {speech.queue.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+                        {fmt(s.queued, { count: speech.queue.length })}
+                      </p>
+                      <div className="mt-1.5 flex flex-wrap gap-1.5">
+                        {speech.queue.map((item) => (
+                          <Badge key={item.id} className="max-w-[12rem] truncate" dir="auto">
+                            {item.text}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              ) : null}
+            </div>
           </>
         )}
       </Card>

@@ -1,11 +1,14 @@
 'use client'
 
 import { useId, useMemo, useState, type SubmitEvent } from 'react'
+import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FieldError } from '@/components/shared/field-error'
 import { PasswordField } from '@/components/shared/password-field'
 import { MIN_PASSWORD_LENGTH, getPasswordStrength } from '@/lib/validation'
+import { useI18n } from '@/i18n/use-i18n'
+import { ApiError } from './api-error'
 
 export interface PasswordChangeValues {
   currentPassword: string
@@ -14,7 +17,8 @@ export interface PasswordChangeValues {
 }
 
 export interface SecurityFormProps {
-  onUpdatePassword?: (values: PasswordChangeValues) => void | Promise<void>
+  /** Throws `ApiError` on failure. */
+  onUpdatePassword?: (values: PasswordChangeValues) => Promise<void>
 }
 
 interface PasswordChangeErrors {
@@ -23,7 +27,7 @@ interface PasswordChangeErrors {
   confirmNewPassword?: string
 }
 
-type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error'
+type SubmitStatus = 'idle' | 'submitting' | 'success'
 
 const initialValues: PasswordChangeValues = {
   currentPassword: '',
@@ -32,31 +36,61 @@ const initialValues: PasswordChangeValues = {
 }
 
 export function SecurityForm({ onUpdatePassword }: SecurityFormProps) {
+  const { t, fmt } = useI18n()
+  const m = t.profile.security
   const idPrefix = useId()
   const [values, setValues] = useState<PasswordChangeValues>(initialValues)
   const [errors, setErrors] = useState<PasswordChangeErrors>({})
+  const [formError, setFormError] = useState<string>()
   const [status, setStatus] = useState<SubmitStatus>('idle')
 
   const strength = useMemo(() => getPasswordStrength(values.newPassword), [values.newPassword])
+  const submitting = status === 'submitting'
+  const minVars = { min: MIN_PASSWORD_LENGTH }
+
+  function setField(key: keyof PasswordChangeValues, value: string) {
+    setValues((v) => ({ ...v, [key]: value }))
+    setErrors((e) => ({ ...e, [key]: undefined }))
+    setFormError(undefined)
+    if (status === 'success') setStatus('idle')
+  }
 
   function validate(current: PasswordChangeValues): PasswordChangeErrors {
     const next: PasswordChangeErrors = {}
-    if (!current.currentPassword) next.currentPassword = 'Enter your current password.'
+    if (!current.currentPassword) next.currentPassword = m.currentRequired
     if (!current.newPassword) {
-      next.newPassword = 'Create a new password.'
+      next.newPassword = m.newRequired
     } else if (current.newPassword.length < MIN_PASSWORD_LENGTH) {
-      next.newPassword = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
+      next.newPassword = fmt(m.tooShort, minVars)
     }
     if (!current.confirmNewPassword) {
-      next.confirmNewPassword = 'Confirm your new password.'
+      next.confirmNewPassword = m.confirmRequired
     } else if (current.confirmNewPassword !== current.newPassword) {
-      next.confirmNewPassword = 'Passwords do not match.'
+      next.confirmNewPassword = m.mismatch
     }
     return next
   }
 
+  function applyServerError(error: unknown) {
+    if (error instanceof ApiError) {
+      if (error.status === 401) {
+        if (error.message === 'Current password is incorrect.') return setErrors({ currentPassword: m.currentIncorrect })
+        return setFormError(t.profile.personal.sessionExpired)
+      }
+      if (error.status === 404) return setFormError(m.noPassword)
+      if (error.status === 400) {
+        if (error.message === 'Enter your current password.') return setErrors({ currentPassword: m.currentRequired })
+        if (error.message.startsWith('Password must be at least')) return setErrors({ newPassword: fmt(m.tooShort, minVars) })
+        return setFormError(error.message || t.common.errors.generic)
+      }
+      if (error.status === 0) return setFormError(t.common.errors.network)
+    }
+    setFormError(t.common.errors.generic)
+  }
+
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
+    setFormError(undefined)
     const nextErrors = validate(values)
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
@@ -66,8 +100,9 @@ export function SecurityForm({ onUpdatePassword }: SecurityFormProps) {
       await onUpdatePassword?.(values)
       setStatus('success')
       setValues(initialValues)
-    } catch {
-      setStatus('error')
+    } catch (error) {
+      setStatus('idle')
+      applyServerError(error)
     }
   }
 
@@ -79,22 +114,22 @@ export function SecurityForm({ onUpdatePassword }: SecurityFormProps) {
     <Card>
       <section aria-labelledby={`${idPrefix}-heading`} className="flex flex-col gap-4">
         <h2 id={`${idPrefix}-heading`} className="text-lg font-semibold text-foreground">
-          Security
+          {m.heading}
         </h2>
 
-        <form onSubmit={handleSubmit}>
-          <fieldset className="flex flex-col gap-4" disabled={status === 'submitting'}>
-            <legend className="sr-only">Update your password</legend>
+        <form onSubmit={handleSubmit} noValidate>
+          <fieldset className="flex flex-col gap-4" disabled={submitting} aria-busy={submitting}>
+            <legend className="sr-only">{m.legend}</legend>
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor={`${idPrefix}-current`} className="text-sm font-medium">
-                Current password
+                {m.current}
               </label>
               <PasswordField
                 id={`${idPrefix}-current`}
                 autoComplete="current-password"
                 value={values.currentPassword}
-                onChange={(value) => setValues((v) => ({ ...v, currentPassword: value }))}
+                onChange={(value) => setField('currentPassword', value)}
                 invalid={Boolean(errors.currentPassword)}
                 describedBy={errors.currentPassword ? `${idPrefix}-current-error` : undefined}
               />
@@ -103,14 +138,14 @@ export function SecurityForm({ onUpdatePassword }: SecurityFormProps) {
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor={`${idPrefix}-new`} className="text-sm font-medium">
-                New password
+                {m.new}
               </label>
               <PasswordField
                 id={`${idPrefix}-new`}
                 autoComplete="new-password"
                 minLength={MIN_PASSWORD_LENGTH}
                 value={values.newPassword}
-                onChange={(value) => setValues((v) => ({ ...v, newPassword: value }))}
+                onChange={(value) => setField('newPassword', value)}
                 invalid={Boolean(errors.newPassword)}
                 describedBy={passwordDescribedBy}
               />
@@ -130,7 +165,7 @@ export function SecurityForm({ onUpdatePassword }: SecurityFormProps) {
                   aria-live="polite"
                   className="whitespace-nowrap text-xs text-muted-foreground"
                 >
-                  {values.newPassword ? strength.label : `At least ${MIN_PASSWORD_LENGTH} characters`}
+                  {values.newPassword ? (m.strength[strength.score] ?? strength.label) : fmt(m.minHint, minVars)}
                 </span>
               </div>
               <FieldError id={`${idPrefix}-new-error`} message={errors.newPassword} />
@@ -138,28 +173,34 @@ export function SecurityForm({ onUpdatePassword }: SecurityFormProps) {
 
             <div className="flex flex-col gap-1.5">
               <label htmlFor={`${idPrefix}-confirm`} className="text-sm font-medium">
-                Confirm new password
+                {m.confirm}
               </label>
               <PasswordField
                 id={`${idPrefix}-confirm`}
                 autoComplete="new-password"
                 value={values.confirmNewPassword}
-                onChange={(value) => setValues((v) => ({ ...v, confirmNewPassword: value }))}
+                onChange={(value) => setField('confirmNewPassword', value)}
                 invalid={Boolean(errors.confirmNewPassword)}
                 describedBy={errors.confirmNewPassword ? `${idPrefix}-confirm-error` : undefined}
               />
               <FieldError id={`${idPrefix}-confirm-error`} message={errors.confirmNewPassword} />
             </div>
 
-            <Button type="submit" className="mt-2 w-fit">
-              {status === 'submitting' ? 'Updating…' : 'Update Password'}
-            </Button>
+            {formError ? (
+              <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {formError}
+              </p>
+            ) : null}
 
-            <p aria-live="polite" className="sr-only">
-              {status === 'submitting' && 'Updating password, please wait.'}
-              {status === 'success' && 'Password updated successfully.'}
-              {status === 'error' && 'Could not update password. Please try again.'}
-            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <Button type="submit" className="h-10 px-4">
+                {submitting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : null}
+                {submitting ? m.submitting : m.submit}
+              </Button>
+              <p role="status" aria-live="polite" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                {status === 'success' ? m.success : ''}
+              </p>
+            </div>
           </fieldset>
         </form>
       </section>

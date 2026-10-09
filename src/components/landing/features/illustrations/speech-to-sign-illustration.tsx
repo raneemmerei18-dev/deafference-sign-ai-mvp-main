@@ -19,7 +19,7 @@ export function SpeechToSignIllustration({ reducedMotion = false }: { reducedMot
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/card1-speech-to-sign-illustration.png"
-        alt="Speech to Sign original illustration"
+        alt=""
         className="h-full max-h-[175px] w-full rounded-xl object-contain"
       />
 

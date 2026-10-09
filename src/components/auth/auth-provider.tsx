@@ -29,15 +29,34 @@ export interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
+/**
+ * Thrown by auth requests. `status` is the HTTP status (0 when the request never
+ * reached the server, e.g. offline) so the UI can show a translated message;
+ * `message` keeps the server's (English) error text as a fallback.
+ */
+export class AuthRequestError extends Error {
+  readonly status: number
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = "AuthRequestError"
+    this.status = status
+  }
+}
+
 async function postJson(url: string, body: unknown) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  })
+  let response: Response
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+  } catch {
+    throw new AuthRequestError("Network request failed.", 0)
+  }
   const data = (await response.json().catch(() => ({}))) as AuthApiError & { user?: AuthUser }
   if (!response.ok) {
-    throw new Error(data.error ?? "Something went wrong. Please try again.")
+    throw new AuthRequestError(data.error ?? "Something went wrong. Please try again.", response.status)
   }
   return data
 }

@@ -5,9 +5,9 @@ import { motion } from "framer-motion"
 import { ArrowRight, Mic } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { cn } from "@/lib/utils"
-import { GlowOrb, PopEyebrow, Reveal, focusRingPop } from "./ui/pop"
-
-const FOCUS_RING = focusRingPop
+import { useI18n } from "@/i18n/use-i18n"
+import { useLandingReducedMotion } from "./calm-mode"
+import { GlowOrb, PopEyebrow, Reveal } from "./ui/pop"
 
 const WAVE_BARS = [8, 16, 11, 20, 13, 18, 9, 15] as const
 
@@ -60,6 +60,7 @@ function AIProcessingVisual({ active }: { active: boolean }) {
             y2={y}
             stroke="var(--primary)"
             strokeWidth="1.5"
+            initial={{ opacity: 0.15 }}
             animate={active ? { opacity: [0.15, 0.9, 0.15] } : { opacity: 0.15 }}
             transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.25, ease: "easeInOut" }}
           />
@@ -100,49 +101,30 @@ function SignStreamVisual({ active }: { active: boolean }) {
   )
 }
 
+/** Visuals zipped by index with `t.landing.howItWorks.stages`. */
 const STAGES = [
-  {
-    emoji: "🎙️",
-    index: "01",
-    title: "Speech Capture",
-    caption: "Continuous real-time microphone stream ingestion.",
-    tag: "Audio waveform",
-    Visual: SpeechCaptureVisual,
-  },
-  {
-    emoji: "⚡",
-    index: "02",
-    title: "AI Processing Engine",
-    caption: "Instant phrase alignment & sign syntax conversion.",
-    tag: "Sign syntax data",
-    Visual: AIProcessingVisual,
-  },
-  {
-    emoji: "🤟",
-    index: "03",
-    title: "Real-Time Sign Stream",
-    caption: "Fluid, high-definition visual sign animation.",
-    tag: "Live playback ready",
-    Visual: SignStreamVisual,
-    terminal: true,
-  },
+  { emoji: "🎙️", index: "01", Visual: SpeechCaptureVisual, terminal: false },
+  { emoji: "⚡", index: "02", Visual: AIProcessingVisual, terminal: false },
+  { emoji: "🤟", index: "03", Visual: SignStreamVisual, terminal: true },
 ] as const
 
 /** Animated connector that sits in the gap between two stages: a traveling
  * glow dot along a dashed line, plus a pulsing arrow node. Horizontal on
  * desktop (left-to-right flow), vertical on mobile (top-to-bottom flow). */
 function StageConnector({ active }: { active: boolean }) {
+  const { dir } = useI18n()
+  const travel = dir === "rtl" ? ["95%", "0%"] : ["0%", "95%"]
   return (
     <>
       {/* Desktop: horizontal connector in the gap to the right of the card */}
       <div
-        className="pointer-events-none absolute top-16 -right-4 z-20 hidden w-8 -translate-y-1/2 md:block"
+        className="pointer-events-none absolute top-16 -end-4 z-20 hidden w-8 -translate-y-1/2 md:block"
         aria-hidden="true"
       >
         <div className="relative h-px w-full overflow-visible rounded-full bg-gradient-to-r from-[color:var(--primary)]/10 via-[color:var(--primary)]/45 to-[color:var(--primary)]/10">
           <motion.span
             className="absolute top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[color:var(--primary)] shadow-[0_0_10px_2px_rgba(59,130,246,0.7)]"
-            animate={{ left: ["0%", "95%"], opacity: [0, 1, 1, 0] }}
+            animate={{ left: travel, opacity: [0, 1, 1, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
           />
         </div>
@@ -154,7 +136,7 @@ function StageConnector({ active }: { active: boolean }) {
             active && "pop-pulse",
           )}
         >
-          <ArrowRight className="size-4" />
+          <ArrowRight className="size-4 rtl:-scale-x-100" />
         </motion.span>
       </div>
 
@@ -186,18 +168,25 @@ function StageConnector({ active }: { active: boolean }) {
 }
 
 export function HowItWorksVisual() {
+  const { t } = useI18n()
+  const copy = t.landing.howItWorks
+  const reduceMotion = useLandingReducedMotion()
   const [active, setActive] = useState(0)
+  // Auto-advance pauses while the pointer is over the steps, after a tap/click, and in calm/reduced-motion mode.
+  const [hovering, setHovering] = useState(false)
   const [locked, setLocked] = useState(false)
+  const paused = locked || hovering || reduceMotion
 
   useEffect(() => {
-    if (locked) return
+    if (paused) return
     const id = setInterval(() => setActive((s) => (s + 1) % STAGES.length), 2800)
     return () => clearInterval(id)
-  }, [locked])
+  }, [paused])
 
   return (
     <section
       id="how-it-works"
+      aria-labelledby="how-it-works-heading"
       className="pop-atmosphere relative overflow-hidden py-24 sm:py-28"
     >
       <div className="pop-grid pointer-events-none absolute inset-0 -z-10 opacity-[0.05]" aria-hidden="true" />
@@ -206,50 +195,52 @@ export function HowItWorksVisual() {
 
       <Container>
         <Reveal className="max-w-2xl">
-          <PopEyebrow>⚡ Pipeline architecture</PopEyebrow>
-          <h2 className="mt-5 text-3xl font-bold tracking-tight text-balance text-brand-navy sm:text-4xl">
-            3 steps from spoken word to visual sign.
+          <PopEyebrow>
+            <span aria-hidden="true">⚡</span> {copy.eyebrow}
+          </PopEyebrow>
+          <h2 id="how-it-works-heading" className="mt-5 text-3xl font-bold tracking-tight text-balance text-brand-navy sm:text-4xl">
+            {copy.title}
           </h2>
+          <p className="mt-4 text-base leading-7 text-muted-foreground">{copy.description}</p>
         </Reveal>
 
-        <div className="relative mt-16 grid grid-cols-1 gap-14 md:grid-cols-3 md:gap-8">
+        {/* Steps are content, not controls: hovering/tapping only moves the decorative highlight. */}
+        <ol
+          className="relative mt-16 grid grid-cols-1 gap-14 md:grid-cols-3 md:gap-8"
+          onMouseEnter={() => setHovering(true)}
+          onMouseLeave={() => setHovering(false)}
+        >
           {STAGES.map((stage, i) => {
             const isActive = active === i
             const Visual = stage.Visual
+            const text = copy.stages[i]
             return (
-              <button
-                key={stage.title}
-                type="button"
+              <li
+                key={stage.index}
                 onMouseEnter={() => setActive(i)}
-                onFocus={() => setActive(i)}
                 onClick={() => {
                   setActive(i)
                   setLocked(true)
                 }}
-                aria-current={isActive ? "step" : undefined}
                 className={cn(
-                  "glass-pop group relative rounded-3xl border p-6 text-left transition-all duration-300",
+                  "glass-pop group relative rounded-3xl border p-6 text-start transition-all duration-300",
                   isActive
                     ? "border-[color:var(--primary)]/45 shadow-[var(--pop-glow)]"
-                    : "border-transparent hover:border-[color:var(--primary)]/20 hover:-translate-y-1",
-                  FOCUS_RING,
+                    : "border-transparent hover:-translate-y-1 hover:border-[color:var(--primary)]/20",
                 )}
               >
                 {i < STAGES.length - 1 && <StageConnector active={isActive} />}
 
                 <div className="flex items-center gap-3">
                   <motion.span
-                    animate={
-                      isActive
-                        ? { scale: [1, 1.08, 1], opacity: 1 }
-                        : { scale: 1, opacity: 0.7 }
-                    }
+                    aria-hidden="true"
+                    animate={isActive ? { scale: [1, 1.08, 1], opacity: 1 } : { scale: 1, opacity: 0.7 }}
                     transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
                     className={cn(
                       "relative flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-bold",
                       isActive
-                        ? "bg-[color:var(--primary)] text-white shadow-[0_0_0_6px_rgba(59,130,246,0.14)]"
-                        : "bg-[color:var(--primary)]/10 text-[color:var(--primary)]",
+                        ? "bg-[#2563EB] text-white shadow-[0_0_0_6px_rgba(59,130,246,0.14)]"
+                        : "bg-[color:var(--primary)]/10 text-[#1D4ED8]",
                     )}
                   >
                     {stage.index}
@@ -259,38 +250,38 @@ export function HowItWorksVisual() {
                   </span>
                 </div>
 
-                <Visual active={isActive} />
+                <Visual active={isActive && !reduceMotion} />
 
-                <h3 className="mt-2 text-lg font-bold text-brand-navy">{stage.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{stage.caption}</p>
+                <h3 className="mt-2 text-lg font-bold text-brand-navy">{text?.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{text?.caption}</p>
 
-                <div
+                <span
                   className={cn(
-                    "mt-4 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold transition-colors",
+                    "mt-4 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
                     isActive
-                      ? "border-[color:var(--primary)]/35 bg-[color:var(--primary)]/10 text-[color:var(--primary)]"
+                      ? "border-[color:var(--primary)]/35 bg-[color:var(--primary)]/10 text-[#1D4ED8]"
                       : "border-border text-muted-foreground",
                   )}
                 >
-                  {"terminal" in stage && stage.terminal ? (
+                  {stage.terminal ? (
                     <>
-                      <span className="relative flex size-1.5">
+                      <span className="relative flex size-1.5" aria-hidden="true">
                         <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-75" />
                         <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
                       </span>
-                      {stage.tag}
+                      {text?.tag}
                     </>
                   ) : (
                     <>
-                      {stage.tag}
-                      <ArrowRight className="size-3" />
+                      {text?.tag}
+                      <ArrowRight className="size-3 rtl:-scale-x-100" aria-hidden="true" />
                     </>
                   )}
-                </div>
-              </button>
+                </span>
+              </li>
             )
           })}
-        </div>
+        </ol>
       </Container>
     </section>
   )

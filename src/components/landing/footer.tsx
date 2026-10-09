@@ -2,28 +2,40 @@
 
 import type { ReactNode } from "react"
 import { motion } from "framer-motion"
-import { Mail } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { Accessibility, ArrowUp, Mail } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { FOOTER_EXPLORE_NAV, FOOTER_COMPANY_NAV } from "@/lib/constants"
 import { Logo } from "@/components/deafference/logo"
-import { ConnectorPath, GlowOrb } from "./ui/pop"
-
-// Only real destinations here — no placeholder "#" links.
-const socialLinks = [{ label: "Email", href: "mailto:hello@deafference.ai", icon: Mail }]
+import { cn } from "@/lib/utils"
+import { useI18n } from "@/i18n/use-i18n"
+import { navLabel, resolveLandingHref } from "./nav-links"
+import { ConnectorPath, GlowOrb, focusRingPop } from "./ui/pop"
 
 function FooterLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <a
       href={href}
-      className="group relative inline-flex w-fit items-center gap-2 text-sm text-muted-foreground transition-all duration-200 hover:translate-x-0.5 hover:text-[color:var(--primary)]"
+      className={cn(
+        "group relative inline-flex w-fit items-center gap-2 rounded-sm text-sm text-muted-foreground transition-all duration-200 hover:translate-x-0.5 hover:text-[#1D4ED8] rtl:hover:-translate-x-0.5",
+        focusRingPop,
+      )}
     >
       {children}
-      <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-[color:var(--primary)] transition-all duration-300 group-hover:w-full" />
+      <span
+        aria-hidden="true"
+        className="absolute -bottom-0.5 start-0 h-px w-0 bg-[color:var(--primary)] transition-all duration-300 group-hover:w-full"
+      />
     </a>
   )
 }
 
 export function Footer() {
+  const { t, fmt } = useI18n()
+  const copy = t.landing.footer
+  const links = t.landing.nav.links
+  const pathname = usePathname()
+
   return (
     <motion.footer
       initial={{ opacity: 0 }}
@@ -42,61 +54,77 @@ export function Footer() {
         delay={0.6}
       />
 
-      <Container className="relative grid gap-12 lg:grid-cols-[1.3fr_auto_auto_auto] lg:items-start lg:gap-10">
-        <div className="max-w-sm">
+      <Container className="relative grid gap-12 sm:grid-cols-3 lg:grid-cols-[1.3fr_auto_auto_auto] lg:items-start lg:gap-10">
+        <div className="max-w-sm sm:col-span-3 lg:col-span-1">
           <Logo />
-          <p className="mt-5 text-sm leading-7 text-muted-foreground">
-            Professional AI landing architecture with a separate translation workflow and room for
-            future product pages.
-          </p>
-          <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-[color:var(--primary)]/20 bg-white/60 px-3 py-1 text-[11px] font-semibold tracking-[0.14em] text-[color:var(--primary)] uppercase backdrop-blur">
-            <span className="size-1.5 rounded-full bg-brand-orange" />
-            Deafference
-          </span>
+          <p className="mt-5 text-sm leading-7 text-muted-foreground">{copy.tagline}</p>
         </div>
 
         <div>
-          <p className="text-xs font-semibold tracking-[0.2em] text-foreground uppercase">Explore</p>
-          <nav className="mt-5 flex flex-col gap-3.5">
+          <h2 className="text-xs font-semibold tracking-[0.2em] text-foreground uppercase">{copy.explore}</h2>
+          <nav aria-label={copy.explore} className="mt-5 flex flex-col gap-3.5">
             {FOOTER_EXPLORE_NAV.map((item) => (
-              <FooterLink key={item.href} href={item.href}>
-                {item.label}
+              <FooterLink key={item.href} href={resolveLandingHref(item.href, pathname)}>
+                {navLabel(links, item.href, item.label)}
               </FooterLink>
             ))}
           </nav>
         </div>
 
         <div>
-          <p className="text-xs font-semibold tracking-[0.2em] text-foreground uppercase">Company</p>
-          <nav className="mt-5 flex flex-col gap-3.5">
+          <h2 className="text-xs font-semibold tracking-[0.2em] text-foreground uppercase">{copy.company}</h2>
+          <nav aria-label={copy.company} className="mt-5 flex flex-col gap-3.5">
             {FOOTER_COMPANY_NAV.map((item) => (
-              <FooterLink key={item.href} href={item.href}>
-                {item.label}
+              <FooterLink key={item.href} href={resolveLandingHref(item.href, pathname)}>
+                {navLabel(links, item.href, item.label)}
               </FooterLink>
             ))}
           </nav>
         </div>
 
         <div>
-          <p className="text-xs font-semibold tracking-[0.2em] text-foreground uppercase">Social</p>
+          <h2 className="text-xs font-semibold tracking-[0.2em] text-foreground uppercase">{copy.contactHeading}</h2>
           <div className="mt-5 flex flex-col gap-3.5">
-            {socialLinks.map((item) => {
-              const Icon = item.icon
-              return (
-                <FooterLink key={item.label} href={item.href}>
-                  <Icon className="size-4" />
-                  {item.label}
-                </FooterLink>
-              )
-            })}
+            <FooterLink href="mailto:hello@deafference.ai">
+              <Mail className="size-4" aria-hidden="true" />
+              {copy.email}
+            </FooterLink>
           </div>
         </div>
       </Container>
 
-      <Container className="relative mt-14 border-t border-[color:var(--primary)]/10 pt-6">
-        <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Deafference. Crafted with a soft-blue, editorial system.
-        </p>
+      <Container className="relative mt-14">
+        <section
+          id="accessibility"
+          aria-labelledby="accessibility-heading"
+          className="glass-pop rounded-2xl p-5 sm:flex sm:items-start sm:gap-4 sm:p-6"
+        >
+          <Accessibility className="size-5 shrink-0 text-[#2563EB] max-sm:mb-3" aria-hidden="true" />
+          <div>
+            <h2 id="accessibility-heading" className="text-sm font-semibold text-foreground">
+              {copy.a11yTitle}
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{copy.a11yBody}</p>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              {copy.a11yContact}{" "}
+              <a
+                href="mailto:hello@deafference.ai"
+                dir="ltr"
+                className={cn("rounded-sm font-semibold text-[#1D4ED8] underline-offset-4 hover:underline", focusRingPop)}
+              >
+                hello@deafference.ai
+              </a>
+            </p>
+          </div>
+        </section>
+      </Container>
+
+      <Container className="relative mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[color:var(--primary)]/10 pt-6">
+        <p className="text-xs text-muted-foreground">{fmt(copy.rights, { year: new Date().getFullYear() })}</p>
+        <FooterLink href={resolveLandingHref("#top", pathname)}>
+          <ArrowUp className="size-4" aria-hidden="true" />
+          {copy.backToTop}
+        </FooterLink>
       </Container>
     </motion.footer>
   )

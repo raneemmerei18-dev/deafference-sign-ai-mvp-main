@@ -3,16 +3,10 @@
 import { motion } from "framer-motion"
 import { Check } from "lucide-react"
 import { Card } from "@/components/ui/card"
-
-const tips = [
-  "Use good lighting",
-  "One signer at a time",
-  "Keep hands visible",
-  "Face the camera",
-  "Avoid cluttered backgrounds",
-]
+import { useI18n } from "@/i18n/use-i18n"
 
 export function TipsCard() {
+  const { t } = useI18n()
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
@@ -21,12 +15,12 @@ export function TipsCard() {
     >
       <Card className="p-5 sm:p-6">
         <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-          Best Recognition Tips
+          {t.app.tips.eyebrow}
         </p>
         <ul className="mt-4 space-y-3">
-          {tips.map((tip) => (
+          {t.app.tips.items.map((tip) => (
             <li key={tip} className="flex items-start gap-3 text-sm text-foreground">
-              <Check className="mt-0.5 size-4 shrink-0 text-emerald-500" />
+              <Check className="mt-0.5 size-4 shrink-0 text-emerald-500" aria-hidden="true" />
               <span>{tip}</span>
             </li>
           ))}

@@ -9,6 +9,8 @@ import { Card } from "@/components/ui/card"
 import { APP_ROUTES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/components/auth/auth-provider"
+import { LogoutConfirmDialog } from "@/components/auth/logout-confirm-dialog"
+import { useI18n } from "@/i18n/use-i18n"
 
 function initialsFor(name: string, email: string) {
   const source = name.trim() || email
@@ -23,36 +25,33 @@ function initialsFor(name: string, email: string) {
  * admin-only block inside it — reflects real, dynamic access, not a mock.
  */
 export function AccountRoleSection() {
-  const { user, role, signOut } = useAuth()
+  const { user, role } = useAuth()
+  const { t } = useI18n()
+  const m = t.settings.account
   const idPrefix = useId()
-  const [signingOut, setSigningOut] = useState(false)
-
-  async function handleSignOut() {
-    setSigningOut(true)
-    try {
-      await signOut()
-    } finally {
-      setSigningOut(false)
-    }
-  }
+  const [logoutOpen, setLogoutOpen] = useState(false)
 
   if (!user) {
     return (
       <Card>
         <section aria-labelledby={`${idPrefix}-heading`} className="flex flex-col items-start gap-3">
           <h2 id={`${idPrefix}-heading`} className="text-lg font-semibold text-foreground">
-            Account &amp; Access
+            {m.heading}
           </h2>
-          <p className="max-w-md text-sm text-muted-foreground">
-            Sign in to see your profile, manage your account, and unlock role-based features like the admin panel.
-          </p>
+          <p className="max-w-md text-sm text-muted-foreground">{m.guestBody}</p>
           <div className="mt-1 flex flex-wrap gap-2">
-            <Button size="lg" nativeButton={false} render={<Link href={APP_ROUTES.login}>Sign In</Link>} />
+            <Button
+              size="lg"
+              className="h-10 px-4"
+              nativeButton={false}
+              render={<Link href={APP_ROUTES.login}>{m.signIn}</Link>}
+            />
             <Button
               variant="outline"
               size="lg"
+              className="h-10 px-4"
               nativeButton={false}
-              render={<Link href={APP_ROUTES.signup}>Create Account</Link>}
+              render={<Link href={APP_ROUTES.signup}>{m.createAccount}</Link>}
             />
           </div>
         </section>
@@ -67,20 +66,22 @@ export function AccountRoleSection() {
       <Card>
         <section aria-labelledby={`${idPrefix}-heading`} className="flex flex-col gap-5">
           <h2 id={`${idPrefix}-heading`} className="text-lg font-semibold text-foreground">
-            Account &amp; Access
+            {m.heading}
           </h2>
 
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-3.5">
+            <div className="flex min-w-0 items-center gap-3.5">
               <span
                 aria-hidden="true"
                 className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-base font-semibold text-primary"
               >
                 {initialsFor(user.name, user.email)}
               </span>
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-foreground">{user.name || user.email}</span>
-                <span className="text-sm text-muted-foreground">{user.email}</span>
+              <div className="flex min-w-0 flex-col">
+                <span className="truncate text-sm font-semibold text-foreground">{user.name || user.email}</span>
+                <span dir="ltr" className="truncate text-start text-sm text-muted-foreground rtl:text-end">
+                  {user.email}
+                </span>
               </div>
             </div>
 
@@ -90,18 +91,23 @@ export function AccountRoleSection() {
                 isAdmin ? "border-primary/30 bg-primary/10 text-primary" : "text-muted-foreground",
               )}
             >
-              {isAdmin ? <ShieldCheck className="size-3.5" /> : <UserIcon className="size-3.5" />}
-              {isAdmin ? "Admin access" : "Standard user"}
+              {isAdmin ? (
+                <ShieldCheck className="size-3.5" aria-hidden="true" />
+              ) : (
+                <UserIcon className="size-3.5" aria-hidden="true" />
+              )}
+              {isAdmin ? m.admin : m.standard}
             </Badge>
           </div>
 
           <div className="flex flex-wrap gap-2 border-t border-border pt-4">
-            <Button type="button" variant="outline" onClick={handleSignOut} disabled={signingOut}>
-              <LogOut className="size-4" />
-              {signingOut ? "Signing out…" : "Sign Out"}
+            <Button type="button" variant="outline" className="h-10 px-4" onClick={() => setLogoutOpen(true)}>
+              <LogOut className="size-4 rtl:-scale-x-100" aria-hidden="true" />
+              {t.common.logout.trigger}
             </Button>
           </div>
         </section>
+        <LogoutConfirmDialog open={logoutOpen} onOpenChange={setLogoutOpen} />
       </Card>
 
       {isAdmin ? (
@@ -110,21 +116,17 @@ export function AccountRoleSection() {
             <div className="flex items-center gap-2">
               <ShieldCheck className="size-4 text-primary" aria-hidden="true" />
               <h3 id={`${idPrefix}-admin-heading`} className="text-sm font-semibold text-foreground">
-                Admin tools unlocked
+                {m.adminUnlockedTitle}
               </h3>
             </div>
-            <p className="max-w-md text-sm text-muted-foreground">
-              Your account has admin access, so you can manage users, review feedback, and monitor system health from
-              the admin panel.
-            </p>
+            <p className="max-w-md text-sm text-muted-foreground">{m.adminUnlockedBody}</p>
             <Button
-              size="sm"
-              className="w-fit"
+              className="h-10 w-fit px-4"
               nativeButton={false}
               render={
                 <Link href={APP_ROUTES.admin}>
-                  Open admin panel
-                  <ArrowRight className="size-3.5" />
+                  {m.openAdmin}
+                  <ArrowRight className="size-3.5 rtl:-scale-x-100" aria-hidden="true" />
                 </Link>
               }
             />
@@ -134,12 +136,9 @@ export function AccountRoleSection() {
         <Card className="border-dashed">
           <section aria-labelledby={`${idPrefix}-locked-heading`} className="flex flex-col gap-1.5">
             <h3 id={`${idPrefix}-locked-heading`} className="text-sm font-semibold text-foreground">
-              Admin tools
+              {m.adminLockedTitle}
             </h3>
-            <p className="max-w-md text-sm text-muted-foreground">
-              Locked for standard users. Ask a workspace admin to upgrade your account if you need access to user
-              management, feedback, or system monitoring.
-            </p>
+            <p className="max-w-md text-sm text-muted-foreground">{m.adminLockedBody}</p>
           </section>
         </Card>
       )}

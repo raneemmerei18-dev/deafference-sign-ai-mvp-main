@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { useI18n } from "@/i18n/use-i18n"
 
 const WAVEFORM_HEIGHTS = [
   [20, 60, 90, 40, 95, 30, 75, 20],
@@ -13,6 +14,7 @@ const WAVEFORM_HEIGHTS = [
 const COLORS = ["#93C5FD", "#60A5FA", "#3B82F6", "#2563EB", "#FF8A3D", "#2563EB", "#60A5FA", "#1D4ED8"]
 
 export function SignToSpeechIllustration({ reducedMotion = false }: { reducedMotion?: boolean }) {
+  const { t } = useI18n()
   const duration = 2.0
 
   return (
@@ -20,7 +22,7 @@ export function SignToSpeechIllustration({ reducedMotion = false }: { reducedMot
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/card2-sign-to-speech-illustration.png"
-        alt="Sign to Speech original illustration"
+        alt=""
         className="h-full max-h-[175px] w-full rounded-xl object-contain"
       />
 
@@ -56,12 +58,12 @@ export function SignToSpeechIllustration({ reducedMotion = false }: { reducedMot
           transition={{ repeat: Infinity, duration: 2.8, ease: "easeInOut" }}
         >
           <div className="mb-1 flex items-center justify-between border-b border-slate-100 pb-1">
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-red-400" />
               <span className="h-2 w-2 rounded-full bg-amber-400" />
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
             </div>
-            <span className="text-[9px] font-extrabold tracking-tight text-slate-600">AUDIO VOICE</span>
+            <span className="text-[9px] font-extrabold tracking-tight text-slate-600">{t.landing.features.illustration.audio}</span>
           </div>
 
           <div className="flex flex-1 items-end justify-between gap-0.5 px-1 pb-1">

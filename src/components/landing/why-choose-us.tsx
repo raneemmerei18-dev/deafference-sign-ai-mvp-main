@@ -1,35 +1,16 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ShieldCheck, LayoutGrid, Sparkles, Workflow, type LucideIcon } from "lucide-react"
+import { Accessibility, HeartPulse, Repeat2, ShieldCheck, type LucideIcon } from "lucide-react"
 import { Container } from "@/components/shared/container"
 import { SectionTitle } from "@/components/shared/section-title"
 import { IconBadge } from "@/components/shared/icon-badge"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/i18n/use-i18n"
 import { GlassPanel, GlowOrb, TiltWrap, staggerContainer, staggerItem } from "./ui/pop"
 
-const reasons = [
-  {
-    icon: ShieldCheck,
-    title: "Trustworthy by design",
-    description: "Clear structure, stable components, and a clean visual hierarchy for enterprise buyers.",
-  },
-  {
-    icon: LayoutGrid,
-    title: "Independent surfaces",
-    description: "Marketing pages and the translation workflow can evolve without coupling to each other.",
-  },
-  {
-    icon: Workflow,
-    title: "Scalable architecture",
-    description: "Shared primitives, reusable sections, and future-ready folders for new product lines.",
-  },
-  {
-    icon: Sparkles,
-    title: "Modern AI brand",
-    description: "A minimal, polished system inspired by the best SaaS landing pages in the market.",
-  },
-] as const
+/** Icons zipped by index with `t.landing.why.reasons`. */
+const REASON_ICONS: LucideIcon[] = [Accessibility, HeartPulse, Repeat2, ShieldCheck]
 
 /** Per-card bento sizing + a gentle idle rotation so the grid reads as hand-placed, not a uniform table. */
 const BENTO_LAYOUT = [
@@ -96,7 +77,7 @@ function WhyCard({
 
             <div
               aria-hidden="true"
-              className="relative mt-6 h-1 w-10 origin-left scale-x-50 rounded-full bg-gradient-to-r from-[color:var(--primary)] to-brand-orange opacity-70 transition-transform duration-400 ease-out group-hover:scale-x-100"
+              className="relative mt-6 h-1 w-10 origin-left scale-x-50 rtl:origin-right rounded-full bg-gradient-to-r from-[color:var(--primary)] to-brand-orange opacity-70 transition-transform duration-400 ease-out group-hover:scale-x-100"
             />
           </GlassPanel>
         </TiltWrap>
@@ -106,6 +87,8 @@ function WhyCard({
 }
 
 export function WhyChooseUs() {
+  const { t } = useI18n()
+  const why = t.landing.why
   return (
     <section
       id="why-choose-us"
@@ -117,9 +100,9 @@ export function WhyChooseUs() {
 
       <Container>
         <SectionTitle
-          eyebrow="Why choose us"
-          title="A focused system for a serious AI product"
-          description="Deafference is framed like a modern software company: clear positioning, clean layout, and deliberate separation between marketing and product UX."
+          eyebrow={why.eyebrow}
+          title={why.title}
+          description={why.description}
         />
 
         <motion.div
@@ -129,12 +112,12 @@ export function WhyChooseUs() {
           viewport={{ once: true, amount: 0.2 }}
           className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[repeat(2,minmax(190px,1fr))_auto]"
         >
-          {reasons.map((item, index) => {
-            const layout = BENTO_LAYOUT[index]
+          {why.reasons.map((item, index) => {
+            const layout = BENTO_LAYOUT[index] ?? BENTO_LAYOUT[1]
             return (
               <WhyCard
                 key={item.title}
-                icon={item.icon}
+                icon={REASON_ICONS[index] ?? ShieldCheck}
                 title={item.title}
                 description={item.description}
                 className={layout.area}

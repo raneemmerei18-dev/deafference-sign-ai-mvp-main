@@ -2,6 +2,7 @@
 
 import { useRef } from "react"
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion"
+import { useI18n } from "@/i18n/use-i18n"
 
 const CONNECTIONS = [
   "M118 119 C82 99 63 73 49 45",
@@ -11,10 +12,10 @@ const CONNECTIONS = [
 ] as const
 
 const CARD_DATA = [
-  { id: "sign", label: "You sign", className: "left-1 top-1 sm:-left-3 sm:top-2", delay: 0 },
-  { id: "understands", label: "AI understands", className: "right-1 top-10 sm:-right-3 sm:top-12", delay: 0.75 },
-  { id: "hear", label: "They hear you", className: "bottom-16 left-0 sm:-bottom-1 sm:-left-3", delay: 1.5 },
-  { id: "connect", label: "Everyone connects", className: "right-0 bottom-0 sm:-right-3 sm:bottom-1", delay: 2.25 },
+  { id: "sign", className: "left-1 top-1 sm:-left-3 sm:top-2", delay: 0 },
+  { id: "understands", className: "right-1 top-10 sm:-right-3 sm:top-12", delay: 0.75 },
+  { id: "hear", className: "bottom-16 left-0 sm:-bottom-1 sm:-left-3", delay: 1.5 },
+  { id: "connect", className: "right-0 bottom-0 sm:-right-3 sm:bottom-1", delay: 2.25 },
 ] as const
 
 function SigningHands() {
@@ -47,9 +48,9 @@ function Conversation() {
   </div>
 }
 
-function StoryCard({ card }: { card: (typeof CARD_DATA)[number] }) {
-  return <motion.div className={`absolute z-30 min-w-[120px] rounded-[18px] border border-white/80 bg-white/82 px-3 py-2.5 shadow-[0_16px_30px_-18px_rgba(72,72,140,0.42)] backdrop-blur-md ${card.className}`} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1, y: [0, -5, 0] }} transition={{ opacity: { duration: 0.55, delay: card.delay * 0.12 }, scale: { duration: 0.55, delay: card.delay * 0.12 }, y: { duration: 4.6, delay: card.delay, repeat: Infinity, ease: "easeInOut" } }}>
-    <p className="mb-1 text-[10px] font-bold tracking-[0.01em] text-[#4b4e6e]">{card.label}</p>
+function StoryCard({ card, label }: { card: (typeof CARD_DATA)[number]; label: string }) {
+  return <motion.div className={`absolute z-30 w-[46%] max-w-[150px] rounded-[18px] border border-white/80 bg-white/82 px-3 py-2.5 shadow-[0_16px_30px_-18px_rgba(72,72,140,0.42)] backdrop-blur-md ${card.className}`} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1, y: [0, -5, 0] }} transition={{ opacity: { duration: 0.55, delay: card.delay * 0.12 }, scale: { duration: 0.55, delay: card.delay * 0.12 }, y: { duration: 4.6, delay: card.delay, repeat: Infinity, ease: "easeInOut" } }}>
+    <p className="mb-1 text-xs leading-tight font-bold text-[#3f4263]">{label}</p>
     <div className="flex h-12 items-center justify-center rounded-xl bg-[#f9f9fe]">
       {card.id === "sign" && <SigningHands />}{card.id === "understands" && <Brain />}{card.id === "hear" && <Soundwave />}{card.id === "connect" && <Conversation />}
     </div>
@@ -57,6 +58,8 @@ function StoryCard({ card }: { card: (typeof CARD_DATA)[number] }) {
 }
 
 export function HeroIllustration() {
+  const { t } = useI18n()
+  const cards = t.landing.hero.cards
   const wrapRef = useRef<HTMLDivElement>(null)
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
@@ -64,7 +67,7 @@ export function HeroIllustration() {
   const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-5, 5]), { stiffness: 80, damping: 18 })
   const updatePointer = (e: React.PointerEvent<HTMLDivElement>) => { const rect = wrapRef.current?.getBoundingClientRect(); if (rect) { mx.set((e.clientX - rect.left) / rect.width - 0.5); my.set((e.clientY - rect.top) / rect.height - 0.5) } }
 
-  return <div ref={wrapRef} onPointerMove={updatePointer} onPointerLeave={() => { mx.set(0); my.set(0) }} className="relative mx-auto aspect-square w-full max-w-[460px] select-none" style={{ perspective: 1000 }}>
+  return <div ref={wrapRef} onPointerMove={updatePointer} onPointerLeave={() => { mx.set(0); my.set(0) }} className="relative mx-auto aspect-square w-full max-w-[460px] select-none" style={{ perspective: 1000 }} role="img" aria-label={t.landing.hero.illustrationLabel}>
     <div className="absolute inset-[8%] rounded-full bg-[#b9c9ff]/30 blur-3xl" />
     <motion.div className="absolute inset-[10%]" style={{ rotateX, rotateY }}>
       <motion.div className="absolute inset-0" animate={{ y: [0, -8, 0] }} transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}>
@@ -74,9 +77,9 @@ export function HeroIllustration() {
           {[...Array(18)].map((_, i) => <motion.circle key={i} cx={30 + ((i * 47) % 180)} cy={25 + ((i * 71) % 185)} r={i % 3 === 0 ? 2.1 : 1.25} fill={i % 4 === 0 ? "#e8a13b" : "#7b85cf"} animate={{ opacity: [.25, 1, .25], scale: [.8, 1.35, .8] }} transition={{ duration: 2.6 + (i % 3) * .5, delay: i * .12, repeat: Infinity }} />)}
         </motion.svg>
         <svg viewBox="0 0 240 240" className="absolute inset-0 size-full" fill="none" aria-hidden="true">{CONNECTIONS.map((path, i) => <g key={path}><path d={path} stroke="#f1aa45" strokeOpacity=".38" strokeWidth="1.2" /><motion.circle r="2.8" fill="#f0a53a" filter="url(#glow)" animate={{ offsetDistance: ["0%", "100%"], opacity: [0, 1, 0] }} transition={{ duration: 2.7, delay: i * .55, repeat: Infinity, ease: "easeOut" }} style={{ offsetPath: `path('${path}')` }} /></g>)}<defs><filter id="glow"><feGaussianBlur stdDeviation="1.2" /></filter></defs></svg>
-        <div className="absolute inset-0 flex items-center justify-center"><motion.div className="relative flex size-[68px] items-center justify-center rounded-full border border-white/80 bg-white/90 shadow-[0_0_0_7px_rgba(255,255,255,.3),0_14px_32px_rgba(99,94,190,.24)] sm:size-[78px]" animate={{ boxShadow: ["0 0 0 7px rgba(255,255,255,.3),0 14px 32px rgba(99,94,190,.24)", "0 0 0 12px rgba(244,179,73,.16),0 14px 38px rgba(99,94,190,.34)", "0 0 0 7px rgba(255,255,255,.3),0 14px 32px rgba(99,94,190,.24)"] }} transition={{ duration: 2.5, repeat: Infinity }}><span className="text-3xl font-black tracking-[-.2em] text-[#f0a23e] sm:text-4xl">⌁</span></motion.div></div>
+        <div className="absolute inset-0 flex items-center justify-center"><motion.div className="relative flex size-[68px] items-center justify-center rounded-full border border-white/80 bg-white/90 shadow-[0_0_0_7px_rgba(255,255,255,.3),0_14px_32px_rgba(99,94,190,.24)] sm:size-[78px]" animate={{ boxShadow: ["0 0 0 7px rgba(255,255,255,.3),0 14px 32px rgba(99,94,190,.24)", "0 0 0 12px rgba(244,179,73,.16),0 14px 38px rgba(99,94,190,.34)", "0 0 0 7px rgba(255,255,255,.3),0 14px 32px rgba(99,94,190,.24)"] }} transition={{ duration: 2.5, repeat: Infinity }}><span aria-hidden="true" className="text-3xl font-black tracking-[-.2em] text-[#f0a23e] sm:text-4xl">⌁</span></motion.div></div>
       </motion.div>
     </motion.div>
-    {CARD_DATA.map(card => <StoryCard key={card.id} card={card} />)}
+    {CARD_DATA.map(card => <StoryCard key={card.id} card={card} label={cards[card.id]} />)}
   </div>
 }
