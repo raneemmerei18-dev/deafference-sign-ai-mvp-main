@@ -1,15 +1,16 @@
 "use client"
 
 import { useRef } from "react"
-import { LayoutDashboard, Mail, MessageSquare, Users, type LucideIcon } from "lucide-react"
+import Link from "next/link"
+import { LayoutDashboard, Mail, MessageSquare, Users, Edit3, type LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { AdminView } from "./admin-shell"
 
 const NAV_ITEMS: Array<{ value: AdminView; label: string; icon: LucideIcon }> = [
+  { value: "overview", label: "System Overview", icon: LayoutDashboard },
   { value: "users", label: "Users Management", icon: Users },
   { value: "feedback", label: "User Feedback", icon: MessageSquare },
   { value: "contacts", label: "Contact Submissions", icon: Mail },
-  { value: "overview", label: "System Overview", icon: LayoutDashboard },
 ]
 
 export function AdminSidebar({
@@ -100,6 +101,22 @@ export function AdminSidebar({
             </button>
           )
         })}
+      </div>
+
+      {/* Content Editor Link */}
+      <div className="mt-auto border-t pt-4">
+        <p className="px-3 text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase mb-2">Content</p>
+        <Link
+          href="/admin/content-editor"
+          className={cn(
+            "flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-left text-sm font-medium transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            "text-muted-foreground hover:bg-muted hover:text-foreground",
+          )}
+        >
+          <Edit3 className="size-4 shrink-0" aria-hidden="true" />
+          Landing Page Editor
+        </Link>
       </div>
     </nav>
   )
