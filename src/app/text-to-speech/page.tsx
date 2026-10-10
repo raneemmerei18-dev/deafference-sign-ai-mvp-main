@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import { Volume2, Copy, Trash2, RotateCcw } from 'lucide-react'
 import WaveformAnimation from '@/components/deafference/waveform-animation'
 
@@ -97,6 +98,19 @@ export default function TextToSpeechPage() {
   return (
     <div className="min-h-screen bg-white p-6">
       <div className="max-w-2xl mx-auto">
+        {/* Navigation */}
+        <nav className="mb-8 flex gap-4 border-b-2 border-gray-300 pb-4">
+          <Link href="/speech-to-text" className="px-4 py-2 bg-gray-200 text-black font-semibold rounded-lg hover:bg-gray-300">
+            🎤 Speech → Text
+          </Link>
+          <Link href="/text-to-speech" className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg">
+            🔊 Text → Speech
+          </Link>
+          <Link href="/sign-to-text" className="px-4 py-2 bg-gray-200 text-black font-semibold rounded-lg hover:bg-gray-300">
+            🖐️ Sign → Text
+          </Link>
+        </nav>
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-black mb-2">Text to Speech</h1>
