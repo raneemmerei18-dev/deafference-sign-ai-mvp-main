@@ -128,10 +128,10 @@ export function Scenarios() {
           <PopEyebrow>
             <span aria-hidden="true">🧭</span> {copy.eyebrow}
           </PopEyebrow>
-          <h2 id="scenarios-heading" className="mt-5 text-3xl font-bold tracking-tight text-balance text-brand-navy sm:text-4xl">
+          <h2 id="scenarios-heading" className="mt-5 text-3xl font-bold tracking-tight text-balance text-black sm:text-4xl">
             {copy.title}
           </h2>
-          <p className="mt-4 text-base leading-7 text-muted-foreground">{copy.description}</p>
+          <p className="mt-4 text-base leading-7 text-black">{copy.description}</p>
         </Reveal>
 
         <Reveal delay={0.1} className="mx-auto mt-12 max-w-5xl">
@@ -158,7 +158,7 @@ export function Scenarios() {
 
           {/* Text version of Judy's bubble: readable at any screen size, not announced on every change. */}
           {currentItem ? (
-            <p className="mt-5 text-center text-sm leading-6 text-brand-navy sm:text-base">
+            <p className="mt-5 text-center text-sm leading-6 text-black sm:text-base">
               <span className="font-semibold text-[#1D4ED8]">{copy.nowLabel}</span> {currentItem.label} — {currentItem.message}
             </p>
           ) : null}
@@ -184,3 +184,4 @@ export function Scenarios() {
     </section>
   )
 }
+

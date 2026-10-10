@@ -68,7 +68,7 @@ export function PrivacyPolicy() {
                     <IconBadge icon={Icon} className="bg-[color:var(--primary)]/10 text-[#1D4ED8]" />
                     <div>
                       <h3 className="text-base font-semibold text-foreground">{item.title}</h3>
-                      <p className="mt-2 text-sm leading-7 text-muted-foreground">{item.description}</p>
+                      <p className="mt-2 text-sm leading-7 text-black">{item.description}</p>
                     </div>
                   </div>
                 </GlassPanel>
@@ -82,7 +82,7 @@ export function PrivacyPolicy() {
             <h3 className="text-base font-semibold text-foreground">{copy.rights.title}</h3>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2">
               {copy.rights.items.map((right) => (
-                <li key={right} className="flex gap-3 text-sm leading-6 text-muted-foreground">
+                <li key={right} className="flex gap-3 text-sm leading-6 text-black">
                   <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-[#2563EB]" aria-hidden="true" />
                   <span>{right}</span>
                 </li>
@@ -93,7 +93,7 @@ export function PrivacyPolicy() {
 
         <Reveal delay={0.1} className="mt-4">
           <GlassPanel className="p-6">
-            <p className="text-sm leading-7 text-muted-foreground">
+            <p className="text-sm leading-7 text-black">
               {copy.contact}{" "}
               <a
                 href="mailto:privacy@deafference.ai"
@@ -109,3 +109,4 @@ export function PrivacyPolicy() {
     </section>
   )
 }
+

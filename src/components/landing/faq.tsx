@@ -59,7 +59,7 @@ function FaqItem({ title, content }: { title: string; content: React.ReactNode }
               transition={{ height: { duration: 0.35, ease: [0.4, 0, 0.2, 1] }, opacity: { duration: 0.25, ease: "easeInOut" } }}
               className="overflow-hidden"
             >
-              <div className="px-5 pb-5 text-sm leading-7 text-muted-foreground sm:px-6 sm:pb-6">{content}</div>
+              <div className="px-5 pb-5 text-sm leading-7 text-black sm:px-6 sm:pb-6">{content}</div>
             </motion.div>
           ) : null}
         </AnimatePresence>
@@ -103,3 +103,4 @@ export function FAQ() {
     </section>
   )
 }
+

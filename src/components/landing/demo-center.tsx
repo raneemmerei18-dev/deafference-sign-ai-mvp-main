@@ -81,14 +81,14 @@ function FlagshipDemo() {
       className="glass-pop glow-border-pop relative overflow-hidden rounded-3xl p-6 sm:p-8"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 id="flagship-demo-heading" className="text-lg font-bold text-brand-navy sm:text-xl">
+        <h3 id="flagship-demo-heading" className="text-lg font-bold text-black sm:text-xl">
           {copy.title}
         </h3>
         <span className="inline-flex items-center rounded-full bg-orange-50 px-2.5 py-1 text-xs font-semibold tracking-[0.08em] text-[#C2410C] uppercase ring-1 ring-[#C2410C]/20">
           {copy.badge}
         </span>
       </div>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{copy.note}</p>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-black">{copy.note}</p>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
         <div>
@@ -145,8 +145,8 @@ function FlagshipDemo() {
                     {i + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className={cn("text-sm text-brand-navy", isCurrent ? "font-bold" : "font-semibold")}>{s.label}</p>
-                    {captionsOn ? <p className="text-xs text-muted-foreground">{s.caption}</p> : null}
+                    <p className={cn("text-sm text-black", isCurrent ? "font-bold" : "font-semibold")}>{s.label}</p>
+                    {captionsOn ? <p className="text-xs text-black">{s.caption}</p> : null}
                   </div>
                   {/* Text indicator, so the current step isn't conveyed by colour alone. */}
                   {isCurrent ? (
@@ -217,7 +217,7 @@ function FlagshipDemo() {
               <circle cx="60" cy="34" r="4" fill="var(--brand-orange)" />
             </svg>
           </div>
-          <p className="mt-6 text-center text-sm leading-6 text-brand-navy">
+          <p className="mt-6 text-center text-sm leading-6 text-black">
             {captionsOn ? steps[step]?.caption : copy.captionsHidden}
           </p>
         </figure>
@@ -247,7 +247,7 @@ function MediaCard({ item }: { item: MediaItem }) {
           <Icon className="size-10 text-[#2563EB]/55" />
         </div>
 
-        <span className="absolute end-2 bottom-2 inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 text-xs font-semibold text-brand-navy shadow-sm">
+        <span className="absolute end-2 bottom-2 inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 text-xs font-semibold text-black shadow-sm">
           <Clock className="size-3.5" aria-hidden="true" />
           {copy.comingSoon}
         </span>
@@ -262,8 +262,8 @@ function MediaCard({ item }: { item: MediaItem }) {
       </figure>
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-base font-bold text-brand-navy">{item.title}</h3>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
+        <h3 className="text-base font-bold text-black">{item.title}</h3>
+        <p className="mt-2 text-sm leading-6 text-black">{item.description}</p>
         <div className="mt-4">
           <button
             type="button"
@@ -276,7 +276,7 @@ function MediaCard({ item }: { item: MediaItem }) {
             <Play className="size-3.5 fill-current rtl:-scale-x-100" aria-hidden="true" />
             {copy.preview}
           </button>
-          <p id={noteId} hidden={!showNote} className="mt-3 text-sm leading-6 text-brand-navy">
+          <p id={noteId} hidden={!showNote} className="mt-3 text-sm leading-6 text-black">
             {copy.comingSoonNote}
           </p>
         </div>
@@ -353,7 +353,7 @@ function DemoCenterTabs() {
                 "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
                 selected
                   ? "bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white shadow-[0_8px_20px_-8px_rgba(37,99,235,0.6)]"
-                  : "text-muted-foreground hover:text-brand-navy",
+                  : "text-black hover:text-black",
                 focusRingPop,
               )}
             >
@@ -422,10 +422,10 @@ export function DemoCenter() {
           <PopEyebrow>
             <span aria-hidden="true">▶</span> {copy.eyebrow}
           </PopEyebrow>
-          <h2 id="demo-heading" className="mt-5 text-3xl font-bold tracking-tight text-balance text-brand-navy sm:text-4xl">
+          <h2 id="demo-heading" className="mt-5 text-3xl font-bold tracking-tight text-balance text-black sm:text-4xl">
             {copy.title}
           </h2>
-          <p className="mt-4 text-base leading-7 text-muted-foreground">{copy.description}</p>
+          <p className="mt-4 text-base leading-7 text-black">{copy.description}</p>
         </Reveal>
 
         <motion.div
@@ -445,8 +445,8 @@ export function DemoCenter() {
           transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
           className="glass-pop glow-border-pop mt-10 flex flex-col items-center gap-3 rounded-3xl p-6 text-center sm:p-8"
         >
-          <p className="text-base font-semibold text-brand-navy sm:text-lg">{copy.ctaTitle}</p>
-          <p className="max-w-md text-sm leading-6 text-muted-foreground">{copy.ctaBody}</p>
+          <p className="text-base font-semibold text-black sm:text-lg">{copy.ctaTitle}</p>
+          <p className="max-w-md text-sm leading-6 text-black">{copy.ctaBody}</p>
           <Magnetic className="mt-2">
             <Link href={APP_ROUTES.translate} className={cn(popPrimaryButton, popButtonSizes.lg)}>
               {copy.ctaButton}
@@ -458,3 +458,4 @@ export function DemoCenter() {
     </section>
   )
 }
+

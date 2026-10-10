@@ -69,8 +69,8 @@ function FloatingField({
             active
               ? "top-0 -translate-y-1/2 scale-75 bg-card px-1.5 font-semibold text-[#1D4ED8]"
               : multiline
-                ? "top-3 scale-100 text-muted-foreground"
-                : "top-1/2 -translate-y-1/2 scale-100 text-muted-foreground",
+                ? "top-3 scale-100 text-black"
+                : "top-1/2 -translate-y-1/2 scale-100 text-black",
             error && "text-[#B91C1C]",
           )}
         >
@@ -294,7 +294,7 @@ export function Contact() {
                           "inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[color:var(--primary)] has-[:focus-visible]:ring-offset-2",
                           method === value
                             ? "border-[color:var(--primary)]/40 bg-[color:var(--primary)]/10 text-[#1D4ED8]"
-                            : "border-border/70 bg-background/60 text-muted-foreground hover:text-foreground",
+                            : "border-border/70 bg-background/60 text-black hover:text-foreground",
                         )}
                       >
                         <input
@@ -342,7 +342,7 @@ export function Contact() {
                 {/* Honest outcome: we can only open the visitor's email app, so say so and offer the address. */}
                 <div role="status" aria-live="polite">
                   {submitted ? (
-                    <div className="rounded-2xl border border-[color:var(--primary)]/20 bg-[color:var(--primary)]/6 p-4 text-sm leading-6 text-brand-navy">
+                    <div className="rounded-2xl border border-[color:var(--primary)]/20 bg-[color:var(--primary)]/6 p-4 text-sm leading-6 text-black">
                       <p className="font-semibold">{copy.statusTitle}</p>
                       <p className="mt-1">
                         {copy.statusBody}{" "}
@@ -383,7 +383,7 @@ export function Contact() {
                       <IconBadge icon={Icon} size="compact" />
                       <div className="min-w-0">
                         <h3 className="text-base font-semibold text-foreground">{text?.title}</h3>
-                        <p className="mt-1 text-sm leading-6 text-muted-foreground">{text?.description}</p>
+                        <p className="mt-1 text-sm leading-6 text-black">{text?.description}</p>
                         <a
                           href={`mailto:${channel.email}`}
                           dir="ltr"
@@ -406,3 +406,4 @@ export function Contact() {
     </section>
   )
 }
+

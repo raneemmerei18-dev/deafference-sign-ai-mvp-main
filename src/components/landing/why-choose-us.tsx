@@ -67,10 +67,10 @@ function WhyCard({
                 />
               </motion.div>
 
-              <h3 className={cn("mt-5 font-semibold text-brand-navy", large ? "text-xl sm:text-2xl" : "text-lg")}>
+              <h3 className={cn("mt-5 font-semibold text-black", large ? "text-xl sm:text-2xl" : "text-lg")}>
                 {title}
               </h3>
-              <p className={cn("mt-3 leading-7 text-muted-foreground", large ? "text-sm sm:text-base" : "text-sm")}>
+              <p className={cn("mt-3 leading-7 text-black", large ? "text-sm sm:text-base" : "text-sm")}>
                 {description}
               </p>
             </div>
@@ -132,3 +132,4 @@ export function WhyChooseUs() {
     </section>
   )
 }
+

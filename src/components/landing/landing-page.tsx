@@ -38,7 +38,10 @@ function LandingContent() {
   const [judyPos, setJudyPos] = useState<{ x: number; y: number } | null>(null)
 
   return (
-    <div className={cn("landing-pop relative min-h-dvh bg-background text-foreground", calm && "reduce-motion")}>
+    <div
+      className={cn("landing-pop relative min-h-dvh bg-background text-foreground", calm && "reduce-motion")}
+      style={{ backgroundColor: '#ffffff', color: '#000000' }}
+    >
       {/* First focusable element: lets keyboard users jump past Judy and the navbar. */}
       <a
         href="#main-content"
@@ -46,7 +49,7 @@ function LandingContent() {
       >
         {t.landing.nav.skipLink}
       </a>
-      <div aria-hidden="true" className="pop-particles pointer-events-none fixed inset-0 z-0 opacity-60" />
+      <div aria-hidden="true" className="pop-particles pointer-events-none fixed inset-0 z-0 opacity-0" />
       {/* Decorative companion: hidden below `sm` (landing.css) so it never covers content on phones. */}
       {/* Rests on the start side so she never sits under the emergency button (end side). */}
       <JudyCharacter
@@ -54,7 +57,7 @@ function LandingContent() {
         y={judyPos?.y ?? 10}
         draggable
         onDragEnd={setJudyPos}
-        autoPlay={!calm}
+        autoPlay={true}
         autoPlayLines={t.common.judyLines}
         announce={false}
         label={t.landing.judy.floatingLabel}
@@ -63,7 +66,7 @@ function LandingContent() {
       <Navbar />
       {/* Story order: the problem → how it works → Judy's everyday scenarios → try it →
           what it does → trust (performance, team) → pricing → privacy → questions → contact. */}
-      <main id="main-content" tabIndex={-1} className="relative z-10 outline-none">
+      <main id="main-content" tabIndex={-1} className="relative z-10 outline-none" style={{ color: '#1a1a1a' }}>
         <SectionTransition first>
           <Hero />
         </SectionTransition>
@@ -108,3 +111,4 @@ function LandingContent() {
     </div>
   )
 }
+

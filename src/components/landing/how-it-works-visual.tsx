@@ -198,10 +198,10 @@ export function HowItWorksVisual() {
           <PopEyebrow>
             <span aria-hidden="true">⚡</span> {copy.eyebrow}
           </PopEyebrow>
-          <h2 id="how-it-works-heading" className="mt-5 text-3xl font-bold tracking-tight text-balance text-brand-navy sm:text-4xl">
+          <h2 id="how-it-works-heading" className="mt-5 text-3xl font-bold tracking-tight text-balance text-black sm:text-4xl">
             {copy.title}
           </h2>
-          <p className="mt-4 text-base leading-7 text-muted-foreground">{copy.description}</p>
+          <p className="mt-4 text-base leading-7 text-black">{copy.description}</p>
         </Reveal>
 
         {/* Steps are content, not controls: hovering/tapping only moves the decorative highlight. */}
@@ -252,15 +252,15 @@ export function HowItWorksVisual() {
 
                 <Visual active={isActive && !reduceMotion} />
 
-                <h3 className="mt-2 text-lg font-bold text-brand-navy">{text?.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{text?.caption}</p>
+                <h3 className="mt-2 text-lg font-bold text-black">{text?.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-black">{text?.caption}</p>
 
                 <span
                   className={cn(
                     "mt-4 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
                     isActive
                       ? "border-[color:var(--primary)]/35 bg-[color:var(--primary)]/10 text-[#1D4ED8]"
-                      : "border-border text-muted-foreground",
+                      : "border-border text-black",
                   )}
                 >
                   {stage.terminal ? (
@@ -286,3 +286,4 @@ export function HowItWorksVisual() {
     </section>
   )
 }
+

@@ -110,7 +110,7 @@ export function Pricing() {
                       </h3>
                     </div>
 
-                    <p className="mt-3 text-sm leading-6 text-muted-foreground">{plan.audience}</p>
+                    <p className="mt-3 text-sm leading-6 text-black">{plan.audience}</p>
 
                     <div className="mt-5 flex flex-wrap items-baseline gap-x-1.5">
                       <span
@@ -122,10 +122,10 @@ export function Pricing() {
                       >
                         {plan.price}
                       </span>
-                      <span className="text-sm text-muted-foreground">{plan.cadence}</span>
+                      <span className="text-sm text-black">{plan.cadence}</span>
                     </div>
 
-                    <ul className="mt-6 flex-1 space-y-3 text-sm leading-6 text-muted-foreground">
+                    <ul className="mt-6 flex-1 space-y-3 text-sm leading-6 text-black">
                       {plan.features.map((feature) => (
                         <li key={feature} className="flex gap-3">
                           <Check className="mt-0.5 size-4 shrink-0 text-[#2563EB]" aria-hidden="true" />
@@ -154,8 +154,9 @@ export function Pricing() {
           })}
         </motion.div>
 
-        <p className="mx-auto mt-10 max-w-2xl text-center text-sm leading-6 text-muted-foreground">{copy.note}</p>
+        <p className="mx-auto mt-10 max-w-2xl text-center text-sm leading-6 text-black">{copy.note}</p>
       </Container>
     </section>
   )
 }
+

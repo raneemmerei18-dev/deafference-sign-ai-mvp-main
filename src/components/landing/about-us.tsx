@@ -70,10 +70,10 @@ function MissionPanel() {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-8">
           <IconBadge icon={Target} variant="solid" />
           <div>
-            <h3 id="about-mission-title" className="text-xl font-semibold text-brand-navy sm:text-2xl">
+            <h3 id="about-mission-title" className="text-xl font-semibold text-black sm:text-2xl">
               {about.missionTitle}
             </h3>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">{about.missionBody}</p>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-black sm:text-base">{about.missionBody}</p>
           </div>
         </div>
       </GlassPanel>
@@ -90,10 +90,10 @@ function VisionPanel() {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-8">
           <IconBadge icon={Compass} variant="solid" />
           <div>
-            <h3 id="about-vision-title" className="text-xl font-semibold text-brand-navy sm:text-2xl">
+            <h3 id="about-vision-title" className="text-xl font-semibold text-black sm:text-2xl">
               {about.visionTitle}
             </h3>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">{about.visionBody}</p>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-black sm:text-base">{about.visionBody}</p>
           </div>
         </div>
       </GlassPanel>
@@ -120,8 +120,8 @@ function ValuesPanel() {
             <motion.div key={value.title} variants={staggerItem} className={spanLast ? "sm:col-span-2" : undefined}>
               <GlassPanel tilt glow className="h-full p-6">
                 <IconBadge icon={Icon} />
-                <h3 className="mt-5 text-lg font-semibold text-brand-navy">{value.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-muted-foreground">{value.description}</p>
+                <h3 className="mt-5 text-lg font-semibold text-black">{value.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-black">{value.description}</p>
               </GlassPanel>
             </motion.div>
           )
@@ -136,7 +136,7 @@ function TeamPanel() {
   const about = t.landing.about
   return (
     <article aria-label={about.tabs.team}>
-      <p className="mb-8 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">{about.teamIntro}</p>
+      <p className="mb-8 max-w-2xl text-sm leading-7 text-black sm:text-base">{about.teamIntro}</p>
       <div className="relative ps-8 sm:ps-10">
         <div
           className="absolute start-[11px] top-2 bottom-2 w-px bg-gradient-to-b from-[color:var(--primary)]/45 via-[color:var(--primary)]/15 to-transparent sm:start-[15px]"
@@ -151,7 +151,7 @@ function TeamPanel() {
                   className="pop-pulse absolute top-1 -start-8 size-[11px] rounded-full bg-[color:var(--primary)] sm:-start-10"
                   aria-hidden="true"
                 />
-                <h3 className="text-sm font-semibold tracking-wide text-brand-navy uppercase">{group.heading}</h3>
+                <h3 className="text-sm font-semibold tracking-wide text-black uppercase">{group.heading}</h3>
                 <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                   {group.roles.map((member) => (
                     <motion.li key={member.role} whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
@@ -159,7 +159,7 @@ function TeamPanel() {
                         <TeamAvatar icon={Icon} />
                         <div className="min-w-0">
                           <p className="text-sm font-semibold text-foreground">{member.role}</p>
-                          <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{member.note}</p>
+                          <p className="mt-1.5 text-sm leading-6 text-black">{member.note}</p>
                         </div>
                       </GlassPanel>
                     </motion.li>
@@ -175,8 +175,8 @@ function TeamPanel() {
           <div className="flex items-start gap-4">
             <IconBadge icon={Sparkles} size="compact" />
             <div>
-              <h3 className="text-base font-semibold text-brand-navy">{about.hiring.title}</h3>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">{about.hiring.body}</p>
+              <h3 className="text-base font-semibold text-black">{about.hiring.title}</h3>
+              <p className="mt-1 text-sm leading-6 text-black">{about.hiring.body}</p>
             </div>
           </div>
           <a
@@ -215,7 +215,7 @@ function FutureGoalsPanel() {
                     <IconBadge icon={Icon} size="compact" />
                     <div>
                       <h3 className="text-base font-semibold text-foreground">{goal.title}</h3>
-                      <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{goal.description}</p>
+                      <p className="mt-1.5 text-sm leading-6 text-black">{goal.description}</p>
                     </div>
                   </div>
                   <span
@@ -307,7 +307,7 @@ function AboutTabs() {
               onKeyDown={(event) => handleKeyDown(event, index)}
               className={cn(
                 "relative z-10 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors",
-                selected ? "text-white" : "text-muted-foreground hover:text-brand-navy",
+                selected ? "text-white" : "text-black hover:text-black",
                 focusRingPop,
               )}
             >
@@ -372,31 +372,31 @@ export function AboutUs() {
         <div className="relative mt-14 grid gap-10 lg:mt-20 lg:grid-cols-12 lg:gap-6">
           <Reveal className="lg:col-span-7 lg:pt-4">
             <PopEyebrow>{about.storyEyebrow}</PopEyebrow>
-            <p className="mt-5 max-w-xl text-base leading-8 text-pretty text-muted-foreground sm:text-lg">
-              <span className="block text-2xl leading-snug font-semibold text-brand-navy sm:text-3xl">{about.storyLead}</span>
+            <p className="mt-5 max-w-xl text-base leading-8 text-pretty text-black sm:text-lg">
+              <span className="block text-2xl leading-snug font-semibold text-black sm:text-3xl">{about.storyLead}</span>
               <span className="mt-4 block">{about.storyBody}</span>
             </p>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">{about.storyMore}</p>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-black sm:text-base">{about.storyMore}</p>
           </Reveal>
 
           <Reveal delay={0.12} className="lg:col-span-5">
             <GlassPanel glow tilt className="relative mx-auto max-w-sm p-6 sm:p-8 lg:ms-auto lg:mt-10">
               <IconBadge icon={HeartHandshake} variant="solid" />
-              <p className="mt-5 text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+              <p className="mt-5 text-xs font-semibold tracking-[0.18em] text-black uppercase">
                 {about.glanceLabel}
               </p>
               <div className="mt-6 grid grid-cols-3 gap-4">
                 <div>
-                  <AnimatedNumber value={about.values.length} className="text-3xl font-bold text-brand-navy" />
-                  <p className="mt-1 text-xs text-muted-foreground">{about.glanceValues}</p>
+                  <AnimatedNumber value={about.values.length} className="text-3xl font-bold text-black" />
+                  <p className="mt-1 text-xs text-black">{about.glanceValues}</p>
                 </div>
                 <div>
-                  <AnimatedNumber value={roleCount} className="text-3xl font-bold text-brand-navy" />
-                  <p className="mt-1 text-xs text-muted-foreground">{about.glanceRoles}</p>
+                  <AnimatedNumber value={roleCount} className="text-3xl font-bold text-black" />
+                  <p className="mt-1 text-xs text-black">{about.glanceRoles}</p>
                 </div>
                 <div>
                   <AnimatedNumber value={about.goals.length} className="text-3xl font-bold text-[#C2410C]" />
-                  <p className="mt-1 text-xs text-muted-foreground">{about.glanceGoals}</p>
+                  <p className="mt-1 text-xs text-black">{about.glanceGoals}</p>
                 </div>
               </div>
             </GlassPanel>
@@ -410,3 +410,4 @@ export function AboutUs() {
     </section>
   )
 }
+

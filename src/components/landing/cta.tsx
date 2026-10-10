@@ -77,7 +77,7 @@ export function CTA() {
                 <h2 id="cta-heading" className="mt-4 text-3xl font-semibold tracking-tight text-balance text-foreground sm:text-4xl">
                   {copy.title}
                 </h2>
-                <p className="mt-4 max-w-2xl text-base leading-8 text-muted-foreground">{copy.body}</p>
+                <p className="mt-4 max-w-2xl text-base leading-8 text-black">{copy.body}</p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
@@ -99,3 +99,4 @@ export function CTA() {
     </section>
   )
 }
+

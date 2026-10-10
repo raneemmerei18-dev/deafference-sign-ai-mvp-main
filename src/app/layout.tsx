@@ -61,7 +61,7 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
-      <body className="min-h-dvh bg-background font-sans antialiased text-foreground">
+      <body className="min-h-dvh bg-background font-sans antialiased text-foreground" style={{ backgroundColor: '#ffffff', color: '#000000' }}>
         <AuthProvider initialUser={initialUser}>
           <SettingsProvider initialSettings={initialSettings}>
             {children}

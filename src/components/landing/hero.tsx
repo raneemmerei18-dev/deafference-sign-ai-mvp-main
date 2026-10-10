@@ -41,7 +41,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="glass-pop inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-brand-navy"
+              className="glass-pop inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-black"
             >
               <span className="relative flex size-2" aria-hidden="true">
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-orange opacity-75" />
@@ -54,7 +54,7 @@ export function Hero() {
               variants={headlineContainer}
               initial="hidden"
               animate="show"
-              className="mt-6 max-w-2xl text-[clamp(1.75rem,9vw,2.25rem)] leading-[1.1] font-extrabold tracking-tight text-balance break-words text-brand-navy sm:text-[min(3.75rem,8.5vw)] sm:leading-[1.05] lg:text-[min(4.75rem,4.1vw)]"
+              className="mt-6 max-w-2xl text-[clamp(1.75rem,9vw,2.25rem)] leading-[1.1] font-extrabold tracking-tight text-balance break-words text-black sm:text-[min(3.75rem,8.5vw)] sm:leading-[1.05] lg:text-[min(4.75rem,4.1vw)]"
             >
               {words.map((word, i) => (
                 <span key={`${i}-${word}`} className="inline-block max-w-full overflow-hidden pb-1 align-bottom">
@@ -73,7 +73,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: "easeOut", delay: 0.5 }}
-              className="mt-6 max-w-lg text-lg leading-8 text-pretty text-muted-foreground"
+              className="mt-6 max-w-lg text-lg leading-8 text-pretty text-black"
             >
               {hero.intro}
             </motion.p>
@@ -108,7 +108,7 @@ export function Hero() {
               {hero.badges.map((label) => (
                 <span
                   key={label}
-                  className="glass-pop inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium text-muted-foreground"
+                  className="glass-pop inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium text-black"
                 >
                   <Check className="size-3.5 text-[#C2410C]" aria-hidden="true" />
                   {label}
@@ -131,8 +131,8 @@ export function Hero() {
               transition={{ duration: 0.6, ease: "easeOut", delay: 1.1 }}
               className="glass-pop pop-float pointer-events-auto rounded-2xl px-3.5 py-2"
             >
-              <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">{hero.modeLabel}</p>
-              <p className="text-sm font-bold text-brand-navy">
+              <p className="text-xs font-semibold tracking-[0.08em] text-black uppercase">{hero.modeLabel}</p>
+              <p className="text-sm font-bold text-black">
                 {hero.modeValue} <span className="text-[#C2410C]">{hero.modeAccent}</span>
               </p>
             </motion.div>
@@ -144,8 +144,8 @@ export function Hero() {
               transition={{ duration: 0.6, ease: "easeOut", delay: 1.3 }}
               className="glass-pop pop-float-delay pointer-events-auto rounded-2xl px-3.5 py-2"
             >
-              <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">{hero.privacyLabel}</p>
-              <p className="text-sm font-bold text-brand-navy">{hero.privacyValue}</p>
+              <p className="text-xs font-semibold tracking-[0.08em] text-black uppercase">{hero.privacyLabel}</p>
+              <p className="text-sm font-bold text-black">{hero.privacyValue}</p>
             </motion.div>
             </div>
             <HeroIllustration />
@@ -155,3 +155,4 @@ export function Hero() {
     </section>
   )
 }
+

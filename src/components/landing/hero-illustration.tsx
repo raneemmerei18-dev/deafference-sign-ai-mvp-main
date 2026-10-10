@@ -83,3 +83,4 @@ export function HeroIllustration() {
     {CARD_DATA.map(card => <StoryCard key={card.id} card={card} label={cards[card.id]} />)}
   </div>
 }
+

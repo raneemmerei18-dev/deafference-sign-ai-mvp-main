@@ -22,8 +22,8 @@ export function SectionTransition({ children, first = false }: { children: React
   const { scrollYProgress: leave } = useScroll({ target: ref, offset: ["end 0.45", "end start"] })
 
   const opacity = useTransform([enter, leave], ([e, l]: number[]) => {
-    const inPart = first ? 1 : 0.15 + 0.85 * easeOut(e)
-    return inPart * (1 - 0.7 * easeIn(l))
+    // Keep sections fully opaque (1.0) at all times for clarity
+    return 1
   })
   const y = useTransform([enter, leave], ([e, l]: number[]) => {
     const inPart = first ? 0 : (1 - easeOut(e)) * 64

@@ -39,7 +39,7 @@ function FeatureCard({
       <div aria-hidden="true" className="pointer-events-none absolute top-0 end-0 -me-10 -mt-10 h-32 w-32 rounded-full bg-[color:var(--primary)]/12 blur-2xl" />
       <IconBadge icon={Icon} variant={emphasized ? "solid" : "tint"} className="relative z-10" />
       <h4 className="relative z-10 mt-5 text-lg font-semibold text-foreground">{title}</h4>
-      <p className="relative z-10 mt-3 text-sm leading-7 text-muted-foreground">{description}</p>
+      <p className="relative z-10 mt-3 text-sm leading-7 text-black">{description}</p>
     </GlassPanel>
   )
 }
@@ -62,7 +62,7 @@ export function Features() {
         />
 
         <div className="mt-12">
-          <h3 className="text-sm font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+          <h3 className="text-sm font-semibold tracking-[0.18em] text-black uppercase">
             {copy.coreHeading}
           </h3>
           <motion.div
@@ -91,7 +91,7 @@ export function Features() {
                 <IconBadge icon={Radio} variant="solid" />
                 <div>
                   <h3 className="text-lg font-semibold text-foreground sm:text-xl">{copy.live.title}</h3>
-                  <p className="mt-2 max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">{copy.live.body}</p>
+                  <p className="mt-2 max-w-xl text-sm leading-7 text-black sm:text-base">{copy.live.body}</p>
                 </div>
               </div>
               <span className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-[color:var(--primary)]/10 px-3 py-1.5 text-xs font-semibold text-[#1D4ED8]">
@@ -103,7 +103,7 @@ export function Features() {
         </motion.div>
 
         <div className="mt-12">
-          <h3 className="text-sm font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+          <h3 className="text-sm font-semibold tracking-[0.18em] text-black uppercase">
             {copy.trustHeading}
           </h3>
           <motion.div
@@ -120,10 +120,10 @@ export function Features() {
         </div>
 
         <div className="mt-12">
-          <h3 className="text-sm font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+          <h3 className="text-sm font-semibold tracking-[0.18em] text-black uppercase">
             {copy.integrations.heading}
           </h3>
-          <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">{copy.integrations.description}</p>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-black">{copy.integrations.description}</p>
           <motion.ul
             variants={staggerContainer}
             initial="hidden"
@@ -136,13 +136,13 @@ export function Features() {
                 <GlassPanel className="h-full p-5 transition-transform duration-300 hover:-translate-y-1">
                   <IconBadge icon={INTEGRATION_ICONS[i] ?? Plug} size="compact" />
                   <p className="mt-4 text-base font-semibold text-foreground">{item.title}</p>
-                  <p className="mt-1.5 text-sm leading-6 text-muted-foreground">{item.text}</p>
+                  <p className="mt-1.5 text-sm leading-6 text-black">{item.text}</p>
                 </GlassPanel>
               </motion.li>
             ))}
           </motion.ul>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm leading-6 text-muted-foreground">{copy.integrations.note}</p>
+            <p className="text-sm leading-6 text-black">{copy.integrations.note}</p>
             <a
               href="#contact"
               onClick={() => requestContactTopic("partnership")}
@@ -157,3 +157,4 @@ export function Features() {
     </section>
   )
 }
+

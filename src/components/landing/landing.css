@@ -1,6 +1,23 @@
 /* Landing-only overrides that Tailwind utilities can't express cleanly.
    Imported once by landing-page.tsx. */
 
+/* Make all text dark and readable */
+.landing-pop {
+  color: #1a1a1a;
+}
+
+.landing-pop p,
+.landing-pop h1,
+.landing-pop h2,
+.landing-pop h3,
+.landing-pop h4,
+.landing-pop h5,
+.landing-pop h6,
+.landing-pop span,
+.landing-pop li {
+  color: #1a1a1a !important;
+}
+
 /* Letter-spacing breaks the joined Arabic script, so drop it in RTL. */
 [dir="rtl"] .landing-pop [class*="tracking-"] {
   letter-spacing: 0;
@@ -31,19 +48,20 @@
    `isolation` keeps the -1 layer above the wrapper's own background colour. */
 .landing-pop {
   isolation: isolate;
+  background-color: #ffffff !important;
 }
 .landing-pop::before {
-  content: "";
+  content: "" !important;
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: url("/back.avif") center / cover no-repeat;
+  background: transparent !important;
 }
 
 /* Sections (and section backdrops) that paint their own colour wash: make the
    base colour see-through (their soft blue glows stay) so the paper shows
    behind them too. Doubled class beats globals.css regardless of load order. */
 .landing-pop .pop-atmosphere.pop-atmosphere {
-  background-color: rgba(246, 250, 255, 0.35);
+  background-color: transparent !important;
 }

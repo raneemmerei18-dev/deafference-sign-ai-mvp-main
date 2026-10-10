@@ -30,7 +30,7 @@ function NavLink({
 }) {
   const className = cn(
     "relative z-10 block rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors xl:px-4",
-    isActive ? "text-brand-navy" : "text-foreground/65 hover:text-brand-navy",
+    isActive ? "text-black" : "text-foreground/65 hover:text-black",
     focusRingPop,
   )
   const props = {
@@ -176,7 +176,7 @@ export function Navbar() {
               aria-controls="mobile-nav"
               aria-label={isMenuOpen ? nav.closeMenu : nav.openMenu}
               className={cn(
-                "inline-flex size-11 items-center justify-center rounded-full text-brand-navy transition-colors hover:bg-[color:var(--primary)]/10 lg:hidden",
+                "inline-flex size-11 items-center justify-center rounded-full text-black transition-colors hover:bg-[color:var(--primary)]/10 lg:hidden",
                 focusRingPop,
               )}
             >
@@ -235,3 +235,4 @@ export function Navbar() {
     </motion.header>
   )
 }
+

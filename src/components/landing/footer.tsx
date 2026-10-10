@@ -17,7 +17,7 @@ function FooterLink({ href, children }: { href: string; children: ReactNode }) {
     <a
       href={href}
       className={cn(
-        "group relative inline-flex w-fit items-center gap-2 rounded-sm text-sm text-muted-foreground transition-all duration-200 hover:translate-x-0.5 hover:text-[#1D4ED8] rtl:hover:-translate-x-0.5",
+        "group relative inline-flex w-fit items-center gap-2 rounded-sm text-sm text-black transition-all duration-200 hover:translate-x-0.5 hover:text-[#1D4ED8] rtl:hover:-translate-x-0.5",
         focusRingPop,
       )}
     >
@@ -57,7 +57,7 @@ export function Footer() {
       <Container className="relative grid gap-12 sm:grid-cols-3 lg:grid-cols-[1.3fr_auto_auto_auto] lg:items-start lg:gap-10">
         <div className="max-w-sm sm:col-span-3 lg:col-span-1">
           <Logo />
-          <p className="mt-5 text-sm leading-7 text-muted-foreground">{copy.tagline}</p>
+          <p className="mt-5 text-sm leading-7 text-black">{copy.tagline}</p>
         </div>
 
         <div>
@@ -104,8 +104,8 @@ export function Footer() {
             <h2 id="accessibility-heading" className="text-sm font-semibold text-foreground">
               {copy.a11yTitle}
             </h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{copy.a11yBody}</p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-black">{copy.a11yBody}</p>
+            <p className="mt-2 text-sm leading-6 text-black">
               {copy.a11yContact}{" "}
               <a
                 href="mailto:hello@deafference.ai"
@@ -120,7 +120,7 @@ export function Footer() {
       </Container>
 
       <Container className="relative mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[color:var(--primary)]/10 pt-6">
-        <p className="text-xs text-muted-foreground">{fmt(copy.rights, { year: new Date().getFullYear() })}</p>
+        <p className="text-xs text-black">{fmt(copy.rights, { year: new Date().getFullYear() })}</p>
         <FooterLink href={resolveLandingHref("#top", pathname)}>
           <ArrowUp className="size-4" aria-hidden="true" />
           {copy.backToTop}
@@ -129,3 +129,4 @@ export function Footer() {
     </motion.footer>
   )
 }
+

@@ -62,3 +62,4 @@ export function useLandingReducedMotion() {
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false)
   return Boolean(ctx?.calm || (hydrated && prefersReduced))
 }
+

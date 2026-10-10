@@ -94,7 +94,7 @@ export function Performance() {
                       <p className="mt-4 text-2xl font-semibold tracking-tight pop-gradient-text">{metric.value}</p>
                     )}
 
-                    <p className="mt-2 text-sm leading-7 text-muted-foreground">{metric.label}</p>
+                    <p className="mt-2 text-sm leading-7 text-black">{metric.label}</p>
 
                     <div aria-hidden="true" className="relative mt-5 h-1.5 overflow-hidden rounded-full bg-[color:var(--primary)]/10">
                       <motion.div
@@ -139,7 +139,7 @@ export function Performance() {
                     >
                       <IconBadge icon={Icon} variant="solid" size="compact" />
                       <h3 className="mt-4 text-sm font-semibold text-foreground">{item.title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.text}</p>
+                      <p className="mt-2 text-sm leading-6 text-black">{item.text}</p>
                     </div>
                   )
                 })}
@@ -151,3 +151,4 @@ export function Performance() {
     </section>
   )
 }
+
